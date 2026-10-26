@@ -14,6 +14,7 @@ const crypto = require('crypto');
 const os = require('os');
 const { EventEmitter } = require('events');
 
+const CAT = require('./public/catalog.js');   // shared with the game: items, prices, levels, rewards
 const PORT = Number(process.env.PORT) || 3000;
 const PUBLIC = path.join(__dirname, 'public');
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
@@ -28,6 +29,7 @@ try {
   db.users = db.users || {};
   db.sessions = db.sessions || {};
 } catch (e) { /* first run */ }
+for (const u of Object.values(db.users)) { CAT.normalize(u); u.look = baseLook(u.look); }
 
 let saveTimer = null;
 function persist() {
@@ -42,44 +44,25 @@ function persist() {
   }, 150);
 }
 
-/* AI ratings live on the server so a client can't claim a fake opponent rating */
-const AI = {
-  rookie: ['Rookie Rex', 650], amateur: ['Amateur Amy', 850], club: ['Club Casey', 1000], pro: ['Pro Paula', 1250],
-  veteran: ['Veteran Victor', 1450], elite: ['Elite Elena', 1600], legend: ['Legend Leo', 1800],
-  champion: ['Champion Kai', 2050], grandmaster: ['Grandmaster Mira', 2350], nightmare: ['Nightmare Nova', 2700],
-};
-
 const USER_RE = /^[A-Za-z0-9_]{3,14}$/;
-const OUTFITS = ['classic', 'sunset', 'neon', 'ocean', 'royal', 'shadow', 'sakura', 'forest'];
 
 function hashPassword(pw, salt) {
   return crypto.scryptSync(String(pw), salt, 64).toString('hex');
 }
-function cleanLook(l) {
-  l = l && typeof l === 'object' ? l : {};
-  return {
-    gender: l.gender === 'girl' ? 'girl' : 'boy',
-    skin: Math.max(0, Math.min(3, l.skin | 0)),
-    hair: Math.max(0, Math.min(4, l.hair | 0)),
-    outfit: OUTFITS.includes(l.outfit) ? l.outfit : 'classic',
-  };
-}
+// account appearance stores only the body; worn items live in equip
+function baseLook(l) { const c = CAT.cleanLook(l); return { gender: c.gender, skin: c.skin, hair: c.hair, hairStyle: c.hairStyle }; }
+function wornLook(u) { return CAT.cleanLook(Object.assign({}, u.look, u.equip)); }
 function publicUser(u) {
+  const lv = CAT.levelInfo(u.xp);
   return {
     username: u.username, mmr: u.mmr, peak: u.peak, wins: u.wins, losses: u.losses,
     bestRally: u.bestRally || 0, history: (u.history || []).slice(0, 20), look: u.look, created: u.created,
+    coins: u.coins, xp: u.xp, level: lv.level, owned: u.owned, equip: u.equip, beaten: u.beaten,
   };
-}
-function elo(mmr, opp, won) {
-  const exp = 1 / (1 + Math.pow(10, (opp - mmr) / 400));
-  let d = Math.round(40 * ((won ? 1 : 0) - exp));
-  if (won && d < 3) d = 3;
-  if (!won && d > -3) d = -3;
-  return d;
 }
 function applyResult(u, delta, entry) {
   u.mmr = Math.max(0, u.mmr + delta);
-  u.peak = Math.max(u.peak || 1000, u.mmr);
+  u.peak = Math.max(u.peak || 0, u.mmr);
   if (entry.win) u.wins++; else u.losses++;
   u.history = [Object.assign({ delta, mmr: u.mmr, t: Date.now() }, entry)].concat(u.history || []).slice(0, 20);
 }
@@ -129,7 +112,7 @@ async function handleApi(req, res, url) {
     const rows = Object.values(db.users)
       .sort((a, b) => b.mmr - a.mmr || b.wins - a.wins)
       .slice(0, 100)
-      .map((u) => ({ username: u.username, mmr: u.mmr, wins: u.wins, losses: u.losses, peak: u.peak, outfit: u.look && u.look.outfit }));
+      .map((u) => ({ username: u.username, mmr: u.mmr, wins: u.wins, losses: u.losses, peak: u.peak, level: CAT.levelInfo(u.xp).level }));
     return json(res, 200, { rows });
   }
 
@@ -150,10 +133,7 @@ async function handleApi(req, res, url) {
     const key = name.toLowerCase();
     if (db.users[key]) return json(res, 409, { error: 'That username is taken' });
     const salt = crypto.randomBytes(16).toString('hex');
-    const u = {
-      username: name, salt, pass: hashPassword(pw, salt), mmr: 1000, peak: 1000, wins: 0, losses: 0,
-      bestRally: 0, history: [], look: cleanLook(body.look), created: Date.now(),
-    };
+    const u = Object.assign({ username: name, salt, pass: hashPassword(pw, salt), look: baseLook(body.look), created: Date.now() }, CAT.newProgress());
     db.users[key] = u;
     const token = newSession(u);
     return json(res, 200, { token, user: publicUser(u) });
@@ -179,22 +159,34 @@ async function handleApi(req, res, url) {
     return json(res, 200, { ok: true });
   }
   if (route === '/api/look') {
-    u.look = cleanLook(body.look); persist();
+    u.look = baseLook(body.look); persist();
     return json(res, 200, { user: publicUser(u) });
   }
   if (route === '/api/ranked') {
-    const ai = AI[body.ai];
-    if (!ai) return json(res, 400, { error: 'Unknown opponent' });
-    const won = !!body.won;
-    const delta = elo(u.mmr, ai[1], won);
-    const doubles = body.mode === 'doubles';
-    applyResult(u, delta, { opp: doubles ? ai[0] + ' pair' : ai[0], mode: doubles ? 'Doubles' : 'Singles', score: String(body.score || '').slice(0, 9), win: won });
+    const r = CAT.applyMatch(u, String(body.ai || ''), !!body.won, body.score, body.mode === 'doubles');
+    if (typeof r === 'string') return json(res, 400, { error: r });
     persist();
-    return json(res, 200, { user: publicUser(u), delta });
+    return json(res, 200, { user: publicUser(u), result: r, delta: r.delta });
   }
   if (route === '/api/rally') {
-    const best = Math.max(0, Math.min(9999, body.best | 0));
-    if (best > (u.bestRally || 0)) { u.bestRally = best; persist(); }
+    const n = Math.max(0, Math.min(500, body.returns | 0));
+    const now = Date.now();
+    let rew = null;
+    if (now - (u.lastRally || 0) > 8000 && n > 0) { u.lastRally = now; rew = CAT.addRewards(u, CAT.rallyRewards(n)); }
+    if (n > (u.bestRally || 0)) u.bestRally = n;
+    persist();
+    return json(res, 200, { user: publicUser(u), result: rew });
+  }
+  if (route === '/api/buy') {
+    const err = CAT.buy(u, String(body.id || ''));
+    if (err) return json(res, 400, { error: err });
+    persist();
+    return json(res, 200, { user: publicUser(u) });
+  }
+  if (route === '/api/equip') {
+    const err = CAT.equip(u, String(body.slot || ''), String(body.id || ''));
+    if (err) return json(res, 400, { error: err });
+    persist();
     return json(res, 200, { user: publicUser(u) });
   }
   return json(res, 404, { error: 'Not found' });
@@ -341,21 +333,22 @@ function rankOnline(room, winTeam, score) {
     room.slots.forEach((c) => c && send(c, { t: 'mmr', ranked: false }));
     return;
   }
-  const avg = (list) => list.reduce((s, m) => s + (m.u ? m.u.mmr : 1000), 0) / list.length;
+  const avg = (list) => list.reduce((s, m) => s + (m.u ? m.u.mmr : 0), 0) / list.length;
   const before = { 1: avg(t1), 2: avg(t2) };
   const names = (team) => members.filter((m) => m.team === team).map((m) => (m.c ? m.c.meta.name : 'CPU')).join(' & ');
   for (const m of members) {
     if (!m.u) { if (m.c) send(m.c, { t: 'mmr', ranked: false }); continue; }
     const won = m.team === winTeam;
-    const delta = elo(m.u.mmr, before[m.team === 1 ? 2 : 1], won);
+    const delta = CAT.elo(m.u.mmr, before[m.team === 1 ? 2 : 1], won);
     applyResult(m.u, delta, { opp: names(m.team === 1 ? 2 : 1), mode: room.mode === '2v2' ? 'Online 2v2' : 'Online 1v1', score: String(score || '').slice(0, 9), win: won });
-    send(m.c, { t: 'mmr', ranked: true, delta, user: publicUser(m.u) });
+    const rew = CAT.addRewards(m.u, CAT.onlineRewards(won));
+    send(m.c, { t: 'mmr', ranked: true, delta, user: publicUser(m.u), result: rew });
   }
   persist();
 }
 
 function onConnection(ws) {
-  ws.meta = { id: nextId++, user: null, name: 'Guest', look: cleanLook({}), room: null, alive: true };
+  ws.meta = { id: nextId++, user: null, name: 'Guest', look: CAT.cleanLook({}), room: null, alive: true };
   ws.on('pong', () => { ws.meta.alive = true; });
 
   ws.on('message', (raw) => {
@@ -369,7 +362,7 @@ function onConnection(ws) {
         const u = userFromToken(m.token);
         ws.meta.user = u ? u.username.toLowerCase() : null;
         ws.meta.name = u ? u.username : cleanName(m.name);
-        ws.meta.look = cleanLook(m.look || (u && u.look));
+        ws.meta.look = u ? wornLook(u) : CAT.cleanLook(m.look);
         send(ws, { t: 'welcome', id: ws.meta.id, name: ws.meta.name, account: !!u });
         send(ws, { t: 'rooms', rooms: roomList() });
         if (room) broadcastRoom(room);
