@@ -29,21 +29,21 @@ tailwind.config = { theme: { extend: { fontFamily: {
   --text:#0f1b33; --muted:#56647c; --line:rgba(15,27,51,.13);
   --accent:#ff7a45; --accent-ink:#ffffff; --ball:#e8ff3d; --ball-ink:#243000;
   --good:#15803d; --bad:#c62828; --kitchen:#26a65b;
-  --hud-bg:rgba(9,17,34,.80); --hud-text:#f6f9ff; --hud-muted:#9fb1cc;
+  --hud-bg:rgba(9,17,34,.88); --glass-solid:rgba(247,250,253,.97); --hud-text:#f6f9ff; --hud-muted:#9fb1cc;
   color-scheme: light;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#08111f; --glass:rgba(13,22,40,.88); --panel:#121d33; --panel2:#18253f;
+    --bg:#08111f; --glass:rgba(13,22,40,.88); --panel:#121d33; --panel2:#18253f; --glass-solid:rgba(13,22,40,.97);
     --text:#eef3fb; --muted:#97a6bf; --line:rgba(255,255,255,.11);
     --accent:#ff8a5b; --accent-ink:#1a0b03; --good:#4ade80; --bad:#f87171;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#08111f; --glass:rgba(13,22,40,.88); --panel:#121d33; --panel2:#18253f;
+  --bg:#08111f; --glass:rgba(13,22,40,.88); --glass-solid:rgba(13,22,40,.97); --panel:#121d33; --panel2:#18253f;
   --text:#eef3fb; --muted:#97a6bf; --line:rgba(255,255,255,.11);
   --accent:#ff8a5b; --accent-ink:#1a0b03; --good:#4ade80; --bad:#f87171;
   color-scheme: dark;
@@ -59,8 +59,8 @@ body{height:100%; margin:0; background:#0b1730; color:var(--text); font-family:B
 .hidden{display:none !important;}   /* works even if the Tailwind CDN can't load (offline LAN) */
 .screen:not(.off) > .glass{animation:cardIn .42s cubic-bezier(.18,1.25,.32,1) both;}
 @keyframes cardIn{from{opacity:0; transform:translateY(14px) scale(.965)} to{opacity:1; transform:none}}
-.glass{background:var(--glass); -webkit-backdrop-filter:blur(18px) saturate(1.2); backdrop-filter:blur(18px) saturate(1.2);
-  border:1px solid var(--line); box-shadow:0 30px 80px -24px rgba(3,10,25,.6);}
+.glass{background:var(--glass-solid); border:1px solid var(--line); box-shadow:0 30px 80px -24px rgba(3,10,25,.6);}
+@media (hover:hover) and (pointer:fine){ .glass{background:var(--glass); -webkit-backdrop-filter:blur(14px) saturate(1.2); backdrop-filter:blur(14px) saturate(1.2);} }
 .tile{background:var(--panel); border:1px solid var(--line); transition:border-color .15s, transform .08s;}
 @media (hover:hover){ .tile:hover{border-color:color-mix(in srgb, var(--accent) 60%, var(--line));} }
 button{transition:transform .08s ease, filter .15s; touch-action:manipulation; -webkit-user-select:none; user-select:none; cursor:pointer;}
@@ -112,7 +112,7 @@ input{font-size:16px;} /* stops iOS zooming into inputs */
 #callBanner{position:fixed; left:50%; top:36%; z-index:14; pointer-events:none; text-align:center; opacity:0;
   transform:translate(-50%,8px) scale(.92); transition:opacity .2s ease, transform .28s cubic-bezier(.2,1.5,.4,1);}
 #callBanner.show{opacity:1; transform:translate(-50%,0) scale(1);}
-.hud{background:var(--hud-bg); color:var(--hud-text); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);}
+.hud{background:var(--hud-bg); color:var(--hud-text);}
 .bar{height:6px; border-radius:99px; background:rgba(255,255,255,.14); overflow:hidden;}
 .bar>i{display:block; height:100%; width:0; background:var(--ball); border-radius:99px; transition:width .15s;}
 .pop{animation:pop .45s cubic-bezier(.2,1.6,.4,1);}
@@ -446,8 +446,12 @@ input{font-size:16px;} /* stops iOS zooming into inputs */
         <div id="optTouch" class="seg"><button data-act="opt" data-k="touch" data-v="normal">Normal</button><button data-act="opt" data-k="touch" data-v="big">Big</button></div>
       </div>
       <div class="flex items-center justify-between gap-3 flex-wrap">
-        <div><div class="font-bold">Screen shake and sound</div></div>
-        <div class="flex gap-2"><button id="optShake" data-act="optToggle" data-k="shake" class="tile rounded-xl px-3 py-1.5 font-bold">Shake</button><button id="optSound" data-act="sound" class="tile rounded-xl px-3 py-1.5 font-bold">Sound</button></div>
+        <div><div class="font-bold">Graphics</div><div class="text-sm text-[var(--muted)]">Auto lowers detail by itself if your device struggles</div></div>
+        <div id="optGfx" class="seg"><button data-act="opt" data-k="gfx" data-v="auto">Auto</button><button data-act="opt" data-k="gfx" data-v="high">High</button><button data-act="opt" data-k="gfx" data-v="low">Low</button></div>
+      </div>
+      <div class="flex items-center justify-between gap-3 flex-wrap">
+        <div><div class="font-bold">Shake, sound and FPS</div><div class="text-sm text-[var(--muted)]">FPS shows your frame rate (and ping online) in the corner</div></div>
+        <div class="flex gap-2"><button id="optShake" data-act="optToggle" data-k="shake" class="tile rounded-xl px-3 py-1.5 font-bold">Shake</button><button id="optSound" data-act="sound" class="tile rounded-xl px-3 py-1.5 font-bold">Sound</button><button id="optFps" data-act="optToggle" data-k="fps" class="tile rounded-xl px-3 py-1.5 font-bold">FPS</button></div>
       </div>
       <div class="flex items-center justify-between gap-3">
         <div><div class="font-bold">Gamepads</div><div id="padInfo" class="text-sm text-[var(--muted)]">Press any button on a gamepad to connect it.</div></div>
@@ -571,6 +575,7 @@ input{font-size:16px;} /* stops iOS zooming into inputs */
   </div>
 </div>
 <div id="ctrlBtns" class="hidden"></div>
+<div id="fpsBox" class="fixed z-30 hidden pointer-events-none hud rounded-lg px-2 py-1 text-xs font-bold tabular-nums" style="left:8px; top:calc(env(safe-area-inset-top,0px) + 6px)">60 fps</div>
 <div id="toast"><div id="tTitle" class="font-display text-white text-[44px] leading-none" style="text-shadow:0 4px 24px rgba(0,0,0,.6)"></div><div id="tSub" class="text-white/90 font-semibold mt-2 text-lg" style="text-shadow:0 2px 10px rgba(0,0,0,.7)"></div></div>
 <div id="callBanner"><div class="hud rounded-2xl px-6 py-3"><div id="cbNum" class="font-display text-[42px] leading-none tabular-nums"></div><div id="cbSub" class="text-[13px] font-semibold text-[var(--hud-muted)] mt-1.5"></div></div></div>
 <div id="hint" class="fixed left-1/2 -translate-x-1/2 z-10 hidden hud rounded-full px-4 py-2 font-semibold pulse" style="bottom:calc(env(safe-area-inset-bottom,0px) + 22px)">Hold Space, release to serve</div>
@@ -657,7 +662,7 @@ const DEF_BINDS = {
 };
 const DEF = { p1:{ name:'Player 1', gender:'boy', skin:1, hair:0, hairStyle:'short' },
   p2:{ name:'Player 2', gender:'girl', skin:0, hair:1, hairStyle:'ponytail', equip:{ head:'head_none', top:'tee_blue', bottom:'shorts_black', shoes:'sneak_black', paddle:'pad_wood', ball:'ball_classic' } },
-  bestRally:0, sound:true, binds:JSON.parse(JSON.stringify(DEF_BINDS)), opts:{ meter:'normal', swing:'auto', touch:'normal', shake:true },
+  bestRally:0, sound:true, binds:JSON.parse(JSON.stringify(DEF_BINDS)), opts:{ meter:'normal', swing:'auto', touch:'normal', shake:true, gfx:'auto', fps:false },
   localAcc:null, token:null };
 const clone = o => JSON.parse(JSON.stringify(o));
 function load(){
@@ -806,8 +811,23 @@ let VW = 0, VH = 0, DPR = 1;
 let isTouch = matchMedia('(pointer: coarse)').matches || ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 const CAM = { D:8, H:5.5, F:600, cx:0, baseCx:0, hy:0 };
 let CROWD = [];
+const GFX = { cap:2, low:false, auto:true, ema:.0167, floor:0, slowT:0, fps:60, fpsN:0, fpsT:0 };
+function applyGfx(){
+  const m = data.opts.gfx || 'auto';
+  GFX.auto = m === 'auto'; GFX.low = m === 'low';
+  GFX.cap = m === 'low' ? 1 : m === 'high' ? 2 : (isTouch ? 1.5 : 2);
+  GFX.ema = .0167; GFX.floor = 0; GFX.slowT = 0;
+  WORLD.key = ''; resize();
+}
+function degradeGfx(){
+  GFX.slowT = 0; GFX.ema = GFX.floor || .0167;
+  if (GFX.cap > 1.01){ GFX.cap = Math.max(1, GFX.cap - .5); resize(); }
+  else if (!GFX.low){ GFX.low = true; WORLD.key = ''; }
+}
+const rectOf = cv2 => cv2._r || (cv2._r = { width:cv2.clientWidth, height:cv2.clientHeight });
+function invalidateRects(){ for (const k of document.getElementsByTagName('canvas')) k._r = null; }
 function resize(){
-  DPR = Math.min(2, window.devicePixelRatio || 1);
+  DPR = Math.min(GFX.cap, window.devicePixelRatio || 1);
   VW = document.documentElement.clientWidth || window.innerWidth;
   VH = Math.round((window.visualViewport && window.visualViewport.height) || document.documentElement.clientHeight || window.innerHeight);
   cv.width = Math.round(VW * DPR); cv.height = Math.round(VH * DPR);
@@ -816,7 +836,7 @@ function resize(){
   CAM.F = F; CAM.baseCx = CAM.cx = VW / 2;
   const bottomY = VH - bottom - Math.max(0, (avail - .645 * F) / 2);
   CAM.hy = bottomY - CAM.H * F / (CAM.D - 1.2);
-  buildCrowd();
+  buildCrowd(); invalidateRects();
 }
 function projRaw(x, y, z){ const dy = Math.max(.5, y + CAM.D), s = CAM.F / dy; return [CAM.cx + x * s, CAM.hy + (CAM.H - z) * s, s]; }
 // online players on the far team see the court from their own side
@@ -845,13 +865,11 @@ const THEMES = {
   court_royal:  { sky:['#1a0d2e', '#3b1d5c', '#24113f'], stands:'rgba(42,19,63,.95)', surround:'#5b1d3a', court:'#2a3d8f', kitchen:'#1f9e5e', line:'#f5c542', board:'#1a0b28', boardText:'#f5c542', light:'245,197,66', crowd:1 },
 };
 const theme = () => THEMES[G.court] || THEMES.court_stadium;
-function drawCrowd(c, th, ox){
-  const cheer = G.state === 'point' || G.state === 'over';
+function paintCrowd(c, th, cheer, cy){
   for (let i = 0; i < CROWD.length; i++){
     const p = CROWD[i];
     if (th.crowd < 1 && (i * 7919) % 100 > th.crowd * 100) continue;
-    const up = cheer ? Math.max(0, Math.sin(G.time * 9 + p.ph)) * p.s * .7 : Math.max(0, Math.sin(G.time * 1.4 + p.ph)) * p.s * .12;
-    const x = p.x + ox, y = p.y - up, s = p.s;
+    const s = p.s, x = p.x + PAD, y = p.y - cy - (cheer ? s * .35 : 0);
     c.globalAlpha = .9 - p.row * .05;
     if (cheer){ c.strokeStyle = p.k; c.lineWidth = s * .35; c.lineCap = 'round'; seg(c, x - s * .55, y - s * .2, x - s * .9, y - s * 1.5); seg(c, x + s * .55, y - s * .2, x + s * .9, y - s * 1.5); }
     c.fillStyle = p.c; rr(c, x - s * .7, y - s * .5, s * 1.4, s * 1.6, s * .5); c.fill();
@@ -864,6 +882,75 @@ function drawCrowd(c, th, ox){
     }
   }
   c.globalAlpha = 1;
+}
+/* The stadium never changes, so it is drawn once into saved images and reused every frame. */
+const PAD = 64, PADY = 24;
+const WORLD = { key:'', L1:null, L2:null, crowd:[null, null], cy:0, ch:0, fontV:0 };
+function mkLayer(w, h){
+  const cvs = document.createElement('canvas');
+  cvs.width = Math.max(1, Math.round(w * DPR)); cvs.height = Math.max(1, Math.round(h * DPR));
+  const x = cvs.getContext('2d'); x.setTransform(DPR, 0, 0, DPR, 0, 0); return [cvs, x];
+}
+function buildWorld(){
+  const key = [VW, VH, DPR, G.court, G.flip ? 1 : 0, GFX.low ? 1 : 0, WORLD.fontV].join('|');
+  if (WORLD.key === key) return;
+  WORLD.key = key;
+  const th = theme(), W = VW + PAD * 2, H = VH + PADY * 2, keepCx = CAM.cx; CAM.cx = CAM.baseCx;
+  const boardTop = projRaw(0, L + 4, .9)[1];
+  let [a, c] = mkLayer(W, H); WORLD.L1 = a; c.translate(PAD, PADY);
+  const g = c.createLinearGradient(0, 0, 0, VH);
+  g.addColorStop(0, th.sky[0]); g.addColorStop(.45, th.sky[1]); g.addColorStop(1, th.sky[2]);
+  c.fillStyle = g; c.fillRect(-PAD, -PADY, W, H);
+  if (th.sun){ const sx = VW * .72, sy = boardTop - 170, sg2 = c.createRadialGradient(sx, sy, 0, sx, sy, 140); sg2.addColorStop(0, 'rgba(255,248,214,1)'); sg2.addColorStop(.25, 'rgba(255,214,140,.9)'); sg2.addColorStop(1, 'rgba(255,170,110,0)'); c.fillStyle = sg2; c.fillRect(sx - 140, sy - 140, 280, 280); }
+  if (th.trees){ c.fillStyle = '#2f6b2c'; for (let i = 0; i < 14; i++){ const tx = (i / 13) * VW, r = 38 + (i * 37 % 26); c.beginPath(); c.arc(tx, boardTop - 115 + (i % 3) * 8, r, 0, TAU); c.fill(); } }
+  const sg = c.createLinearGradient(0, boardTop - 150, 0, boardTop);
+  sg.addColorStop(0, 'rgba(0,0,0,0)'); sg.addColorStop(1, th.stands);
+  c.fillStyle = sg; c.fillRect(-PAD, boardTop - 150, W, 150);
+  let minY = boardTop;
+  for (const p of CROWD) minY = Math.min(minY, p.y - p.s * 4.6);
+  WORLD.cy = Math.floor(minY); WORLD.ch = Math.ceil(boardTop + 16 - minY);
+  WORLD.crowd = [null, null];
+  for (const cheer of [0, 1]){
+    if (cheer && GFX.low) break;
+    const [cc, cx2] = mkLayer(W, WORLD.ch); paintCrowd(cx2, th, !!cheer, WORLD.cy); WORLD.crowd[cheer] = cc;
+  }
+  [a, c] = mkLayer(W, H); WORLD.L2 = a; c.translate(PAD, PADY);
+  if (!GFX.low) for (let i = 0; i < 6; i++){
+    const lx = VW * (i + .5) / 6, ly = boardTop - 160, rg = c.createRadialGradient(lx, ly, 0, lx, ly, 170);
+    rg.addColorStop(0, `rgba(${th.light},.14)`); rg.addColorStop(1, `rgba(${th.light},0)`); c.fillStyle = rg; c.fillRect(lx - 170, ly - 170, 340, 340);
+  }
+  const fl = G.flip; G.flip = false;
+  c.fillStyle = th.surround; poly(c, [[-8, -3.8], [8, -3.8], [8, L + 4], [-8, L + 4]]);
+  c.fillStyle = th.board; poly(c, [[-8, L + 4, 0], [8, L + 4, 0], [8, L + 4, .9], [-8, L + 4, .9]]);
+  G.flip = fl;
+  const bt = projRaw(0, L + 4, .45);
+  c.fillStyle = th.boardText; c.font = `${Math.round(.5 * bt[2])}px "Russo One", Impact, sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle';
+  c.fillText('PICKLE RUSH', bt[0] - 3.2 * bt[2], bt[1]); c.fillText('PICKLE RUSH', bt[0] + 3.2 * bt[2], bt[1]);
+  c.fillStyle = th.court; poly(c, [[-HW, 0], [HW, 0], [HW, L], [-HW, L]]);
+  c.fillStyle = th.kitchen; poly(c, [[-HW, NET - KIT], [HW, NET - KIT], [HW, NET + KIT], [-HW, NET + KIT]]);
+  const sheen = c.createLinearGradient(0, proj(0, L, 0)[1], 0, proj(0, 0, 0)[1]);
+  sheen.addColorStop(0, 'rgba(255,255,255,.07)'); sheen.addColorStop(.5, 'rgba(255,255,255,0)'); sheen.addColorStop(1, 'rgba(0,0,0,.08)');
+  c.fillStyle = sheen; poly(c, [[-HW, 0], [HW, 0], [HW, L], [-HW, L]]);
+  c.fillStyle = th.line;
+  const W5 = th.neon ? .075 : .055;
+  gline(c, -HW, 0, HW, 0, W5); gline(c, -HW, L, HW, L, W5);
+  gline(c, -HW, 0, -HW, L, W5); gline(c, HW, 0, HW, L, W5);
+  gline(c, -HW, NET - KIT, HW, NET - KIT, W5); gline(c, -HW, NET + KIT, HW, NET + KIT, W5);
+  gline(c, 0, 0, 0, NET - KIT, W5); gline(c, 0, NET + KIT, 0, L, W5);
+  const vg = c.createRadialGradient(VW / 2, VH * .55, Math.min(VW, VH) * .35, VW / 2, VH * .55, Math.max(VW, VH) * .8);
+  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.38)'); c.fillStyle = vg; c.fillRect(-PAD, -PADY, W, H);
+  CAM.cx = keepCx;
+}
+function drawCrowdLayer(c, dx){
+  const cheer = G.state === 'point' || G.state === 'over', img = (cheer && WORLD.crowd[1]) || WORLD.crowd[0];
+  if (!img) return;
+  const W = VW + PAD * 2, x0 = dx - PAD, y0 = WORLD.cy, ch = WORLD.ch;
+  if (GFX.low){ c.drawImage(img, x0, y0, W, ch); return; }
+  const n = cheer ? 18 : 8, amp = cheer ? 5 : 1.2, spd = cheer ? 9 : 1.6, sw = W / n, iw = img.width / n;
+  for (let k = 0; k < n; k++){
+    const wave = Math.sin(G.time * spd + k * .7), dy = cheer ? -Math.abs(wave) * amp : -(wave + 1) * .5 * amp;
+    c.drawImage(img, k * iw, 0, iw + 1, img.height, x0 + k * sw, y0 + dy, sw + .6, ch);
+  }
 }
 
 /* ---------- shots ---------- */
@@ -1446,7 +1533,7 @@ function ballParticles(b, dt){
   const fx = IT(b.skin).fx; if (!fx || fx === 'none' || fx === 'lightning' || fx === 'rainbow') return;
   const rate = { fire:70, ice:35, galaxy:30, gold:35 }[fx] || 0;
   G.bfxAcc = (G.bfxAcc || 0) + dt * rate;
-  while (G.bfxAcc >= 1 && G.bfx.length < 160){
+  while (G.bfxAcc >= 1 && G.bfx.length < (GFX.low ? 50 : 160)){
     G.bfxAcc -= 1;
     const P = { x:b.x + rand(-.04, .04), y:b.y + rand(-.04, .04), z:b.z + rand(-.03, .03), vx:rand(-.3, .3), vy:rand(-.3, .3), vz:rand(.1, .6), life:rand(.25, .5), max:.5, fx };
     if (fx === 'fire'){ P.c = ['#ff3b1f', '#ff7a1a', '#ffb020', '#ffe066'][(Math.random() * 4) | 0]; P.r = rand(.03, .065); P.vz = rand(.4, 1.1); }
@@ -1714,34 +1801,11 @@ function render(){
   CAM.cx = CAM.baseCx - G.camX * CAM.F * .012;
   c.setTransform(DPR, 0, 0, DPR, 0, 0);
   if (G.shake > 0){ const k = G.shake * 26; c.translate(rand(-k, k), rand(-k, k)); }
-  const th = theme();
-  const g = c.createLinearGradient(0, 0, 0, VH);
-  g.addColorStop(0, th.sky[0]); g.addColorStop(.45, th.sky[1]); g.addColorStop(1, th.sky[2]);
-  c.fillStyle = g; c.fillRect(-40, -40, VW + 80, VH + 80);
-  const boardTop = projRaw(0, L + 4, .9)[1];
-  if (th.sun){ const sx = VW * .72, sy = boardTop - 170, sg2 = c.createRadialGradient(sx, sy, 0, sx, sy, 140); sg2.addColorStop(0, 'rgba(255,248,214,1)'); sg2.addColorStop(.25, 'rgba(255,214,140,.9)'); sg2.addColorStop(1, 'rgba(255,170,110,0)'); c.fillStyle = sg2; c.fillRect(sx - 140, sy - 140, 280, 280); }
-  if (th.trees){ c.fillStyle = '#2f6b2c'; for (let i = 0; i < 14; i++){ const tx = (i / 13) * VW, r = 38 + (i * 37 % 26); c.beginPath(); c.arc(tx, boardTop - 115 + (i % 3) * 8, r, 0, TAU); c.fill(); } }
-  const sg = c.createLinearGradient(0, boardTop - 150, 0, boardTop);
-  sg.addColorStop(0, 'rgba(0,0,0,0)'); sg.addColorStop(1, th.stands);
-  c.fillStyle = sg; c.fillRect(-40, boardTop - 150, VW + 80, 150);
-  drawCrowd(c, th, CAM.cx - CAM.baseCx);
-  for (let i = 0; i < 6; i++){
-    const lx = VW * (i + .5) / 6, ly = boardTop - 160, rg = c.createRadialGradient(lx, ly, 0, lx, ly, 170);
-    rg.addColorStop(0, `rgba(${th.light},.14)`); rg.addColorStop(1, `rgba(${th.light},0)`); c.fillStyle = rg; c.fillRect(lx - 170, ly - 170, 340, 340);
-  }
-  const fl = G.flip; G.flip = false;
-  c.fillStyle = th.surround; poly(c, [[-8, -3.8], [8, -3.8], [8, L + 4], [-8, L + 4]]);
-  c.fillStyle = th.board; poly(c, [[-8, L + 4, 0], [8, L + 4, 0], [8, L + 4, .9], [-8, L + 4, .9]]);
-  G.flip = fl;
-  const bt = projRaw(0, L + 4, .45);
-  c.fillStyle = th.boardText; c.font = `${Math.round(.5 * bt[2])}px "Russo One", Impact, sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle';
-  c.fillText('PICKLE RUSH', bt[0] - 3.2 * bt[2], bt[1]); c.fillText('PICKLE RUSH', bt[0] + 3.2 * bt[2], bt[1]);
-  // court + green kitchen
-  c.fillStyle = th.court; poly(c, [[-HW, 0], [HW, 0], [HW, L], [-HW, L]]);
-  c.fillStyle = th.kitchen; poly(c, [[-HW, NET - KIT], [HW, NET - KIT], [HW, NET + KIT], [-HW, NET + KIT]]);
-  const sheen = c.createLinearGradient(0, proj(0, L, 0)[1], 0, proj(0, 0, 0)[1]);
-  sheen.addColorStop(0, 'rgba(255,255,255,.07)'); sheen.addColorStop(.5, 'rgba(255,255,255,0)'); sheen.addColorStop(1, 'rgba(0,0,0,.08)');
-  c.fillStyle = sheen; poly(c, [[-HW, 0], [HW, 0], [HW, L], [-HW, L]]);
+  buildWorld();
+  const dx = Math.round((CAM.cx - CAM.baseCx) * DPR) / DPR, ww = VW + PAD * 2, wh = VH + PADY * 2;
+  c.drawImage(WORLD.L1, dx - PAD, -PADY, ww, wh);
+  drawCrowdLayer(c, dx);
+  c.drawImage(WORLD.L2, dx - PAD, -PADY, ww, wh);
   if (G.state === 'play' && b.live && b.hitCount >= 3){
     for (const p of G.players){
       if (p.human && b.lastHitter !== p.team && Math.abs(p.y - NET) < KIT){
@@ -1750,12 +1814,6 @@ function render(){
       }
     }
   }
-  c.fillStyle = th.line;
-  const W5 = th.neon ? .075 : .055;
-  gline(c, -HW, 0, HW, 0, W5); gline(c, -HW, L, HW, L, W5);
-  gline(c, -HW, 0, -HW, L, W5); gline(c, HW, 0, HW, L, W5);
-  gline(c, -HW, NET - KIT, HW, NET - KIT, W5); gline(c, -HW, NET + KIT, HW, NET + KIT, W5);
-  gline(c, 0, 0, 0, NET - KIT, W5); gline(c, 0, NET + KIT, 0, L, W5);
   // serve target box hint for the human server
   if (G.state === 'serve' && G.serverP && G.serverP.human && !G.serverP.human.remote){
     const T = G.serverP.team, sx = b.serveSign, y0 = T === 1 ? NET + KIT : NET - KIT, y1 = T === 1 ? L : 0;
@@ -1819,8 +1877,6 @@ function render(){
     c.lineWidth = 4; c.strokeStyle = 'rgba(5,10,25,.8)'; c.strokeText(t.txt, q[0], q[1]); c.fillStyle = t.color; c.fillText(t.txt, q[0], q[1]);
   }
   c.globalAlpha = 1;
-  const vg = c.createRadialGradient(VW / 2, VH * .55, Math.min(VW, VH) * .35, VW / 2, VH * .55, Math.max(VW, VH) * .8);
-  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.38)'); c.fillStyle = vg; c.fillRect(-40, -40, VW + 80, VH + 80);
   for (const k of G.confetti){
     c.save(); c.translate(k.x, k.y); c.rotate(k.rot); c.globalAlpha = Math.min(1, k.life); c.fillStyle = k.c; c.fillRect(-k.w / 2, -k.h / 2, k.w, k.h * Math.abs(Math.cos(k.rot * 1.3))); c.restore();
   }
@@ -1955,7 +2011,7 @@ function previewPaddle(cv2, id){
 /* ---------- previews ---------- */
 let editWho = 'p1', pvFacing = 'front';
 function drawPreview(cvs, look, facing, t, tag){
-  const r = cvs.getBoundingClientRect(); if (!r.width || !r.height) return;
+  const r = rectOf(cvs); if (!r.width || !r.height) return;
   const w = Math.round(r.width * DPR), h = Math.round(r.height * DPR);
   if (cvs.width !== w || cvs.height !== h){ cvs.width = w; cvs.height = h; }
   const c = cvs.getContext('2d'); c.setTransform(DPR, 0, 0, DPR, 0, 0); c.clearRect(0, 0, r.width, r.height);
@@ -1993,6 +2049,7 @@ function sbNames(t){
     return `<div class="sbName ${on ? 'on' : ''}"><span class="sbBall"></span><b style="color:${p.human ? 'var(--hud-text)' : 'var(--hud-muted)'}"><span style="color:${col}">•</span> ${esc(p.name)}</b>${G.doubles ? `<span class="sbNum">S${G.serveNum}</span>` : ''}</div>`;
   }).join('');
 }
+const setTxt = (sel, v) => { const el = $(sel); if (el._v !== v){ el._v = v; el.textContent = v; } };
 function updateHUD(){
   const inGame = ['game', 'pause', 'result'].includes(screenNow) && G.mode !== 'demo';
   $('#hud').classList.toggle('hidden', !inGame);
@@ -2003,22 +2060,23 @@ function updateHUD(){
   $('#serveBtn').classList.toggle('hidden', !(tOn && G.state === 'serve' && me && G.serverP === me));
   if (!inGame || !G.players.length){ $('#hint').classList.add('hidden'); return; }
   const rally = G.mode === 'rally';
-  $('#sbN1').innerHTML = sbNames(1); $('#sbN2').innerHTML = sbNames(2);
+  const n1 = sbNames(1), n2 = sbNames(2), e1 = $('#sbN1'), e2 = $('#sbN2');
+  if (e1._v !== n1){ e1._v = n1; e1.innerHTML = n1; } if (e2._v !== n2){ e2._v = n2; e2.innerHTML = n2; }
   $('#sbT1').classList.toggle('serving', !rally && G.server === 1); $('#sbT2').classList.toggle('serving', !rally && G.server === 2);
   if (G.score[0] !== lastScore[0]) popEl($('#h1Score'));
   if (G.score[1] !== lastScore[1]) popEl($('#h2Score'));
   lastScore = G.score.slice();
-  $('#h1Score').textContent = rally ? G.rally : G.score[0];
-  $('#h2Score').textContent = rally ? '·' : G.score[1];
+  setTxt('#h1Score', String(rally ? G.rally : G.score[0]));
+  setTxt('#h2Score', rally ? '·' : String(G.score[1]));
   if (rally && G.rally !== lastRally && G.rally > 0) popEl($('#h1Score'));
   lastRally = G.rally;
-  $('#sbCall').textContent = rally ? `Best ${Math.max(data.bestRally, (ACC.user && ACC.user.bestRally) || 0)}` : scoreCall();
+  setTxt('#sbCall', rally ? `Best ${Math.max(data.bestRally, (ACC.user && ACC.user.bestRally) || 0)}` : scoreCall());
   const gp = gamePoint();
   $('#sbTag').classList.toggle('hidden', !gp && !rally);
-  $('#sbTag').textContent = rally ? 'RALLY' : 'GAME POINT';
+  setTxt('#sbTag', rally ? 'RALLY' : 'GAME POINT');
   const prim = t => { const tm = team(t); return tm.find(p => p.human && !p.human.remote) || tm.find(p => p.human) || tm[0]; };
   const sk = p => !p ? '' : p.ai ? (p.ai.d.coach ? 'Practice partner' : LADDER.includes(p.ai.d.key) ? `AI · ${p.ai.d.mmr} MMR` : 'AI teammate') : `Next shot: ${LABEL[p.armed]}`;
-  $('#h1Skill').textContent = sk(prim(1)); $('#h2Skill').textContent = sk(prim(2));
+  setTxt('#h1Skill', sk(prim(1))); setTxt('#h2Skill', sk(prim(2)));
   $$('#touch .tbtn.skill').forEach(b => { b.classList.toggle('on', !!me && me.armed === b.dataset.t); b.style.opacity = me && !skillOk(me, b.dataset.t) ? '.35' : ''; });
   const s = G.serverP;
   const showHint = G.state === 'serve' && s && s.human && !s.human.remote && screenNow === 'game';
@@ -2030,8 +2088,9 @@ function tickBars(){
   if (!G.players.length) return;
   const prim = t => { const tm = team(t); return tm.find(p => p.human && !p.human.remote) || tm.find(p => p.human) || tm[0]; };
   const a = prim(1), b = prim(2);
-  $('#h1Bar').style.width = (a ? a.energy : 0) + '%'; $('#h2Bar').style.width = (b ? b.energy : 0) + '%';
-  $('#sbClock').textContent = fmtTime(G.matchT || 0);
+  const w1 = (a ? a.energy : 0) + '%', w2 = (b ? b.energy : 0) + '%', b1 = $('#h1Bar'), b2 = $('#h2Bar');
+  if (b1._v !== w1){ b1._v = w1; b1.style.width = w1; } if (b2._v !== w2){ b2._v = w2; b2.style.width = w2; }
+  setTxt('#sbClock', fmtTime(G.matchT || 0));
 }
 let toastT = 0;
 function showToast(t, s){
@@ -2049,6 +2108,7 @@ function show(id){
   screenNow = id ? id.replace('s-', '') : 'game';
   const wantsDemo = MENU_SCREENS.includes(screenNow) || (screenNow === 'ctrl' && ctrlFrom === 'menu');
   if (wantsDemo && G.mode !== 'demo'){ G.netRole = null; startMatch('demo'); }
+  invalidateRects();
   ({ gate:renderGate, shop:renderShop, menu:refreshMenu, diff:renderDiff, char:renderChar, rank:renderRank, signup:renderSignup, online:renderOnline, room:renderRoom, ctrl:renderCtrl, pause:renderPause }[screenNow] || (() => {}))();
   if (screenNow === 'rank' && Date.now() - ACC.boardT > 5000) loadBoard();
   updateHUD();
@@ -2229,7 +2289,7 @@ function renderShop(){
   }).join('');
 }
 function fitCanvas(cv2){
-  const r = cv2.getBoundingClientRect(); if (!r.width) return false;
+  const r = rectOf(cv2); if (!r.width) return false;
   const w = Math.round(r.width * DPR), h = Math.round(r.height * DPR);
   if (cv2.width !== w || cv2.height !== h){ cv2.width = w; cv2.height = h; }
   return true;
@@ -2260,6 +2320,8 @@ function renderCtrl(){
   $$('#optMeter button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === data.opts.meter));
   $$('#optSwing button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === data.opts.swing));
   $$('#optTouch button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === data.opts.touch));
+  $$('#optGfx button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === (data.opts.gfx || 'auto')));
+  $('#optFps').classList.toggle('chip-on', !!data.opts.fps);
   $('#optShake').classList.toggle('chip-on', !!data.opts.shake); $('#optSound').classList.toggle('chip-on', !!data.sound);
   $('#padInfo').textContent = padsSeen ? `${padsSeen} gamepad${padsSeen > 1 ? 's' : ''} connected. Gamepad 1 controls Player 1, gamepad 2 Player 2, and so on.` : 'Press any button on a gamepad to connect it.';
 }
@@ -2351,7 +2413,7 @@ function act(name, el){
     case 'ctrlBack': REB = null; show(ctrlFrom === 'pause' ? 's-pause' : 's-menu'); break;
     case 'ctrlTab': REB = null; ctrlSet = el.dataset.v; renderCtrl(); break;
     case 'bind': REB = { set:ctrlSet, act:el.dataset.a }; renderCtrl(); break;
-    case 'opt': data.opts[el.dataset.k] = el.dataset.v; save(); renderCtrl(); updateHUD(); break;
+    case 'opt': data.opts[el.dataset.k] = el.dataset.v; save(); if (el.dataset.k === 'gfx') applyGfx(); renderCtrl(); updateHUD(); break;
     case 'optToggle': data.opts[el.dataset.k] = !data.opts[el.dataset.k]; save(); renderCtrl(); break;
     case 'resetBinds': data.binds[ctrlSet] = clone(DEF_BINDS[ctrlSet]); save(); renderCtrl(); break;
     case 'rank': show('s-rank'); break;
@@ -2651,25 +2713,47 @@ function guestTick(dt){
 /* ---------- loop ---------- */
 let last = performance.now() / 1000, accT = 0, hudTick = 0, pingTick = 0;
 const DT = 1 / 120;
+let lastRender = 0, lastShop = 0;
 function frame(nowMs){
   requestAnimationFrame(frame);
-  const now = nowMs / 1000, d = Math.min(.05, Math.max(0, now - last)); last = now;
+  const now = nowMs / 1000, raw = Math.max(0, now - last), d = Math.min(.05, raw); last = now;
+  // auto graphics: if the device keeps missing frames, lower the resolution, then the detail
+  if (raw > 0 && raw < .5){
+    GFX.ema += (raw - GFX.ema) * .08;
+    GFX.fpsN++; GFX.fpsT += raw;
+    if (GFX.fpsT >= .5){ GFX.fps = Math.round(GFX.fpsN / GFX.fpsT); GFX.fpsN = 0; GFX.fpsT = 0; }
+    if (!document.hidden){
+      if (!GFX.floor || GFX.ema < GFX.floor) GFX.floor = Math.max(.0075, GFX.ema);   // the display's normal frame time, learned in the menus
+      if (screenNow === 'game'){
+        if (GFX.auto && GFX.ema > .027 && GFX.ema > GFX.floor * 1.5){ GFX.slowT += raw; if (GFX.slowT > 2.5) degradeGfx(); }
+        else GFX.slowT = Math.max(0, GFX.slowT - raw);
+      }
+    }
+  }
   pollPads();
   if (G.netRole === 'guest'){ guestInterp(); guestTick(d); }
   else if (!G.paused){ accT += d; while (accT >= DT){ update(DT); accT -= DT; } }
   if (G.netRole === 'host' && now - NW.lastSt >= .014){ NW.lastSt = now; netSend(hostSnapshot()); }
   if (G.mode === 'online' && (pingTick += d) > 2){ pingTick = 0; netSend({ t:'ping', ts:performance.now() }); }
-  render();
+  const inPlay = screenNow === 'game' || screenNow === 'pause' || screenNow === 'result';
+  if (inPlay || now - lastRender >= 1 / 30 - .004){   // menus run at 30 fps, which saves battery
+    lastRender = now;
+    render();
+    if (screenNow === 'menu') drawPreview($('#pvMenu'), myLook(), 'front', now, '');
+    if (screenNow === 'char') drawPreview($('#pvBig'), editWho === 'p2' ? p2Look() : myLook(), pvFacing, now, (myName() || '?').slice(0, 1).toUpperCase());
+    if (screenNow === 'signup' && ACC.user) drawPreview($('#pvSign'), myLook(), 'front', now, '');
+    if (screenNow === 'shop' && now - lastShop >= 1 / 20){ lastShop = now; drawShop(now); }
+  }
   if ((hudTick += d) > .1){ hudTick = 0; tickBars(); if (screenNow === 'game') updateHUD(); }
-  if (screenNow === 'menu') drawPreview($('#pvMenu'), myLook(), 'front', now, '');
-  if (screenNow === 'char') drawPreview($('#pvBig'), editWho === 'p2' ? p2Look() : myLook(), pvFacing, now, (myName() || '?').slice(0, 1).toUpperCase());
-  if (screenNow === 'signup' && ACC.user) drawPreview($('#pvSign'), myLook(), 'front', now, '');
-  if (screenNow === 'shop') drawShop(now);
+  const fb = $('#fpsBox');
+  if (data.opts.fps){ fb.classList.remove('hidden'); setTxt('#fpsBox', `${GFX.fps} fps · ${GFX.low ? 'low' : GFX.cap + 'x'}${G.mode === 'online' && NW.ping ? ' · ' + NW.ping + ' ms' : ''}`); }
+  else if (!fb.classList.contains('hidden')) fb.classList.add('hidden');
 }
 addEventListener('resize', resize);
 addEventListener('orientationchange', () => setTimeout(resize, 150));
 if (window.visualViewport) window.visualViewport.addEventListener('resize', resize);
-resize();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { WORLD.fontV = 1; });
+applyGfx();
 startMatch('demo');
 show('s-gate');
 // invite links: https://your-site/?room=ABCD joins that room straight away

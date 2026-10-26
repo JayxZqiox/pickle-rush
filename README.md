@@ -94,6 +94,15 @@ Run `npm start`, then use a tunnel such as **Cloudflare Tunnel** (`cloudflared t
 4. Wi-Fi is smoother than mobile data. Keep the game tab open and in front, since phones slow down hidden tabs.
 5. To test lag on purpose, add `?lag=100` to the link (extra delay in each direction, for testing only).
 
+## If the game lags
+
+There are two different kinds of lag, and the **FPS** button in Settings shows which one you have.
+
+- **Low FPS** (the corner shows under about 40 fps): your device is struggling to draw. **Settings → Graphics** has Auto, High and Low. Auto lowers the resolution and then the detail by itself when frames are missed. Choose **Low** on an old phone.
+- **High ping** (the ms number in the match is red, above about 180): the connection is slow, not the device. See "Fixing lag online" above: the server must be in Singapore, and the player with the best connection should create the room.
+
+Performance notes for developers: the stadium (sky, crowd, boards, court) is drawn once into saved images and reused every frame, the crowd animates as a wave of slices, menus render at 30 fps, and there is no blur behind the HUD or on touch devices.
+
 ## Controls (default)
 
 | Player | Move | Hit / serve (hold) | Slice | Curve | Dink | Spike |
