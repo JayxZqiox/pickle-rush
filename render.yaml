@@ -1,0 +1,10 @@
+# Render Blueprint: New -> Blueprint -> pick this repo. Region is set to Singapore (closest to the Philippines).
+services:
+  - type: web
+    name: pickle-rush
+    runtime: node
+    region: singapore
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
