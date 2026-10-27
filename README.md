@@ -12,11 +12,16 @@ pickle-rush/
 └─ data/db.json         ← created automatically: accounts, MMR, match history
 ```
 
+## Shots and serves
+
+- **6 shots**, all available from level 1: Drive (normal), Slice (Q), Curve (E), Dink (R), Spike (T) and Smash, which fires on its own on high balls.
+- **3 serves**, picked before serving: **Volley** (Q, let go of the ball and hit it before it lands), **Curve** (E, a volley serve with sidespin), **Drop** (R, let the ball bounce once, then hit it; slower but more accurate). On touch screens the skill buttons turn into Volley, Curve and Drop while you serve.
+
 ## Progression
 
 - The first screen asks: **Play anonymously** (progress saved in that browser) or **Log in / Sign up** (progress saved on the server, shown on the leaderboard).
 - Everyone starts at **level 1, 0 MMR and 150 coins**. The 10 AI opponents range from 0 to 1800 MMR and unlock one at a time: beat one to open the next.
-- Coins and XP come from ranked games, rallies and ranked online matches. Skills unlock by level (Slice 2, Dink 3, Curve 5, Spike 7).
+- Coins and XP come from ranked games, rallies and ranked online matches. Every shot and serve is available from level 1.
 - The Shop sells hats, shirts, shorts, shoes, paddles (Power / Control / Spin stats), ball effects (fire, ice, lightning, rainbow, galaxy, gold), courts and 2v2 AI teammates. Items, prices and level requirements are all in `public/catalog.js`, which both the game and the server read, so edit them in one place.
 
 ## 1. Run it in VS Code

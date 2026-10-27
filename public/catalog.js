@@ -19,8 +19,8 @@
     { key:'nightmare',   name:'Nightmare Nova',   name2:'Nightmare Nyx',   mmr:1800 },
   ];
 
-  /* ---------- skills unlock by level ---------- */
-  const SKILL_LEVELS = { slice:2, dink:3, curve:5, spike:7 };
+  /* ---------- skills: every shot is available from level 1 ---------- */
+  const SKILL_LEVELS = {};
 
   /* ---------- items ----------
    * slot: head | top | bottom | shoes | paddle | ball | court | partner

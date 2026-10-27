@@ -488,11 +488,12 @@ input{font-size:16px;} /* stops iOS zooming into inputs */
     <div class="tile rounded-2xl p-4 mt-4 text-[15px]">
       <h3 class="font-bold">The power meter</h3>
       <p class="mt-1">Hold <b>Hit</b> (Space) and a meter fills beside your player. The shot uses the meter level at the moment you hit the ball. Inside the green band is a <b>Perfect</b> shot: faster and more accurate. Below it is weaker and shorter; past it, in red, the ball flies long. If you don’t hold Hit at all, you still return a normal shot.</p>
+      <p class="mt-2"><b>Serves:</b> before serving, pick <b>Volley</b> (Q: let go of the ball and hit it before it lands), <b>Curve</b> (E: a volley serve with sidespin that bends and kicks away), or <b>Drop</b> (R: let the ball bounce once, then hit it; slower but more accurate). On touch screens the skill buttons turn into Volley, Curve and Drop while you serve.</p>
       <p class="mt-2">Hold left or right while hitting to aim. Load a shot first with <b>Q</b> slice, <b>E</b> curve, <b>R</b> dink or <b>T</b> spike. Slice, curve and spike cost energy, which fills as you hit.</p>
     </div>
     <div class="tile rounded-2xl p-4 mt-3 text-[15px]">
       <h3 class="font-bold">Level up and unlock</h3>
-      <p class="mt-1">Everyone starts at level 1 with 0 MMR. Ranked games, rallies and online matches give coins and XP. New skills unlock by level: Slice at 2, Dink at 3, Curve at 5, Spike at 7 (smashes are always on). Beat each AI to unlock the next one. Spend coins in the Shop on hats, shirts, shorts, shoes, paddles with Power, Control and Spin, special balls like Fireball and Lightning, new courts, and better 2v2 teammates.</p>
+      <p class="mt-1">Everyone starts at level 1 with 0 MMR and every shot already unlocked: Drive, Slice, Curve, Dink, Spike and the automatic Smash. Ranked games, rallies and online matches give coins and XP. Beat each AI to unlock the next one. Spend coins in the Shop on hats, shirts, shorts, shoes, paddles with Power, Control and Spin, special balls like Fireball and Lightning, new courts, and better 2v2 teammates.</p>
     </div>
     <div class="grid sm:grid-cols-2 gap-3 mt-3 text-[15px]">
       <div class="tile rounded-2xl p-4">
@@ -1006,7 +1007,7 @@ function randomLook(){
 }
 function makePlayer(o){
   return Object.assign({ team:1, lane:0, look:randomLook(), name:'AI', x:0, y:0, vx:0, vy:0, swing:0, run:0, moving:false, energy:20, armed:'drive',
-    inX:0, inY:0, ai:null, human:null, charging:false, charge:0, swingT:0, power:0, meterT:0, meterQ:0, padX:0, padY:0, padPrev:[], netIn:{ x:0, y:0, h:0 } }, o);
+    inX:0, inY:0, ai:null, human:null, serveType:'volley', charging:false, charge:0, swingT:0, power:0, meterT:0, meterQ:0, padX:0, padY:0, padPrev:[], netIn:{ x:0, y:0, h:0 } }, o);
 }
 const mkAI = d => ({ d, react:d.react, plannedFor:-1, target:null, leave:false, serveT:1 });
 const other = t => t === 1 ? 2 : 1;
@@ -1077,7 +1078,7 @@ function setupServe(){
     if (!G.firstSetup && Math.hypot(p.x - fx, p.y - fy) > .05){ p.walk = { fx, fy, tx:p.x, ty:p.y, t:0 }; p.x = fx; p.y = fy; }
   });
   G.firstSetup = false;
-  G.serverP = server; G.recvP = recv;
+  G.serverP = server; G.recvP = recv; G.serveDrop = null;
   Object.assign(b, { live:false, bounces:0, hitCount:0, lastHitter:0, lastP:null, netHit:false, rolling:false, ax:0, vx:0, vy:0, vz:0, serveSign:recvLane });
   G.trail.length = 0; G.state = 'serve'; G.pred = null; G.stats.cur = 0;
   for (const p of G.players) if (p.ai){ p.ai.serveT = rand(.8, 1.2); p.ai.plannedFor = -1; p.ai.target = null; p.ai.leave = false; }
@@ -1209,24 +1210,42 @@ function aiShot(p){
   updateHUD();
 }
 
-function doServe(p, q, metered){
-  const b = G.ball, dir = p.team === 1 ? 1 : -1, sign = b.serveSign;
-  b.x = p.x + (p.team === 1 ? .3 : -.3); b.y = p.y + dir * .2; b.z = .85; b.hitCount = 0; b.live = true;
+/* serves: volley (hit out of the air after letting go), drop (let it bounce once first), curve (volley with sidespin) */
+const SERVES = ['volley', 'drop', 'curve'];
+const SERVE_NAME = { volley:'Volley serve', drop:'Drop serve', curve:'Curve serve' };
+const SERVE_KEY = { slice:'volley', curve:'curve', dink:'drop', spike:'volley' };
+function startServeDrop(p, q, metered){
+  if (G.serveDrop || G.state !== 'serve' || G.serverP !== p) return;
+  // the ball is released from an open hand: no throw, no spin, it just falls
+  G.serveDrop = { p, q:metered ? q : .7, metered, type:p.serveType || 'volley', vz:0, bounced:false };
+}
+function aiServeType(p){
+  const D = p.ai.d, r = Math.random();
+  if (D.coach) return 'volley';
+  return r < D.skill * .9 ? 'curve' : r < .45 ? 'drop' : 'volley';
+}
+function doServe(p, q, metered, type = 'volley'){
+  const b = G.ball, sign = b.serveSign;
+  b.hitCount = 0; b.live = true;
+  const acc = type === 'drop' ? .55 : type === 'curve' ? 1.25 : 1;   // drop serves are steadier, curve serves riskier
   let tx, depth, err = null, ts = 1, lbl = null, lcol = null;
   if (p.ai){
-    const D = p.ai.d; tx = sign * rand(.7, 2.2) + gauss() * D.aimSd * .4; depth = rand(KIT + 1.3, 6.0) + gauss() * D.aimSd * .4; ts = D.tScale;
+    const D = p.ai.d; tx = sign * rand(.7, 2.2) + gauss() * D.aimSd * .4 * acc; depth = rand(KIT + 1.3, 6.0) + gauss() * D.aimSd * .4 * acc; ts = D.tScale;
     if (!D.coach && Math.random() < D.mistake * .6){ if (Math.random() < .5) depth = rand(7, 7.8); else err = 'net'; }
   } else {
     const Q = metered ? quality(q) : 'good';
     tx = sign * rand(.7, 2.3);
     if (Q === 'perfect'){ depth = rand(5.2, 6.2); ts = .9; tx += gauss() * .1; lbl = 'Perfect serve!'; lcol = QCOL.perfect; G.stats.perfect++; }
-    else if (Q === 'good'){ depth = rand(3.9, 6.0) + gauss() * .15; tx += gauss() * .15; }
-    else if (Q === 'weak'){ depth = rand(KIT + .35, 3.6) + gauss() * .25; ts = 1.18; tx += gauss() * .25; lbl = 'Weak'; lcol = QCOL.weak; }
+    else if (Q === 'good'){ depth = rand(3.9, 6.0) + gauss() * .15 * acc; tx += gauss() * .15 * acc; }
+    else if (Q === 'weak'){ depth = rand(KIT + .35, 3.6) + gauss() * .25 * acc; ts = 1.18; tx += gauss() * .25 * acc; lbl = 'Weak'; lcol = QCOL.weak; }
     else { depth = 6.2 + (q - PG1) * 8 + gauss() * .3; ts = .88; tx += gauss() * .4; lbl = 'Too strong'; lcol = QCOL.late; }
     tx = sign * clamp(Math.abs(tx), .25, 3.3);
   }
+  if (type === 'drop') ts *= 1.05;
+  if (type === 'curve') ts *= 1.12;
+  if (!lbl && type !== 'volley'){ lbl = SERVE_NAME[type] + (type === 'curve' ? '!' : ''); lcol = type === 'curve' ? SHOT.curve.color : '#a3e635'; }
   G.state = 'play';
-  launch(p, 'serve', tx, depth, ts, err, lbl, lcol);
+  launch(p, type === 'curve' ? 'curve' : 'serve', tx, depth, ts, err, lbl, lcol);
   if (lbl === 'Perfect serve!') sfx('perfect');
   updateHUD();
 }
@@ -1260,7 +1279,7 @@ function tryHit(p){
 }
 function startCharge(p){
   if (!p || p.ai) return;
-  if (G.state === 'serve' && (G.serverP !== p || G.players.some(q => q.walk))) return;
+  if (G.state === 'serve' && (G.serverP !== p || G.serveDrop || G.players.some(q => q.walk))) return;
   if (G.state !== 'serve' && G.state !== 'play') return;
   p.charging = true; p.charge = 0; p.meterT = 0;
 }
@@ -1268,7 +1287,7 @@ function release(p){
   if (!p || !p.charging) return;
   const q = p.charge;
   p.charging = false; p.meterQ = q; p.meterT = .7;
-  if (G.state === 'serve' && G.serverP === p){ doServe(p, q, q >= .15); return; }
+  if (G.state === 'serve' && G.serverP === p){ startServeDrop(p, q, q >= .15); return; }
   if (G.state !== 'play') return;
   if (q < .15 && data.opts.swing !== 'manual') return;     // a quick tap doesn't spoil the next auto shot
   p.power = q; p.swingT = data.opts.swing === 'manual' ? .34 : .55;
@@ -1427,12 +1446,19 @@ function readInput(p){
   p.inX = ix; p.inY = iy;
 }
 const LOCK_MODES = ['1p', 'duo-ai', 'rally'];
-function skillOk(p, t){
+function skillOk(p, t){ return true; }
+function skillOkOld(p, t){
   if (!p || !p.human || p.human.remote || p.human.set !== 'p1' || !LOCK_MODES.includes(G.mode)) return true;
   const need = CAT.SKILL_LEVELS[t]; return !need || myLevel() >= need;
 }
 function arm(p, t){
   if (!p || p.ai) return;
+  if (G.state === 'serve' && G.serverP === p && SERVE_KEY[t]){
+    if (G.serveDrop) return;
+    p.serveType = SERVE_KEY[t]; playSfx('tick');
+    addText({ txt:SERVE_NAME[p.serveType], x:p.x, y:p.y, z:2.1, life:.8, max:.8, color:'#e8ff3d' });
+    updateHUD(); return;
+  }
   if (!skillOk(p, t)){ addText({ txt:`${LABEL[t]} unlocks at Lv ${CAT.SKILL_LEVELS[t]}`, x:p.x, y:p.y, z:2.1, life:1, max:1, color:'#ffd0c0' }); return; }
   if (t !== 'dink' && p.armed !== t && p.energy < COST){ addText({ txt:'Need energy', x:p.x, y:p.y, z:2.1, life:.8, max:.8, color:'#ffd0c0' }); return; }
   p.armed = p.armed === t ? 'drive' : t; playSfx('tick'); updateHUD();
@@ -1503,9 +1529,16 @@ function update(dt){
     if (p.swing > 0) p.swing = Math.max(0, p.swing - dt / .3);
   }
   if (G.state === 'serve'){
-    const s = G.serverP;
-    b.x = s.x + (s.team === 1 ? .32 : -.32); b.y = s.y + (s.team === 1 ? .15 : -.15); b.z = .95 + Math.sin(G.time * 5) * .08;
-    if (s.ai){ s.ai.serveT -= dt; if (s.ai.serveT <= 0 && !G.players.some(q => q.walk)) doServe(s, .86, false); }
+    const s = G.serverP, sd = G.serveDrop;
+    if (sd){
+      sd.vz -= GRAV * dt; b.z += sd.vz * dt;
+      if (b.z <= 0 && sd.vz < 0){ b.z = 0; sd.vz = -sd.vz * .62; sd.bounced = true; sfx('bounce'); addRing({ x:r3(b.x), y:r3(b.y), life:.4, max:.4, color:'rgba(255,255,255,' }); }
+      const ready = sd.type === 'drop' ? (sd.bounced && sd.vz <= .25) : b.z <= .7;
+      if (ready){ G.serveDrop = null; doServe(sd.p, sd.q, sd.metered, sd.type); }
+    } else {
+      b.x = s.x + (s.team === 1 ? .32 : -.32); b.y = s.y + (s.team === 1 ? .15 : -.15); b.z = .95 + Math.sin(G.time * 5) * .04;
+      if (s.ai){ s.ai.serveT -= dt; if (s.ai.serveT <= 0 && !G.players.some(q => q.walk)){ s.serveType = aiServeType(s); startServeDrop(s, .86, false); } }
+    }
   } else if (b.live){
     const ev = physics(b, dt);
     if (G.state === 'play'){
@@ -1674,124 +1707,166 @@ function drawPaddle(c, it, hx, hy, ang){
   c.strokeStyle = c2; c.lineWidth = .028; rr(c, .12, -.12, .28, .24, .1); c.stroke();
   c.restore();
 }
-function limb(c, x0, y0, a, bend, l1, l2, skin, sleeveCol, sleeveLen, foreCol){
+function limb(c, x0, y0, a, bend, l1, l2, skin, sleeveCol, sleeveLen, foreCol, wU = .085, wF = .075){
   const ex = x0 + Math.sin(a) * l1, ey = y0 + Math.cos(a) * l1;
   const hx = ex + Math.sin(a + bend) * l2, hy = ey + Math.cos(a + bend) * l2;
-  c.strokeStyle = skin; c.lineWidth = .085; seg(c, x0, y0, ex, ey);
-  c.strokeStyle = foreCol || skin; c.lineWidth = .075; seg(c, ex, ey, hx, hy);
-  if (sleeveLen > 0){ c.strokeStyle = sleeveCol; c.lineWidth = .11; seg(c, x0, y0, x0 + Math.sin(a) * l1 * sleeveLen, y0 + Math.cos(a) * l1 * sleeveLen); }
-  c.fillStyle = skin; ell(c, hx, hy, .045, .045);
+  c.strokeStyle = skin; c.lineWidth = wU; seg(c, x0, y0, ex, ey);
+  c.strokeStyle = foreCol || skin; c.lineWidth = wF; seg(c, ex, ey, hx, hy);
+  if (sleeveLen > 0){ c.strokeStyle = sleeveCol; c.lineWidth = wU + .028; seg(c, x0, y0, x0 + Math.sin(a) * l1 * sleeveLen, y0 + Math.cos(a) * l1 * sleeveLen); }
+  c.fillStyle = skin; ell(c, hx, hy, wF * .62, wF * .62);
   return [hx, hy, ex, ey];
+}
+/* body builds: boys are broad and straight, girls are narrower with a waist and hips */
+const BODY = {
+  boy:  { sh:.255, waist:.195, hip:.185, legX:.1,  thigh:.135, calf:.11,  arm:.092, fore:.08,  neck:.1,   hx:.142, hy:.152, hem:-.64 },
+  girl: { sh:.198, waist:.14,  hip:.195, legX:.085, thigh:.112, calf:.092, arm:.07,  fore:.062, neck:.072, hx:.128, hy:.148, hem:-.7 },
+};
+function torsoPath(c, B){
+  c.beginPath();
+  c.moveTo(-B.sh, -1.42); c.quadraticCurveTo(0, -1.47, B.sh, -1.42);
+  c.quadraticCurveTo(B.waist + .03, -1.24, B.waist, -1.13);
+  c.quadraticCurveTo(B.hip + .015, -1.04, B.hip, -.99);
+  c.quadraticCurveTo(0, -.95, -B.hip, -.99);
+  c.quadraticCurveTo(-B.hip - .015, -1.04, -B.waist, -1.13);
+  c.quadraticCurveTo(-B.waist - .03, -1.24, -B.sh, -1.42);
+  c.closePath();
 }
 function drawCharacter(c, x, y, s, look, facing, swing, run, moving, t, tag){
   const head = IT(look.head), top = IT(look.top), bot = IT(look.bottom), shoe = IT(look.shoes), pad = IT(look.paddle || 'pad_wood');
   const skin = SKINS[look.skin] || SKINS[0], skinD = shade(skin, -.2), hair = HAIRS[look.hair] || HAIRS[0], hairD = shade(hair, -.3);
-  const girl = look.gender === 'girl', front = facing === 'front', ps = front ? -1 : 1;
+  const girl = look.gender === 'girl', front = facing === 'front', ps = front ? -1 : 1, B = girl ? BODY.girl : BODY.boy;
   const hs = look.hairStyle || (girl ? 'ponytail' : 'short');
   const t1 = top.c1 || '#f5f7fb', t2 = top.c2 || '#1f3b8c', tst = top.style || 'tee';
   const b1 = bot.c1 || '#1f3b8c', b2 = bot.c2 || '#ffffff', bst = bot.style || 'shorts';
+  const tie = head.style === 'band' ? (head.c1 || '#ff5c9a') : '#ff5c9a';
   const SLEEVE = { tee:.55, polo:.55, jersey:.6, tank:0, hoodie:1, kit:.6 }[tst] ?? .55;
   c.save(); c.translate(x, y); c.scale(s, s); c.lineCap = 'round'; c.lineJoin = 'round';
   c.fillStyle = 'rgba(0,0,0,.28)'; ell(c, 0, 0, .36, .09);
   const sw = moving ? Math.sin(run) : 0;
   const bob = moving ? Math.abs(Math.cos(run)) * .035 : Math.sin(t * 2.2) * .01;
   c.translate(0, -bob);
-  // legs with knees, socks, shoes
+  // legs: thigh, knee, calf, sock, shoe
   for (const side of [-1, 1]){
     const lift = Math.max(0, side * sw) * .09;
-    const hx = side * .1, hy = -.92, kx = side * .115, ky = -.5 - lift * .7, ax = side * .1, ay = -.1 - lift;
-    c.strokeStyle = skin; c.lineWidth = .13; seg(c, hx, hy, kx, ky);
-    c.lineWidth = .105; seg(c, kx, ky, ax, ay - .02);
-    c.strokeStyle = skinD; c.lineWidth = .025; seg(c, kx + side * .04, ky + .05, ax + side * .035, ay - .1);
-    c.strokeStyle = '#ffffff'; c.lineWidth = .112; seg(c, ax, ay - .12, ax, ay - .03);
+    const hx = side * B.legX, hy = -.92, kx = side * (B.legX + .012), ky = -.5 - lift * .7, ax = side * (B.legX - .004), ay = -.1 - lift;
+    c.strokeStyle = skin; c.lineWidth = B.thigh; seg(c, hx, hy, kx, ky);
+    c.lineWidth = B.calf; seg(c, kx, ky, ax, ay - .02);
+    c.strokeStyle = skinD; c.lineWidth = .022; seg(c, kx + side * B.calf * .38, ky + .05, ax + side * B.calf * .32, ay - .1);
+    c.strokeStyle = '#ffffff'; c.lineWidth = B.calf + .006; seg(c, ax, ay - .12, ax, ay - .03);
     drawShoe(c, shoe, ax, ay);
   }
   // shorts / skirt
   if (bst === 'skirt'){
-    c.fillStyle = b1; c.beginPath(); c.moveTo(-.2, -1.0); c.lineTo(.2, -1.0); c.lineTo(.31, -.6); c.quadraticCurveTo(0, -.55, -.31, -.6); c.closePath(); c.fill();
+    c.fillStyle = b1; c.beginPath(); c.moveTo(-B.hip, -1.0); c.lineTo(B.hip, -1.0); c.lineTo(B.hip + .11, -.6); c.quadraticCurveTo(0, -.55, -B.hip - .11, -.6); c.closePath(); c.fill();
     c.strokeStyle = shade(b1, -.18); c.lineWidth = .014; for (const k of [-.15, -.05, .05, .15]) seg(c, k * .7, -.98, k * 1.25, -.59);
-    c.fillStyle = b2; c.fillRect(-.2, -1.0, .4, .035);
+    c.fillStyle = b2; c.fillRect(-B.hip, -1.0, B.hip * 2, .035);
   } else {
-    const hem = bst === 'long' ? -.48 : -.64;
-    c.fillStyle = b1; c.beginPath(); c.moveTo(-.215, -1.0); c.lineTo(.215, -1.0); c.lineTo(.25, hem); c.lineTo(.025, hem); c.lineTo(0, -.8); c.lineTo(-.025, hem); c.lineTo(-.25, hem); c.closePath(); c.fill();
-    c.fillStyle = shade(b1, -.15); c.fillRect(-.215, -1.0, .43, .04);
-    if (bst === 'track'){ c.strokeStyle = b2; c.lineWidth = .02; for (const sx of [-1, 1]){ seg(c, sx * .228, -.97, sx * .25, hem); seg(c, sx * .2, -.97, sx * .222, hem); } }
-    else { c.strokeStyle = b2; c.lineWidth = .018; for (const sx of [-1, 1]) seg(c, sx * .23, -.96, sx * .25, hem + .02); }
+    const hem = bst === 'long' ? -.48 : B.hem, w = B.hip + .02;
+    c.fillStyle = b1; c.beginPath(); c.moveTo(-w, -1.0); c.lineTo(w, -1.0); c.lineTo(w + .035, hem); c.lineTo(.025, hem); c.lineTo(0, -.82); c.lineTo(-.025, hem); c.lineTo(-w - .035, hem); c.closePath(); c.fill();
+    c.fillStyle = shade(b1, -.15); c.fillRect(-w, -1.0, w * 2, .04);
+    c.strokeStyle = b2;
+    if (bst === 'track'){ c.lineWidth = .02; for (const sx of [-1, 1]){ seg(c, sx * (w + .013), -.97, sx * (w + .035), hem); seg(c, sx * (w - .015), -.97, sx * (w + .007), hem); } }
+    else { c.lineWidth = .018; for (const sx of [-1, 1]) seg(c, sx * (w + .015), -.96, sx * (w + .035), hem + .02); }
   }
-  // back arm (free hand)
-  const fa = .18 + (moving ? -sw * .4 : Math.sin(t * 2) * .03);
-  limb(c, -ps * .2, -1.37, -ps * fa, -ps * .35, .27, .25, skin, t1, SLEEVE, tst === 'hoodie' ? t1 : null);
-  // hood behind the neck
-  if (tst === 'hoodie'){ c.fillStyle = shade(t1, -.12); ell(c, 0, front ? -1.44 : -1.47, .16, .08); }
-  // torso
-  const g = c.createLinearGradient(-.24, 0, .24, 0);
+  // back arm
+  const fa = .18 + (moving ? -sw * .4 : Math.sin(t * 2) * .03), shX = B.sh - .03;
+  limb(c, -ps * shX, -1.37, -ps * fa, -ps * .35, .27, .25, skin, t1, SLEEVE, tst === 'hoodie' ? t1 : null, B.arm, B.fore);
+  if (tst === 'hoodie'){ c.fillStyle = shade(t1, -.12); ell(c, 0, front ? -1.44 : -1.47, B.sh * .65, .08); }
+  // long hair falls behind the shoulders
+  if (girl && hs === 'long' && front){ c.fillStyle = hair; rr(c, -.16, -1.66, .32, .34, .08); c.fill(); }
+  // torso shaped by gender, details clipped inside it
+  const g = c.createLinearGradient(-B.sh, 0, B.sh, 0);
   g.addColorStop(0, shade(t1, -.14)); g.addColorStop(.45, t1); g.addColorStop(1, shade(t1, -.24));
-  c.fillStyle = g;
-  c.beginPath(); c.moveTo(-.235, -1.43); c.quadraticCurveTo(0, -1.48, .235, -1.43); c.lineTo(.205, -.99); c.quadraticCurveTo(0, -.95, -.205, -.99); c.closePath(); c.fill();
+  c.fillStyle = g; torsoPath(c, B); c.fill();
+  c.save(); torsoPath(c, B); c.clip();
   c.lineWidth = .02;
-  if (tst === 'tank'){ c.fillStyle = skin; ell(c, -.2, -1.4, .055, .05); ell(c, .2, -1.4, .055, .05); c.strokeStyle = t2; seg(c, -.15, -1.44, -.19, -1.2); seg(c, .15, -1.44, .19, -1.2); }
-  if (tst === 'jersey'){ c.fillStyle = t2; c.fillRect(-.235, -1.38, .045, .38); c.fillRect(.19, -1.38, .045, .38); }
-  if (tst === 'kit'){ c.strokeStyle = t2; c.lineWidth = .045; seg(c, -.2, -1.4, .19, -1.02); }
+  if (tst === 'tank'){ c.fillStyle = skin; ell(c, -B.sh + .02, -1.4, .06, .055); ell(c, B.sh - .02, -1.4, .06, .055); c.strokeStyle = t2; seg(c, -B.sh + .06, -1.44, -B.sh + .03, -1.2); seg(c, B.sh - .06, -1.44, B.sh - .03, -1.2); }
+  if (tst === 'jersey'){ c.fillStyle = t2; c.fillRect(-B.sh - .02, -1.42, .065, .44); c.fillRect(B.sh - .045, -1.42, .065, .44); }
+  if (tst === 'kit'){ c.strokeStyle = t2; c.lineWidth = .045; seg(c, -B.sh, -1.42, B.sh, -1.0); }
+  c.fillStyle = shade(t1, -.2); c.fillRect(-.3, -1.02, .6, .03);
+  c.restore();
   if (front){
     if (tst === 'polo'){ c.fillStyle = t2; c.beginPath(); c.moveTo(-.09, -1.45); c.lineTo(0, -1.38); c.lineTo(-.03, -1.33); c.closePath(); c.fill(); c.beginPath(); c.moveTo(.09, -1.45); c.lineTo(0, -1.38); c.lineTo(.03, -1.33); c.closePath(); c.fill(); c.fillStyle = shade(t1, -.3); ell(c, 0, -1.29, .012, .012); ell(c, 0, -1.23, .012, .012); }
     else if (tst === 'hoodie'){ c.fillStyle = shade(t1, -.1); rr(c, -.11, -1.17, .22, .12, .04); c.fill(); c.strokeStyle = t2; c.lineWidth = .012; seg(c, -.04, -1.42, -.05, -1.3); seg(c, .04, -1.42, .05, -1.3); }
-    else { c.fillStyle = skin; c.beginPath(); c.arc(0, -1.455, .065, 0, Math.PI); c.fill(); c.strokeStyle = t2; c.lineWidth = .018; c.beginPath(); c.arc(0, -1.455, .07, 0, Math.PI); c.stroke(); }
+    else { c.fillStyle = skin; c.beginPath(); c.arc(0, -1.455, girl ? .075 : .062, 0, Math.PI); c.fill(); c.strokeStyle = t2; c.lineWidth = .018; c.beginPath(); c.arc(0, -1.455, girl ? .08 : .067, 0, Math.PI); c.stroke(); }
     if ((tst === 'jersey' || tst === 'kit') && tag){ c.save(); c.scale(.01, .01); c.fillStyle = t2; c.font = '11px "Russo One", Impact, sans-serif'; c.textAlign = 'center'; c.fillText(tag, 9, -128); c.restore(); }
   } else {
     if (tst === 'polo'){ c.fillStyle = t2; c.fillRect(-.09, -1.46, .18, .03); }
     if ((tst === 'jersey' || tst === 'kit' || tst === 'tee') && tag){ c.save(); c.scale(.01, .01); c.fillStyle = tst === 'tee' ? shade(t1, -.35) : t2; c.font = '22px "Russo One", Impact, sans-serif'; c.textAlign = 'center'; c.fillText(tag, 0, -116); c.restore(); }
   }
-  c.fillStyle = shade(t1, -.2); c.fillRect(-.205, -1.02, .41, .03);   // hem
-  // neck + head + ears
-  c.fillStyle = skinD; c.fillRect(-.045, -1.52, .09, .1);
-  c.fillStyle = skin; ell(c, -.135, -1.6, .03, .04); ell(c, .135, -1.6, .03, .04);
-  c.fillStyle = skin; ell(c, 0, -1.6, .135, .152);
+  // neck, ears, head
+  c.fillStyle = skinD; c.fillRect(-B.neck / 2, -1.52, B.neck, .1);
+  c.fillStyle = skin; ell(c, -B.hx, -1.6, .03, .04); ell(c, B.hx, -1.6, .03, .04);
+  if (girl && front && hs !== 'long' && hs !== 'bob'){ c.fillStyle = '#f5c542'; ell(c, -B.hx - .005, -1.565, .012, .012); ell(c, B.hx + .005, -1.565, .012, .012); }
+  c.fillStyle = skin;
+  if (girl){ c.beginPath(); c.moveTo(-B.hx, -1.63); c.quadraticCurveTo(-B.hx, -1.75, 0, -1.755); c.quadraticCurveTo(B.hx, -1.75, B.hx, -1.63); c.quadraticCurveTo(B.hx * .95, -1.5, 0, -1.455); c.quadraticCurveTo(-B.hx * .95, -1.5, -B.hx, -1.63); c.fill(); }
+  else { c.beginPath(); c.moveTo(-B.hx, -1.64); c.quadraticCurveTo(-B.hx, -1.76, 0, -1.76); c.quadraticCurveTo(B.hx, -1.76, B.hx, -1.64); c.lineTo(B.hx * .92, -1.53); c.quadraticCurveTo(B.hx * .7, -1.455, 0, -1.452); c.quadraticCurveTo(-B.hx * .7, -1.455, -B.hx * .92, -1.53); c.closePath(); c.fill(); }
   // hair
   c.fillStyle = hair;
   if (!front){
-    if (hs === 'ponytail'){ const pw = Math.sin(t * 3 + run) * .05; c.beginPath(); c.moveTo(-.05, -1.62); c.quadraticCurveTo(pw * 1.5 - .09, -1.42, pw, -1.27); c.quadraticCurveTo(pw * 1.5 + .09, -1.42, .05, -1.62); c.fill(); }
-    if (hs === 'long'){ c.beginPath(); c.moveTo(-.15, -1.6); c.quadraticCurveTo(-.17, -1.36, -.12, -1.3); c.lineTo(.12, -1.3); c.quadraticCurveTo(.17, -1.36, .15, -1.6); c.fill(); }
-    if (hs === 'bob'){ rr(c, -.155, -1.68, .31, .2, .06); c.fill(); }
-    ell(c, 0, -1.62, .145, .148);
-    if (hs === 'buzz'){ c.fillStyle = skin; c.globalAlpha = .35; ell(c, 0, -1.6, .13, .13); c.globalAlpha = 1; }
-    if (hs === 'short' || hs === 'buzz' || hs === 'spiky'){ c.fillStyle = skin; ell(c, 0, -1.49, .07, .03); }
+    if (hs === 'ponytail'){
+      const pw = Math.sin(t * 3 + run) * .05;
+      c.beginPath(); c.moveTo(-.055, -1.63); c.quadraticCurveTo(pw * 1.5 - .1, -1.42, pw, -1.22); c.quadraticCurveTo(pw * 1.5 + .1, -1.42, .055, -1.63); c.fill();
+      c.fillStyle = tie; ell(c, -.03, -1.62, .03, .022); ell(c, .03, -1.62, .03, .022); ell(c, 0, -1.62, .016, .016); c.fillStyle = hair;
+    }
+    if (hs === 'long'){ c.beginPath(); c.moveTo(-.155, -1.6); c.quadraticCurveTo(-.19, -1.3, -.14, -1.22); c.lineTo(.14, -1.22); c.quadraticCurveTo(.19, -1.3, .155, -1.6); c.fill(); }
+    if (hs === 'bob'){ rr(c, -.16, -1.68, .32, .22, .07); c.fill(); }
+    ell(c, 0, -1.62, B.hx + .01, .15);
+    if (hs === 'buzz'){ c.fillStyle = skin; c.globalAlpha = .35; ell(c, 0, -1.6, B.hx - .01, .13); c.globalAlpha = 1; }
+    if (!girl){ c.fillStyle = skin; ell(c, 0, -1.49, .07, .028); }
   } else {
-    if (hs === 'long'){ rr(c, -.165, -1.68, .07, .36, .03); c.fill(); rr(c, .095, -1.68, .07, .36, .03); c.fill(); }
-    if (hs === 'bob'){ rr(c, -.165, -1.7, .07, .22, .03); c.fill(); rr(c, .095, -1.7, .07, .22, .03); c.fill(); }
-    if (hs === 'ponytail'){ ell(c, -.14, -1.58, .035, .08); ell(c, .14, -1.58, .035, .08); }
-    c.beginPath(); c.arc(0, -1.62, .148, Math.PI, TAU); c.lineTo(.148, -1.6); c.quadraticCurveTo(.06, hs === 'buzz' ? -1.7 : -1.66, -.02, -1.63); c.quadraticCurveTo(-.09, hs === 'buzz' ? -1.7 : -1.67, -.148, -1.6); c.closePath(); c.fill();
-    if (hs === 'buzz'){ c.fillStyle = skin; c.globalAlpha = .35; c.beginPath(); c.arc(0, -1.62, .14, Math.PI, TAU); c.fill(); c.globalAlpha = 1; }
+    if (girl){
+      if (hs === 'bob'){ rr(c, -.175, -1.71, .075, .25, .035); c.fill(); rr(c, .1, -1.71, .075, .25, .035); c.fill(); }
+      else if (hs === 'long'){ rr(c, -.175, -1.7, .07, .4, .035); c.fill(); rr(c, .105, -1.7, .07, .4, .035); c.fill(); }
+      else { c.beginPath(); c.moveTo(-.135, -1.66); c.quadraticCurveTo(-.16, -1.58, -.13, -1.5); c.lineTo(-.115, -1.6); c.closePath(); c.fill(); c.beginPath(); c.moveTo(.135, -1.66); c.quadraticCurveTo(.16, -1.58, .13, -1.5); c.lineTo(.115, -1.6); c.closePath(); c.fill(); }
+      if (hs === 'ponytail'){ const pw = Math.sin(t * 3 + run) * .03; c.beginPath(); c.moveTo(.1, -1.7); c.quadraticCurveTo(.24 + pw, -1.6, .2 + pw, -1.38); c.quadraticCurveTo(.17, -1.55, .09, -1.62); c.fill(); c.fillStyle = tie; ell(c, .135, -1.69, .028, .02); c.fillStyle = hair; }
+      // side-swept fringe
+      c.beginPath(); c.arc(0, -1.625, B.hx + .012, Math.PI, TAU); c.lineTo(B.hx + .012, -1.6); c.quadraticCurveTo(.04, -1.69, -.06, -1.635); c.quadraticCurveTo(-.11, -1.62, -B.hx - .012, -1.6); c.closePath(); c.fill();
+    } else {
+      c.beginPath(); c.arc(0, -1.635, B.hx + .008, Math.PI, TAU); c.lineTo(B.hx + .008, -1.62); c.quadraticCurveTo(.06, hs === 'buzz' ? -1.72 : -1.69, -.02, -1.665); c.quadraticCurveTo(-.09, hs === 'buzz' ? -1.72 : -1.7, -B.hx - .008, -1.62); c.closePath(); c.fill();
+      if (hs !== 'buzz'){ c.fillRect(-B.hx - .004, -1.65, .028, .07); c.fillRect(B.hx - .024, -1.65, .028, .07); }
+      if (hs === 'buzz'){ c.fillStyle = skin; c.globalAlpha = .35; c.beginPath(); c.arc(0, -1.635, B.hx, Math.PI, TAU); c.fill(); c.globalAlpha = 1; }
+    }
     // face
-    c.fillStyle = '#ffffff'; ell(c, -.05, -1.585, .024, .02); ell(c, .05, -1.585, .024, .02);
-    c.fillStyle = '#1f1a17'; ell(c, -.046, -1.583, .014, .016); ell(c, .054, -1.583, .014, .016);
-    c.fillStyle = '#ffffff'; ell(c, -.042, -1.589, .005, .005); ell(c, .058, -1.589, .005, .005);
-    c.strokeStyle = hairD; c.lineWidth = .014; seg(c, -.075, -1.625, -.025, -1.63); seg(c, .025, -1.63, .075, -1.625);
-    c.strokeStyle = skinD; c.lineWidth = .012; c.beginPath(); c.moveTo(0, -1.58); c.lineTo(-.008, -1.545); c.lineTo(.006, -1.542); c.stroke();
-    c.strokeStyle = '#8a3b2e'; c.lineWidth = .016; c.beginPath(); c.arc(0, -1.53, .035, .2 * Math.PI, .8 * Math.PI); c.stroke();
-    if (girl){ c.fillStyle = 'rgba(255,110,130,.35)'; ell(c, -.085, -1.545, .025, .018); ell(c, .085, -1.545, .025, .018); }
+    const er = girl ? .028 : .022, eh = girl ? .026 : .019, ey = -1.59;
+    c.fillStyle = '#ffffff'; ell(c, -.052, ey, er, eh); ell(c, .052, ey, er, eh);
+    c.fillStyle = girl ? '#3a2416' : '#1f1a17'; ell(c, -.048, ey + .002, er * .62, eh * .82); ell(c, .056, ey + .002, er * .62, eh * .82);
+    c.fillStyle = '#ffffff'; ell(c, -.043, ey - .006, .006, .006); ell(c, .061, ey - .006, .006, .006);
+    if (girl){
+      c.strokeStyle = '#1b1210'; c.lineWidth = .011;
+      for (const sx of [-1, 1]){ c.beginPath(); c.arc(sx * .052, ey + .004, er * 1.05, Math.PI * 1.08, Math.PI * 1.92); c.stroke(); seg(c, sx * (.052 + er * .95), ey - .01, sx * (.052 + er * 1.45), ey - .024); }
+      c.strokeStyle = hairD; c.lineWidth = .009;
+      c.beginPath(); c.moveTo(-.085, -1.628); c.quadraticCurveTo(-.055, -1.648, -.025, -1.633); c.stroke();
+      c.beginPath(); c.moveTo(.025, -1.633); c.quadraticCurveTo(.055, -1.648, .085, -1.628); c.stroke();
+      c.fillStyle = 'rgba(255,105,130,.4)'; ell(c, -.088, -1.545, .027, .018); ell(c, .088, -1.545, .027, .018);
+      c.fillStyle = '#d9536a'; ell(c, 0, -1.528, .028, .013); c.fillStyle = 'rgba(255,255,255,.35)'; ell(c, -.008, -1.532, .009, .004);
+    } else {
+      c.strokeStyle = hairD; c.lineWidth = .022; seg(c, -.085, -1.627, -.024, -1.633); seg(c, .024, -1.633, .085, -1.627);
+      c.strokeStyle = '#7a3428'; c.lineWidth = .016; c.beginPath(); c.arc(0, -1.535, .036, .2 * Math.PI, .8 * Math.PI); c.stroke();
+    }
+    c.strokeStyle = skinD; c.lineWidth = .012; c.beginPath(); c.moveTo(0, -1.585); c.lineTo(-.008, -1.552); c.lineTo(.006, -1.549); c.stroke();
   }
-  if (hs === 'spiky'){ c.fillStyle = hair; for (let i = -2; i <= 2; i++){ c.beginPath(); c.moveTo(i * .055 - .035, -1.72); c.lineTo(i * .06, -1.81 + Math.abs(i) * .02); c.lineTo(i * .055 + .035, -1.72); c.fill(); } }
-  if (hs === 'curly'){ c.fillStyle = hair; for (let i = -3; i <= 3; i++) ell(c, i * .045, -1.73 + Math.abs(i) * .012, .04, .035); }
-  if (hs === 'buns'){ c.fillStyle = hair; ell(c, -.1, -1.75, .05, .05); ell(c, .1, -1.75, .05, .05); }
+  if (hs === 'spiky'){ c.fillStyle = hair; for (let i = -2; i <= 2; i++){ c.beginPath(); c.moveTo(i * .055 - .035, -1.73); c.lineTo(i * .06, -1.82 + Math.abs(i) * .02); c.lineTo(i * .055 + .035, -1.73); c.fill(); } }
+  if (hs === 'curly'){ c.fillStyle = hair; for (let i = -3; i <= 3; i++) ell(c, i * .045, -1.74 + Math.abs(i) * .012, .04, .035); }
+  if (hs === 'buns'){ c.fillStyle = hair; ell(c, -.1, -1.76, .055, .055); ell(c, .1, -1.76, .055, .055); c.fillStyle = tie; ell(c, -.1, -1.715, .03, .012); ell(c, .1, -1.715, .03, .012); }
   // headwear
   const h1 = head.c1 || '#e23b3b', h2 = head.c2 || '#ffffff', hst = head.style || 'none';
-  const clip = () => { c.save(); c.beginPath(); c.arc(0, -1.61, .156, 0, TAU); c.clip(); };
-  if (hst === 'band'){ clip(); c.fillStyle = h1; c.fillRect(-.2, -1.705, .4, .042); c.restore(); }
+  const clip = () => { c.save(); c.beginPath(); c.arc(0, -1.62, B.hx + .016, 0, TAU); c.clip(); };
+  if (hst === 'band'){ clip(); c.fillStyle = h1; c.fillRect(-.2, -1.715, .4, .042); c.restore(); }
   if (hst === 'cap' || hst === 'capback'){
-    c.fillStyle = h1; c.beginPath(); c.arc(0, -1.65, .155, Math.PI, TAU); c.closePath(); c.fill();
-    c.strokeStyle = shade(h1, -.2); c.lineWidth = .01; seg(c, 0, -1.8, 0, -1.65); c.fillStyle = h2; ell(c, 0, -1.805, .018, .012);
-    const brimFront = (hst === 'cap') === front;
-    if (brimFront){ c.fillStyle = shade(h1, -.18); c.beginPath(); c.ellipse(0, -1.645, .17, .045, 0, 0, Math.PI); c.fill(); }
-    else { c.fillStyle = h2; ell(c, 0, -1.66, .03, .015); }
+    c.fillStyle = h1; c.beginPath(); c.arc(0, -1.66, B.hx + .015, Math.PI, TAU); c.closePath(); c.fill();
+    c.strokeStyle = shade(h1, -.2); c.lineWidth = .01; seg(c, 0, -1.81, 0, -1.66); c.fillStyle = h2; ell(c, 0, -1.815, .018, .012);
+    if ((hst === 'cap') === front){ c.fillStyle = shade(h1, -.18); c.beginPath(); c.ellipse(0, -1.655, B.hx + .03, .045, 0, 0, Math.PI); c.fill(); }
+    else { c.fillStyle = h2; ell(c, 0, -1.67, .03, .015); }
   }
-  if (hst === 'visor'){ clip(); c.fillStyle = h1; c.fillRect(-.2, -1.71, .4, .05); c.restore(); if (front){ c.fillStyle = h2; c.beginPath(); c.ellipse(0, -1.665, .17, .045, 0, 0, Math.PI); c.fill(); } }
-  if (hst === 'bucket'){ c.fillStyle = shade(h1, -.15); ell(c, 0, -1.66, .23, .055); c.fillStyle = h1; c.beginPath(); c.moveTo(-.14, -1.66); c.quadraticCurveTo(-.13, -1.82, 0, -1.83); c.quadraticCurveTo(.13, -1.82, .14, -1.66); c.closePath(); c.fill(); c.fillStyle = h2; c.fillRect(-.14, -1.7, .28, .03); }
-  if (hst === 'beanie'){ c.fillStyle = h1; c.beginPath(); c.arc(0, -1.66, .155, Math.PI, TAU); c.closePath(); c.fill(); c.fillStyle = h2; rr(c, -.158, -1.7, .316, .06, .02); c.fill(); ell(c, 0, -1.83, .04, .04); }
-  if (hst === 'crown'){ c.fillStyle = h1; c.beginPath(); c.moveTo(-.12, -1.7); c.lineTo(-.13, -1.85); c.lineTo(-.065, -1.77); c.lineTo(0, -1.88); c.lineTo(.065, -1.77); c.lineTo(.13, -1.85); c.lineTo(.12, -1.7); c.closePath(); c.fill(); c.fillStyle = h2; ell(c, 0, -1.74, .02, .02); ell(c, -.075, -1.73, .014, .014); ell(c, .075, -1.73, .014, .014); }
+  if (hst === 'visor'){ clip(); c.fillStyle = h1; c.fillRect(-.2, -1.72, .4, .05); c.restore(); if (front){ c.fillStyle = h2; c.beginPath(); c.ellipse(0, -1.675, B.hx + .03, .045, 0, 0, Math.PI); c.fill(); } }
+  if (hst === 'bucket'){ c.fillStyle = shade(h1, -.15); ell(c, 0, -1.67, .23, .055); c.fillStyle = h1; c.beginPath(); c.moveTo(-.14, -1.67); c.quadraticCurveTo(-.13, -1.83, 0, -1.84); c.quadraticCurveTo(.13, -1.83, .14, -1.67); c.closePath(); c.fill(); c.fillStyle = h2; c.fillRect(-.14, -1.71, .28, .03); }
+  if (hst === 'beanie'){ c.fillStyle = h1; c.beginPath(); c.arc(0, -1.67, B.hx + .015, Math.PI, TAU); c.closePath(); c.fill(); c.fillStyle = h2; rr(c, -B.hx - .018, -1.71, (B.hx + .018) * 2, .06, .02); c.fill(); ell(c, 0, -1.84, .04, .04); }
+  if (hst === 'crown'){ c.fillStyle = h1; c.beginPath(); c.moveTo(-.12, -1.71); c.lineTo(-.13, -1.86); c.lineTo(-.065, -1.78); c.lineTo(0, -1.89); c.lineTo(.065, -1.78); c.lineTo(.13, -1.86); c.lineTo(.12, -1.71); c.closePath(); c.fill(); c.fillStyle = h2; ell(c, 0, -1.75, .02, .02); ell(c, -.075, -1.74, .014, .014); ell(c, .075, -1.74, .014, .014); }
   // paddle arm
   const pr = 1 - swing;
   const a = .85 + (swing > 0 ? Math.sin(pr * Math.PI) * 1.5 : 0) + (moving ? 0 : Math.sin(t * 2) * .05);
-  const [hx, hy, ex, ey] = limb(c, ps * .2, -1.37, ps * a, ps * .3, .27, .25, skin, t1, SLEEVE, tst === 'hoodie' ? t1 : null);
+  const [hx, hy, ex, ey] = limb(c, ps * shX, -1.37, ps * a, ps * .3, .27, .25, skin, t1, SLEEVE, tst === 'hoodie' ? t1 : null, B.arm, B.fore);
   drawPaddle(c, pad, hx, hy, Math.atan2(hy - ey, hx - ex));
   c.restore();
 }
@@ -2077,11 +2152,22 @@ function updateHUD(){
   const prim = t => { const tm = team(t); return tm.find(p => p.human && !p.human.remote) || tm.find(p => p.human) || tm[0]; };
   const sk = p => !p ? '' : p.ai ? (p.ai.d.coach ? 'Practice partner' : LADDER.includes(p.ai.d.key) ? `AI · ${p.ai.d.mmr} MMR` : 'AI teammate') : `Next shot: ${LABEL[p.armed]}`;
   setTxt('#h1Skill', sk(prim(1))); setTxt('#h2Skill', sk(prim(2)));
-  $$('#touch .tbtn.skill').forEach(b => { b.classList.toggle('on', !!me && me.armed === b.dataset.t); b.style.opacity = me && !skillOk(me, b.dataset.t) ? '.35' : ''; });
+  const myServe = tOn && G.state === 'serve' && me && G.serverP === me;
+  const SERVE_BTN = { slice:'Volley', curve:'Curve', dink:'Drop', spike:'' };
+  $$('#touch .tbtn.skill').forEach(b => {
+    if (!b.dataset.label) b.dataset.label = b.textContent;
+    const t = b.dataset.t, lbl = myServe ? SERVE_BTN[t] : b.dataset.label;
+    if (b.textContent !== lbl) b.textContent = lbl;
+    b.style.visibility = lbl ? '' : 'hidden';
+    b.classList.toggle('on', !!me && (myServe ? SERVE_KEY[t] === me.serveType && t !== 'spike' : me.armed === t));
+  });
   const s = G.serverP;
   const showHint = G.state === 'serve' && s && s.human && !s.human.remote && screenNow === 'game';
   $('#hint').classList.toggle('hidden', !showHint);
-  if (showHint) $('#hint').textContent = tOn ? 'Tap Serve, or hold Hit for a power serve' : `${s.name}: hold ${keyName(data.binds[s.human.set].hit)} and release to serve`;
+  if (showHint){
+    const bs = data.binds[s.human.set], st = SERVE_NAME[s.serveType || 'volley'];
+    setTxt('#hint', tOn ? `${st} · pick Volley, Curve or Drop, then tap Serve` : `${st} · ${keyName(bs.slice)} volley · ${keyName(bs.curve)} curve · ${keyName(bs.dink)} drop · hold ${keyName(bs.hit)} and release to serve`);
+  }
 }
 function popEl(el){ el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
 function tickBars(){
@@ -2623,7 +2709,7 @@ function hostInput(m){
 }
 function hostSnapshot(){
   const b = G.ball;
-  return { t:'st', s:G.state, sc:G.score, sv:G.server, sp:G.players.indexOf(G.serverP), rp:G.players.indexOf(G.recvP), sn:G.serveNum, mt:Math.round(G.matchT), r:G.rally,
+  return { t:'st', s:G.state, sc:G.score, sv:G.server, sp:G.players.indexOf(G.serverP), rp:G.players.indexOf(G.recvP), sn:G.serveNum, sty:SERVES.indexOf(G.serverP ? G.serverP.serveType || 'volley' : 'volley'), mt:Math.round(G.matchT), r:G.rally,
     b:[r3(b.x), r3(b.y), r3(b.z), TYPES.indexOf(b.type), b.live ? 1 : 0, b.hitCount, b.lastHitter, b.serveSign, BALL_IDS.indexOf(b.skin || 'ball_classic')], ct:COURT_IDS.indexOf(G.court),
     p:G.players.map(p => [r3(p.x), r3(p.y), r3(p.swing), r3(p.run), p.moving ? 1 : 0, Math.round(p.energy), ARMS.indexOf(p.armed), p.charging ? 1 : 0, r3(p.charge), r3(p.meterT), r3(p.meterQ)]),
     ev:G.netEv.splice(0) };
@@ -2673,7 +2759,7 @@ function guestInterp(){
   const last = S[S.length - 1];
   if (G.state !== 'over') G.state = last.s;
   if (COURT_IDS[last.ct]) G.court = COURT_IDS[last.ct];
-  G.serverP = G.players[last.sp] || null; G.recvP = G.players[last.rp] || null; G.serveNum = last.sn || 1; G.server = last.sv; G.rally = last.r;
+  G.serverP = G.players[last.sp] || null; if (G.serverP) G.serverP.serveType = SERVES[last.sty] || 'volley'; G.recvP = G.players[last.rp] || null; G.serveNum = last.sn || 1; G.server = last.sv; G.rally = last.r;
   if (typeof last.mt === 'number' && Math.abs(last.mt - G.matchT) > 1.5) G.matchT = last.mt;
   if (last.sc[0] !== G.score[0] || last.sc[1] !== G.score[1]){ G.score = last.sc.slice(); updateHUD(); }
   while (S.length > 2 && S[1].rt < rt) S.shift();
