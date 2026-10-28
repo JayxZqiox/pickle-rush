@@ -109,9 +109,17 @@ input{font-size:16px;} /* stops iOS zooming into inputs */
   .sbMid{min-width:72px; padding:4px 6px;} .sbClock{font-size:15px;} .sbCall{font-size:11px;}
   .sbBody{padding:5px 7px;}
 }
-#callBanner{position:fixed; left:50%; top:36%; z-index:14; pointer-events:none; text-align:center; opacity:0;
-  transform:translate(-50%,8px) scale(.92); transition:opacity .2s ease, transform .28s cubic-bezier(.2,1.5,.4,1);}
-#callBanner.show{opacity:1; transform:translate(-50%,0) scale(1);}
+#callBanner{position:fixed; right:12px; top:42%; z-index:14; pointer-events:none; text-align:center; opacity:0;
+  transform:translateX(14px) scale(.94); transition:opacity .2s ease, transform .28s cubic-bezier(.2,1.5,.4,1);}
+#callBanner.show{opacity:1; transform:none;}
+/* the scoreboard fades away when the ball or the far players are behind it */
+#hud{transition:opacity .18s ease;}
+#hud.sb-dim{opacity:.12;}
+#callBanner.cb-dim{opacity:.15 !important;}
+@media (max-height: 500px){
+  .sbBody{padding:4px 8px;} .sbSkill{display:none;} .sb .bar{margin-top:3px; height:4px;}
+  .sbScore{font-size:28px; min-width:44px;} .sbName{font-size:12px;} .sbClock{font-size:14px;} .sbMid{padding:3px 8px;}
+}
 .hud{background:var(--hud-bg); color:var(--hud-text);}
 .bar{height:6px; border-radius:99px; background:rgba(255,255,255,.14); overflow:hidden;}
 .bar>i{display:block; height:100%; width:0; background:var(--ball); border-radius:99px; transition:width .15s;}
@@ -578,7 +586,7 @@ input{font-size:16px;} /* stops iOS zooming into inputs */
 <div id="ctrlBtns" class="hidden"></div>
 <div id="fpsBox" class="fixed z-30 hidden pointer-events-none hud rounded-lg px-2 py-1 text-xs font-bold tabular-nums" style="left:8px; top:calc(env(safe-area-inset-top,0px) + 6px)">60 fps</div>
 <div id="toast"><div id="tTitle" class="font-display text-white text-[44px] leading-none" style="text-shadow:0 4px 24px rgba(0,0,0,.6)"></div><div id="tSub" class="text-white/90 font-semibold mt-2 text-lg" style="text-shadow:0 2px 10px rgba(0,0,0,.7)"></div></div>
-<div id="callBanner"><div class="hud rounded-2xl px-6 py-3"><div id="cbNum" class="font-display text-[42px] leading-none tabular-nums"></div><div id="cbSub" class="text-[13px] font-semibold text-[var(--hud-muted)] mt-1.5"></div></div></div>
+<div id="callBanner"><div class="hud rounded-2xl px-4 py-2.5"><div id="cbNum" class="font-display text-[30px] leading-none tabular-nums"></div><div id="cbSub" class="text-[13px] font-semibold text-[var(--hud-muted)] mt-1.5"></div></div></div>
 <div id="hint" class="fixed left-1/2 -translate-x-1/2 z-10 hidden hud rounded-full px-4 py-2 font-semibold pulse" style="bottom:calc(env(safe-area-inset-bottom,0px) + 22px)">Hold Space, release to serve</div>
 <div id="rotTip" class="fixed left-1/2 -translate-x-1/2 z-10 hidden hud rounded-full px-4 py-2 text-sm font-semibold" style="top:calc(env(safe-area-inset-top,0px) + 132px)">Turn your phone sideways for a bigger court</div>
 
@@ -2194,7 +2202,7 @@ function show(id){
   screenNow = id ? id.replace('s-', '') : 'game';
   const wantsDemo = MENU_SCREENS.includes(screenNow) || (screenNow === 'ctrl' && ctrlFrom === 'menu');
   if (wantsDemo && G.mode !== 'demo'){ G.netRole = null; startMatch('demo'); }
-  invalidateRects();
+  invalidateRects(); HUD_RECT = null;
   ({ gate:renderGate, shop:renderShop, menu:refreshMenu, diff:renderDiff, char:renderChar, rank:renderRank, signup:renderSignup, online:renderOnline, room:renderRoom, ctrl:renderCtrl, pause:renderPause }[screenNow] || (() => {}))();
   if (screenNow === 'rank' && Date.now() - ACC.boardT > 5000) loadBoard();
   updateHUD();
@@ -2800,6 +2808,28 @@ function guestTick(dt){
 let last = performance.now() / 1000, accT = 0, hudTick = 0, pingTick = 0;
 const DT = 1 / 120;
 let lastRender = 0, lastShop = 0;
+let HUD_RECT = null, CB_RECT = null;
+addEventListener('resize', () => { HUD_RECT = CB_RECT = null; });
+function hudAutoHide(dt){
+  const hud = $('#hud'), cb = $('#callBanner');
+  if (hud.classList.contains('hidden') || G.mode === 'demo'){ if (hud.classList.contains('sb-dim')) hud.classList.remove('sb-dim'); return; }
+  if (!HUD_RECT || !HUD_RECT.w){ const r = $('.sb').getBoundingClientRect(); HUD_RECT = { l:r.left - 14, t:r.top - 14, r:r.right + 14, b:r.bottom + 18, w:r.width }; }
+  const inside = (R, x, y) => R && x > R.l && x < R.r && y > R.t && y < R.b;
+  const b = G.ball, nearTeam = G.flip ? 2 : 1, pts = [];
+  if (b && (b.live || G.state === 'serve')){ const q = proj(b.x, b.y, b.z); pts.push(q); }
+  for (const p of G.players) if (p.team !== nearTeam){ pts.push(proj(p.x, p.y, 1.9)); pts.push(proj(p.x, p.y, 1.0)); }
+  let block = pts.some(q => inside(HUD_RECT, q[0], q[1]));
+  // the opponent's serve: clear the view until the ball is on its way
+  if (G.state === 'serve' && G.serverP && G.serverP.team !== nearTeam) block = true;
+  G.hudDimT = block ? .45 : Math.max(0, (G.hudDimT || 0) - dt);
+  const dim = G.hudDimT > 0;
+  if (dim !== hud.classList.contains('sb-dim')) hud.classList.toggle('sb-dim', dim);
+  if (cb.classList.contains('show')){
+    if (!CB_RECT){ const r = cb.getBoundingClientRect(); CB_RECT = { l:r.left - 10, t:r.top - 10, r:r.right + 10, b:r.bottom + 10 }; }
+    const cdim = b && b.live && inside(CB_RECT, ...proj(b.x, b.y, b.z));
+    if (cdim !== cb.classList.contains('cb-dim')) cb.classList.toggle('cb-dim', !!cdim);
+  } else { CB_RECT = null; if (cb.classList.contains('cb-dim')) cb.classList.remove('cb-dim'); }
+}
 function frame(nowMs){
   requestAnimationFrame(frame);
   const now = nowMs / 1000, raw = Math.max(0, now - last), d = Math.min(.05, raw); last = now;
@@ -2825,6 +2855,7 @@ function frame(nowMs){
   if (inPlay || now - lastRender >= 1 / 30 - .004){   // menus run at 30 fps, which saves battery
     lastRender = now;
     render();
+    if (inPlay) hudAutoHide(Math.min(.1, now - (G.hudLast || now))), G.hudLast = now;
     if (screenNow === 'menu') drawPreview($('#pvMenu'), myLook(), 'front', now, '');
     if (screenNow === 'char') drawPreview($('#pvBig'), editWho === 'p2' ? p2Look() : myLook(), pvFacing, now, (myName() || '?').slice(0, 1).toUpperCase());
     if (screenNow === 'signup' && ACC.user) drawPreview($('#pvSign'), myLook(), 'front', now, '');
