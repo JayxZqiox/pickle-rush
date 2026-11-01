@@ -1,4 +1,5 @@
-# Render Blueprint: New -> Blueprint -> pick this repo. Region is set to Singapore (closest to the Philippines).
+# Render Blueprint: New -> Blueprint -> pick this repo. Region is Singapore (closest to the Philippines).
+# Render will ask for the two Upstash values; they keep accounts safe when the free server sleeps.
 services:
   - type: web
     name: pickle-rush
@@ -8,3 +9,8 @@ services:
     buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /api/health
+    envVars:
+      - key: UPSTASH_REDIS_REST_URL
+        sync: false
+      - key: UPSTASH_REDIS_REST_TOKEN
+        sync: false

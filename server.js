@@ -21,27 +21,90 @@ const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
 const DB_FILE = path.join(DATA_DIR, 'db.json');
 
 /* ------------------------------------------------------------------ */
-/* Database: one JSON file, written atomically, debounced              */
+/* Database                                                            */
+/*  - UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN set: accounts   */
+/*    live in Upstash Redis (free, permanent; use this on Render).      */
+/*  - otherwise: one JSON file in DATA_DIR (fine on your own PC; on     */
+/*    Render's free plan this file is wiped whenever the server sleeps).*/
 /* ------------------------------------------------------------------ */
 let db = { users: {}, sessions: {} };
-try {
-  db = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
-  db.users = db.users || {};
-  db.sessions = db.sessions || {};
-} catch (e) { /* first run */ }
-for (const u of Object.values(db.users)) { CAT.normalize(u); u.look = baseLook(u.look); }
+const UP_URL = (process.env.UPSTASH_REDIS_REST_URL || '').replace(/\/+$/, '');
+const UP_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN || '';
+const STORAGE = UP_URL && UP_TOKEN ? 'upstash' : 'file';
+const SESSION_DAYS = 180;
+const dirtyUsers = new Set(), dirtySessions = new Set(), droppedSessions = new Set();
 
-let saveTimer = null;
+async function upstash(path, body) {
+  const r = await fetch(UP_URL + path, { method: 'POST', headers: { Authorization: 'Bearer ' + UP_TOKEN, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  if (!r.ok) throw new Error('Upstash HTTP ' + r.status);
+  return r.json();
+}
+async function upstashScan(prefix) {
+  const out = {}; let cursor = '0';
+  do {
+    const { result } = await upstash('', ['SCAN', cursor, 'MATCH', prefix + '*', 'COUNT', '500']);
+    cursor = String(result[0]);
+    const keys = result[1] || [];
+    if (keys.length) {
+      const got = await upstash('', ['MGET', ...keys]);
+      keys.forEach((k, n) => { const v = got.result[n]; if (v) { try { out[k.slice(prefix.length)] = JSON.parse(v); } catch (e) {} } });
+    }
+  } while (cursor !== '0');
+  return out;
+}
+async function loadDb() {
+  if (STORAGE === 'upstash') {
+    db.users = await upstashScan('pr:u:');
+    db.sessions = await upstashScan('pr:s:');
+  } else {
+    try {
+      const d = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+      db.users = d.users || {}; db.sessions = d.sessions || {};
+    } catch (e) { /* first run */ }
+  }
+  for (const u of Object.values(db.users)) { CAT.normalize(u); u.look = baseLook(u.look); }
+  const cutoff = Date.now() - SESSION_DAYS * 864e5;
+  for (const [t, s] of Object.entries(db.sessions)) if (!s || s.created < cutoff || !db.users[s.user]) delete db.sessions[t];
+}
+let saveTimer = null, saving = false;
 function persist() {
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => {
-    try {
+  saveTimer = setTimeout(flush, 150);
+}
+const touchUser = (u) => { if (u) dirtyUsers.add(u.username.toLowerCase()); persist(); };
+const touchSession = (t) => { dirtySessions.add(t); droppedSessions.delete(t); persist(); };
+const dropSession = (t) => { delete db.sessions[t]; dirtySessions.delete(t); droppedSessions.add(t); persist(); };
+async function flush() {
+  if (saving) { persist(); return; }
+  saving = true;
+  try {
+    if (STORAGE === 'upstash') {
+      const cmds = [];
+      for (const k of dirtyUsers) if (db.users[k]) cmds.push(['SET', 'pr:u:' + k, JSON.stringify(db.users[k])]);
+      for (const t of dirtySessions) if (db.sessions[t]) cmds.push(['SET', 'pr:s:' + t, JSON.stringify(db.sessions[t]), 'EX', String(SESSION_DAYS * 86400)]);
+      for (const t of droppedSessions) cmds.push(['DEL', 'pr:s:' + t]);
+      const users = [...dirtyUsers], sess = [...dirtySessions], drops = [...droppedSessions];
+      dirtyUsers.clear(); dirtySessions.clear(); droppedSessions.clear();
+      if (cmds.length) {
+        try {
+          const res = await upstash('/pipeline', cmds);
+          if (Array.isArray(res) && res.some((x) => x && x.error)) throw new Error(res.find((x) => x.error).error);
+        } catch (e) {
+          // keep everything queued and try again shortly, so nothing is lost
+          users.forEach((k) => dirtyUsers.add(k)); sess.forEach((t) => dirtySessions.add(t)); drops.forEach((t) => droppedSessions.add(t));
+          console.error('Database save failed, retrying:', e.message);
+          setTimeout(persist, 3000);
+        }
+      }
+    } else {
+      dirtyUsers.clear(); dirtySessions.clear(); droppedSessions.clear();
       fs.mkdirSync(DATA_DIR, { recursive: true });
       const tmp = DB_FILE + '.tmp';
       fs.writeFileSync(tmp, JSON.stringify(db));
       fs.renameSync(tmp, DB_FILE);
-    } catch (e) { console.error('Could not save database:', e.message); }
-  }, 150);
+    }
+  } catch (e) { console.error('Could not save database:', e.message); }
+  saving = false;
 }
 
 const USER_RE = /^[A-Za-z0-9_]{3,14}$/;
@@ -69,7 +132,9 @@ function applyResult(u, delta, entry) {
 function userFromToken(token) {
   if (!token || typeof token !== 'string') return null;
   const s = db.sessions[token];
-  return s ? db.users[s.user] || null : null;
+  if (!s) return null;
+  if (s.created < Date.now() - SESSION_DAYS * 864e5) { dropSession(token); return null; }
+  return db.users[s.user] || null;
 }
 
 /* ------------------------------------------------------------------ */
@@ -100,13 +165,13 @@ function authUser(req) {
 function newSession(u) {
   const token = crypto.randomBytes(24).toString('hex');
   db.sessions[token] = { user: u.username.toLowerCase(), created: Date.now() };
-  persist();
+  touchSession(token);
   return token;
 }
 
 async function handleApi(req, res, url) {
   const route = url.pathname;
-  if (route === '/api/health') return json(res, 200, { ok: true, game: 'pickle-rush', players: Object.keys(db.users).length });
+  if (route === '/api/health') return json(res, 200, { ok: true, game: 'pickle-rush', players: Object.keys(db.users).length, storage: STORAGE, temporary: STORAGE === 'file' && !!process.env.RENDER });
 
   if (route === '/api/leaderboard' && req.method === 'GET') {
     const rows = Object.values(db.users)
@@ -134,7 +199,7 @@ async function handleApi(req, res, url) {
     if (db.users[key]) return json(res, 409, { error: 'That username is taken' });
     const salt = crypto.randomBytes(16).toString('hex');
     const u = Object.assign({ username: name, salt, pass: hashPassword(pw, salt), look: baseLook(body.look), created: Date.now() }, CAT.newProgress());
-    db.users[key] = u;
+    db.users[key] = u; touchUser(u);
     const token = newSession(u);
     return json(res, 200, { token, user: publicUser(u) });
   }
@@ -155,17 +220,17 @@ async function handleApi(req, res, url) {
 
   if (route === '/api/logout') {
     const h = req.headers.authorization || '';
-    delete db.sessions[h.slice(7)]; persist();
+    dropSession(h.slice(7));
     return json(res, 200, { ok: true });
   }
   if (route === '/api/look') {
-    u.look = baseLook(body.look); persist();
+    u.look = baseLook(body.look); touchUser(u);
     return json(res, 200, { user: publicUser(u) });
   }
   if (route === '/api/ranked') {
     const r = CAT.applyMatch(u, String(body.ai || ''), !!body.won, body.score, body.mode === 'doubles');
     if (typeof r === 'string') return json(res, 400, { error: r });
-    persist();
+    touchUser(u);
     return json(res, 200, { user: publicUser(u), result: r, delta: r.delta });
   }
   if (route === '/api/rally') {
@@ -174,19 +239,19 @@ async function handleApi(req, res, url) {
     let rew = null;
     if (now - (u.lastRally || 0) > 8000 && n > 0) { u.lastRally = now; rew = CAT.addRewards(u, CAT.rallyRewards(n)); }
     if (n > (u.bestRally || 0)) u.bestRally = n;
-    persist();
+    touchUser(u);
     return json(res, 200, { user: publicUser(u), result: rew });
   }
   if (route === '/api/buy') {
     const err = CAT.buy(u, String(body.id || ''));
     if (err) return json(res, 400, { error: err });
-    persist();
+    touchUser(u);
     return json(res, 200, { user: publicUser(u) });
   }
   if (route === '/api/equip') {
     const err = CAT.equip(u, String(body.slot || ''), String(body.id || ''));
     if (err) return json(res, 400, { error: err });
-    persist();
+    touchUser(u);
     return json(res, 200, { user: publicUser(u) });
   }
   return json(res, 404, { error: 'Not found' });
@@ -291,8 +356,34 @@ function slotOf(room, ws) { return room.slots.indexOf(ws); }
 function roomInfo(room) {
   return {
     code: room.code, name: room.name, mode: room.mode, state: room.state, host: slotOf(room, room.host),
-    slots: room.slots.map((c) => c ? { name: c.meta.name, look: c.meta.look, account: !!c.meta.user, mmr: c.meta.user ? db.users[c.meta.user].mmr : null } : null),
+    slots: room.slots.map((c) => c ? { name: c.meta.name, look: c.meta.look, account: !!c.meta.user, mmr: c.meta.user && db.users[c.meta.user] ? db.users[c.meta.user].mmr : null,
+      away: !!c.away, awayLeft: c.away ? Math.max(0, Math.ceil((c.until - Date.now()) / 1000)) : 0 } : null),
   };
+}
+/* Reconnection: a dropped player keeps their slot for GRACE ms and can come back with their rejoin id. */
+const GRACE = 30000;
+const newRid = () => crypto.randomBytes(12).toString('hex');
+function markAway(ws) {
+  const room = ws.meta.room;
+  if (!room) return;
+  const i = slotOf(room, ws);
+  if (i < 0) return;
+  const ph = { away: true, readyState: 3, meta: Object.assign({}, ws.meta, { room }), until: Date.now() + GRACE, send() {} };
+  ph.timer = setTimeout(() => expireAway(room, ph), GRACE);
+  room.slots[i] = ph;
+  if (room.host === ws) room.host = ph;
+  ws.meta.room = null;
+  broadcastRoom(room); broadcastRooms();
+}
+function expireAway(room, ph) {
+  const i = room.slots.indexOf(ph);
+  if (i < 0) return;
+  room.slots[i] = null;
+  if (room.host === ph) {
+    room.slots.forEach((c) => { if (c && !c.away) { c.meta.room = null; send(c, { t: 'closed', reason: 'The host didn’t reconnect in time.' }); } else if (c) clearTimeout(c.timer); });
+    rooms.delete(room.code);
+  } else broadcastRoom(room);
+  broadcastRooms();
 }
 function roomList() {
   return [...rooms.values()].map((r) => ({ code: r.code, name: r.name, mode: r.mode, state: r.state, count: r.slots.filter(Boolean).length, max: r.slots.length }));
@@ -303,7 +394,7 @@ function broadcastRooms() {
 }
 function broadcastRoom(room) {
   const info = roomInfo(room);
-  room.slots.forEach((c, i) => { if (c) send(c, { t: 'room', room: info, you: i }); });
+  room.slots.forEach((c, i) => { if (c && !c.away) send(c, { t: 'room', room: info, you: i, rid: c.meta.rid }); });
 }
 function leaveRoom(ws, notice) {
   const room = ws.meta.room;
@@ -312,7 +403,7 @@ function leaveRoom(ws, notice) {
   const i = slotOf(room, ws);
   if (i >= 0) room.slots[i] = null;
   if (room.host === ws) {
-    room.slots.forEach((c) => { if (c) { c.meta.room = null; send(c, { t: 'closed', reason: notice || 'The host left the room.' }); } });
+    room.slots.forEach((c) => { if (c && !c.away) { c.meta.room = null; send(c, { t: 'closed', reason: notice || 'The host left the room.' }); } else if (c) clearTimeout(c.timer); });
     rooms.delete(room.code);
   } else {
     broadcastRoom(room);
@@ -343,8 +434,8 @@ function rankOnline(room, winTeam, score) {
     applyResult(m.u, delta, { opp: names(m.team === 1 ? 2 : 1), mode: room.mode === '2v2' ? 'Online 2v2' : 'Online 1v1', score: String(score || '').slice(0, 9), win: won });
     const rew = CAT.addRewards(m.u, CAT.onlineRewards(won));
     send(m.c, { t: 'mmr', ranked: true, delta, user: publicUser(m.u), result: rew });
+    touchUser(m.u);
   }
-  persist();
 }
 
 function onConnection(ws) {
@@ -373,7 +464,7 @@ function onConnection(ws) {
         leaveRoom(ws);
         const mode = m.mode === '2v2' ? '2v2' : '1v1';
         const r = { code: makeCode(), name: cleanName(m.name || ws.meta.name + '’s room'), mode, state: 'lobby', host: ws, slots: new Array(mode === '2v2' ? 4 : 2).fill(null) };
-        r.slots[0] = ws; ws.meta.room = r; rooms.set(r.code, r);
+        r.slots[0] = ws; ws.meta.room = r; ws.meta.rid = newRid(); rooms.set(r.code, r);
         broadcastRoom(r); broadcastRooms();
         break;
       }
@@ -384,7 +475,23 @@ function onConnection(ws) {
         const free = r.slots.indexOf(null);
         if (free < 0) return send(ws, { t: 'error', msg: 'That room is full.' });
         leaveRoom(ws);
-        r.slots[free] = ws; ws.meta.room = r;
+        r.slots[free] = ws; ws.meta.room = r; ws.meta.rid = newRid();
+        broadcastRoom(r); broadcastRooms();
+        break;
+      }
+      case 'rejoin': {
+        const r = rooms.get(String(m.code || '').toUpperCase().trim());
+        const i = r ? r.slots.findIndex((c) => c && c.away && c.meta.rid && c.meta.rid === m.rid) : -1;
+        if (i < 0) return send(ws, { t: 'rejoinFail', msg: 'That match has ended or your spot was given away.' });
+        const ph = r.slots[i];
+        clearTimeout(ph.timer);
+        if (ws.meta.room) leaveRoom(ws);
+        // keep the identity this player had in the room
+        Object.assign(ws.meta, { user: ph.meta.user, name: ph.meta.name, look: ph.meta.look, rid: ph.meta.rid, room: r });
+        r.slots[i] = ws;
+        if (r.host === ph) r.host = ws;
+        const info = roomInfo(r);
+        if (r.state === 'playing') send(ws, { t: 'start', room: info, you: i, rejoin: true });
         broadcastRoom(r); broadcastRooms();
         break;
       }
@@ -434,7 +541,7 @@ function onConnection(ws) {
     }
   });
 
-  ws.on('close', () => leaveRoom(ws));
+  ws.on('close', () => markAway(ws));   // dropped connections get a grace period; 'leave' leaves for real
 }
 
 setInterval(() => {
@@ -443,9 +550,18 @@ setInterval(() => {
     ws.meta.alive = false;
     try { ws.ping(); } catch (e) {}
   }
-}, 20000);
+}, 10000);
 
-server.listen(PORT, '0.0.0.0', () => {
+async function start() {
+  for (let attempt = 1; ; attempt++) {
+    try { await loadDb(); break; }
+    catch (e) { console.error(`Could not load the database (attempt ${attempt}): ${e.message}. Retrying in 5 s…`); await new Promise((r) => setTimeout(r, 5000)); }
+  }
+  console.log(`  Storage: ${STORAGE === 'upstash' ? 'Upstash Redis (permanent)' : 'file ' + DB_FILE}  ·  ${Object.keys(db.users).length} accounts`);
+  if (STORAGE === 'file' && process.env.RENDER) console.warn('  WARNING: on Render the file is wiped when the server sleeps. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN to keep accounts.');
+  server.listen(PORT, '0.0.0.0', onListen);
+}
+function onListen() {
   const ips = [];
   for (const list of Object.values(os.networkInterfaces())) {
     for (const a of list || []) if (a.family === 'IPv4' && !a.internal) ips.push(a.address);
@@ -455,4 +571,5 @@ server.listen(PORT, '0.0.0.0', () => {
   ips.forEach((ip) => console.log(`  On your Wi-Fi (LAN): http://${ip}:${PORT}`));
   console.log('\n  Open the LAN address on phones, iPads and other PCs on the same Wi-Fi.');
   console.log('  Press Ctrl+C to stop.\n');
-});
+}
+start();

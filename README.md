@@ -99,6 +99,34 @@ Run `npm start`, then use a tunnel such as **Cloudflare Tunnel** (`cloudflared t
 4. Wi-Fi is smoother than mobile data. Keep the game tab open and in front, since phones slow down hidden tabs.
 5. To test lag on purpose, add `?lag=100` to the link (extra delay in each direction, for testing only).
 
+## Keep accounts forever (Upstash, free) — do this on Render
+
+Render's free plan deletes the server's files whenever it sleeps (after ~15 minutes without visitors) or restarts. Without a database, every account would vanish after a few hours. Upstash Redis fixes this and is free.
+
+1. Go to https://upstash.com and sign up (Google or GitHub login works, no credit card).
+2. **Create Database → Redis**. Name it `pickle-rush`, pick the region **ap-southeast-1 (Singapore)** so it's next to your Render server, and choose the **Free** plan.
+3. Open the database and find the **REST API** section. Copy **UPSTASH_REDIS_REST_URL** and **UPSTASH_REDIS_REST_TOKEN**.
+4. On Render: open your service → **Environment** → **Add Environment Variable**. Add both, with exactly those names, and click **Save**. Render redeploys by itself.
+5. Check it worked: open `https://your-site.onrender.com/api/health`. It should say `"storage":"upstash"`. The server log also says `Storage: Upstash Redis (permanent)`.
+
+If those variables are missing on Render, the start screen shows a warning that accounts will be deleted on restart, and the server log prints a WARNING.
+
+On your own PC you don't need Upstash: accounts are saved in `data/db.json`.
+
+## Online multiplayer
+
+- Works from any internet connection once the server is on Render: create a room, then share the 4-letter code or the **Copy invite link** button.
+- 1v1 and 2v2 rooms. Empty slots are played by the AI.
+- The host's device runs the match. The ball, players, score, serve and game state are sent to everyone about 60 times a second, and your own player moves instantly on your screen.
+- **Reconnection:** if someone's connection drops, the match pauses with "Waiting for … to reconnect" and they get 30 seconds to come back to the same slot. Reloading the page during a match also rejoins automatically. After 30 seconds the AI takes their place. If the host drops, everyone waits for the host the same way.
+
+## Phones
+
+- The court resizes to fit any screen, upright or sideways, and the whole court stays visible.
+- Touch the left half of the screen anywhere to get the movement stick under your thumb. The big button on the right is **Hit**, and turns into **Serve** when it's your serve (tap to serve, hold for a power serve). The smaller buttons pick shots, or serves while you're serving.
+- The page can't scroll or zoom during a match. On Android, matches go fullscreen (turn this off in Settings).
+- Settings → Graphics: Auto lowers detail by itself on slower phones.
+
 ## If the game lags
 
 There are two different kinds of lag, and the **FPS** button in Settings shows which one you have.

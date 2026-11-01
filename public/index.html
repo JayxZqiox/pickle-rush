@@ -16,41 +16,22 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com/3.4.17"></script>
-<script>
-tailwind.config = { theme: { extend: { fontFamily: {
-  display: ['"Russo One"', 'Impact', 'system-ui', 'sans-serif'],
-  sans: ['Barlow', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif']
-}}}};
-</script>
 <style>
 :root{
-  --bg:#dfe8f2; --glass:rgba(247,250,253,.9); --panel:#ffffff; --panel2:#eef3f9;
-  --text:#0f1b33; --muted:#56647c; --line:rgba(15,27,51,.13);
-  --accent:#ff7a45; --accent-ink:#ffffff; --ball:#e8ff3d; --ball-ink:#243000;
-  --good:#15803d; --bad:#c62828; --kitchen:#26a65b;
-  --hud-bg:rgba(9,17,34,.88); --glass-solid:rgba(247,250,253,.97); --hud-text:#f6f9ff; --hud-muted:#9fb1cc;
-  color-scheme: light;
+  --bg:#070f1f; --glass:rgba(11,21,41,.9); --glass-solid:rgba(11,21,41,.97); --panel:#0f1b33; --panel2:#15243f;
+  --text:#eef3fb; --muted:#93a4bf; --line:rgba(255,255,255,.09);
+  --accent:#a6f23d; --accent2:#7fd61f; --accent-ink:#0b1702; --hot:#ff7a3d; --ball:#e8ff3d; --ball-ink:#243000;
+  --good:#4ade80; --bad:#f87171; --kitchen:#26a65b;
+  --hud-bg:rgba(7,14,29,.88); --hud-text:#f6f9ff; --hud-muted:#9fb1cc;
+  --radius:22px; --ease:cubic-bezier(.2,1.2,.3,1);
+  color-scheme: dark;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#08111f; --glass:rgba(13,22,40,.88); --panel:#121d33; --panel2:#18253f; --glass-solid:rgba(13,22,40,.97);
-    --text:#eef3fb; --muted:#97a6bf; --line:rgba(255,255,255,.11);
-    --accent:#ff8a5b; --accent-ink:#1a0b03; --good:#4ade80; --bad:#f87171;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#08111f; --glass:rgba(13,22,40,.88); --glass-solid:rgba(13,22,40,.97); --panel:#121d33; --panel2:#18253f;
-  --text:#eef3fb; --muted:#97a6bf; --line:rgba(255,255,255,.11);
-  --accent:#ff8a5b; --accent-ink:#1a0b03; --good:#4ade80; --bad:#f87171;
-  color-scheme: dark;
-}
 *{-webkit-tap-highlight-color:transparent;}
 html{height:100%; scroll-padding-top:env(safe-area-inset-top,0px); overscroll-behavior:none;}
-body{height:100%; margin:0; background:#0b1730; color:var(--text); font-family:Barlow,system-ui,sans-serif; overscroll-behavior:none; -webkit-text-size-adjust:100%;}
+html,body{position:fixed; inset:0; overflow:hidden; -webkit-touch-callout:none;}
+body{height:100%; margin:0; background:radial-gradient(120% 90% at 50% -10%, #13284d 0%, var(--bg) 60%); color:var(--text); font-family:Barlow,system-ui,sans-serif; overscroll-behavior:none; -webkit-text-size-adjust:100%;}
 #game{position:fixed; left:0; top:0; width:100vw; height:100vh; height:100dvh; display:block; touch-action:none;}
 .screen{position:fixed; inset:0; z-index:20; display:flex; align-items:center; justify-content:center; overflow-y:auto; overscroll-behavior:contain;
   padding:calc(env(safe-area-inset-top,0px) + 16px) 16px calc(env(safe-area-inset-bottom,0px) + 16px);
@@ -58,21 +39,32 @@ body{height:100%; margin:0; background:#0b1730; color:var(--text); font-family:B
 .screen.off{display:none !important;}
 .hidden{display:none !important;}   /* works even if the Tailwind CDN can't load (offline LAN) */
 .screen:not(.off) > .glass{animation:cardIn .42s cubic-bezier(.18,1.25,.32,1) both;}
+.screen:not(.off) > .glass > *{animation:fadeUp .45s var(--ease) both;}
+.screen:not(.off) > .glass > *:nth-child(2){animation-delay:.04s} .screen:not(.off) > .glass > *:nth-child(3){animation-delay:.08s}
+.screen:not(.off) > .glass > *:nth-child(4){animation-delay:.12s} .screen:not(.off) > .glass > *:nth-child(5){animation-delay:.16s}
+.screen:not(.off) > .glass > *:nth-child(n+6){animation-delay:.2s}
+@keyframes fadeUp{from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none}}
 @keyframes cardIn{from{opacity:0; transform:translateY(14px) scale(.965)} to{opacity:1; transform:none}}
-.glass{background:var(--glass-solid); border:1px solid var(--line); box-shadow:0 30px 80px -24px rgba(3,10,25,.6);}
+.glass{background:linear-gradient(180deg, rgba(20,36,66,.97), var(--glass-solid)); border:1px solid rgba(166,242,61,.12);
+  box-shadow:0 30px 80px -24px rgba(0,0,0,.75), inset 0 1px 0 rgba(255,255,255,.05);}
 @media (hover:hover) and (pointer:fine){ .glass{background:var(--glass); -webkit-backdrop-filter:blur(14px) saturate(1.2); backdrop-filter:blur(14px) saturate(1.2);} }
-.tile{background:var(--panel); border:1px solid var(--line); transition:border-color .15s, transform .08s;}
-@media (hover:hover){ .tile:hover{border-color:color-mix(in srgb, var(--accent) 60%, var(--line));} }
-button{transition:transform .08s ease, filter .15s; touch-action:manipulation; -webkit-user-select:none; user-select:none; cursor:pointer;}
-button:active{transform:scale(.97);}
+.tile{background:linear-gradient(180deg, var(--panel2), var(--panel)); border:1px solid var(--line);
+  transition:border-color .2s, transform .18s var(--ease), box-shadow .2s;}
+@media (hover:hover){ button.tile:hover:not(:disabled){border-color:rgba(166,242,61,.55); transform:translateY(-2px); box-shadow:0 10px 24px -14px rgba(166,242,61,.55);} }
+button{transition:transform .14s var(--ease), filter .15s, background-color .15s, color .15s; touch-action:manipulation; -webkit-user-select:none; user-select:none; cursor:pointer;}
+button:active:not(:disabled){transform:scale(.96) !important;}
 button:disabled{opacity:.5; cursor:default;}
 button:focus-visible, input:focus-visible{outline:3px solid var(--accent); outline-offset:2px;}
 input{font-size:16px;} /* stops iOS zooming into inputs */
-.primary{background:var(--accent); color:var(--accent-ink); box-shadow:0 8px 22px -10px var(--accent);}
-@media (hover:hover){ .primary:hover{filter:brightness(1.07);} }
-.chip-on{background:var(--text) !important; color:var(--bg) !important; border-color:var(--text) !important;}
-.seg{display:flex; border:1px solid var(--line); border-radius:12px; padding:3px; background:var(--panel2);}
-.seg>button{flex:1; padding:6px 10px; border-radius:9px; font-weight:700; font-size:14px;}
+.primary{position:relative; overflow:hidden; background:linear-gradient(180deg, #bdff55, var(--accent) 45%, var(--accent2)); color:var(--accent-ink);
+  box-shadow:0 10px 26px -12px rgba(166,242,61,.9), inset 0 1px 0 rgba(255,255,255,.45);}
+.primary::after{content:""; position:absolute; inset:0; background:linear-gradient(105deg, transparent 35%, rgba(255,255,255,.45) 50%, transparent 65%); transform:translateX(-120%);}
+@media (hover:hover){ .primary:hover:not(:disabled){transform:translateY(-2px); filter:brightness(1.05);} .primary:hover::after{transform:translateX(120%); transition:transform .7s ease;} }
+.hot{color:var(--hot);}
+.chip-on{background:var(--accent) !important; color:var(--accent-ink) !important; border-color:var(--accent) !important; box-shadow:0 6px 18px -10px rgba(166,242,61,.9);}
+.seg{display:flex; border:1px solid var(--line); border-radius:14px; padding:4px; background:rgba(0,0,0,.25);}
+.seg>button{flex:1; padding:7px 10px; border-radius:10px; font-weight:700; font-size:14px; color:var(--muted);}
+@media (hover:hover){ .seg>button:hover:not(.chip-on){color:var(--text); background:rgba(255,255,255,.05);} }
 #toast{position:fixed; left:50%; top:24%; z-index:15; pointer-events:none; text-align:center; opacity:0;
   transform:translate(-50%,-10px) scale(.9); transition:opacity .18s ease, transform .26s cubic-bezier(.2,1.5,.4,1);}
 #toast.show{opacity:1; transform:translate(-50%,0) scale(1);}
@@ -99,7 +91,7 @@ input{font-size:16px;} /* stops iOS zooming into inputs */
   border-left:1px solid rgba(255,255,255,.08); border-right:1px solid rgba(255,255,255,.08); pointer-events:auto;}
 .sbClock{font-family:"Russo One",Impact,sans-serif; font-size:18px; line-height:1; font-variant-numeric:tabular-nums;}
 .sbCall{font-size:12px; font-weight:800; letter-spacing:.05em; color:var(--hud-muted); font-variant-numeric:tabular-nums; white-space:nowrap;}
-.sbTag{font-size:10px; font-weight:800; letter-spacing:.08em; padding:1px 6px; border-radius:6px; background:var(--accent); color:#1a0b03; white-space:nowrap;}
+.sbTag{font-size:10px; font-weight:800; letter-spacing:.08em; padding:1px 6px; border-radius:6px; background:var(--hot); color:#1a0b03; white-space:nowrap;}
 .sbRow{display:flex; align-items:center; gap:6px;}
 .sbPause{width:26px; height:22px; border-radius:7px; background:rgba(255,255,255,.12); font-weight:800; font-size:11px; color:var(--hud-text);}
 .sbPing{font-size:10px; font-weight:800;}
@@ -136,34 +128,253 @@ input{font-size:16px;} /* stops iOS zooming into inputs */
 .kbd{font-family:Barlow,system-ui,sans-serif; font-weight:800; min-width:64px; padding:6px 10px; border-radius:10px; border:1px solid var(--line); background:var(--panel2);}
 .kbd.wait{background:var(--accent); color:var(--accent-ink);}
 /* touch layout */
-#touch{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 14px);}
-#touch .tbtn.skill{width:62px; height:46px; font-size:14px;}
-#hitBtn{width:96px; height:96px;}
-#serveBtn{position:fixed; left:50%; transform:translateX(-50%); bottom:calc(env(safe-area-inset-bottom,0px) + 150px); z-index:12;}
-#serveBtn:active{transform:translateX(-50%) scale(.96);}
-#touch.big .tbtn.skill{width:72px; height:54px;} #touch.big #hitBtn{width:112px; height:112px;} #touch.big #joy{width:150px; height:150px;}
+/* touch controls: a floating stick on the left half, Hit/Serve under the right thumb */
+#joyZone{position:fixed; left:0; bottom:0; width:50vw; height:68vh; z-index:11; touch-action:none;}
+#joy{position:fixed; z-index:12; pointer-events:none; width:var(--joy); height:var(--joy); left:calc(env(safe-area-inset-left,0px) + 20px); bottom:calc(env(safe-area-inset-bottom,0px) + 18px); opacity:.55; transition:opacity .15s;}
+#joy.live{opacity:.95; transition:none;}
+#touchR{position:fixed; z-index:12; right:calc(env(safe-area-inset-right,0px) + 14px); bottom:calc(env(safe-area-inset-bottom,0px) + 14px); display:flex; align-items:flex-end; gap:8px;}
+#touch{--joy:clamp(104px, 26vmin, 150px); --hit:clamp(86px, 22vmin, 124px); --skw:clamp(54px, 13vmin, 76px); --skh:clamp(42px, 10vmin, 56px);}
+#touch.big{--joy:clamp(120px, 30vmin, 170px); --hit:clamp(100px, 26vmin, 140px); --skw:clamp(62px, 15vmin, 86px); --skh:clamp(48px, 11.5vmin, 62px);}
+#touch .tbtn.skill{width:var(--skw); height:var(--skh); font-size:clamp(12px, 3.2vmin, 15px);}
+#hitBtn{width:var(--hit); height:var(--hit); font-size:clamp(17px, 4.6vmin, 24px);}
+#hitBtn.serve{animation:servePulse 1.2s ease-in-out infinite;}
+@keyframes servePulse{0%,100%{box-shadow:0 10px 26px -12px rgba(166,242,61,.9), 0 0 0 0 rgba(166,242,61,.55)} 50%{box-shadow:0 10px 26px -12px rgba(166,242,61,.9), 0 0 0 12px rgba(166,242,61,0)}}
+#serveBtn{display:none !important;}
+#hint{pointer-events:none;}
+body.touchui #hint{left:auto !important; right:calc(env(safe-area-inset-right,0px) + 14px) !important; transform:none !important;
+  bottom:calc(env(safe-area-inset-bottom,0px) + var(--hitpx, 110px) + 26px) !important; max-width:min(56vw, 420px); white-space:normal !important;
+  font-size:12px !important; line-height:1.3; text-align:right; padding:6px 12px !important; border-radius:14px !important;}
+body.touchui #rotTip{top:auto !important; bottom:calc(env(safe-area-inset-bottom,0px) + var(--hitpx, 110px) + 26px); left:14px !important; transform:none !important; max-width:44vw; font-size:12px; border-radius:14px;}
+@media (orientation: landscape) and (max-height: 500px){
+  #callBanner{right:auto; left:calc(env(safe-area-inset-left,0px) + 14px); top:24%; transform:translateX(-14px) scale(.94);}
+  #cbNum{font-size:24px !important;}
+}
+@media (orientation: portrait){
+  #callBanner{right:auto; left:50%; top:calc(env(safe-area-inset-top,0px) + 76px); transform:translateX(-50%) scale(.94);}
+  #callBanner.show{transform:translateX(-50%);}
+  #cbNum{font-size:22px !important;} #cbSub{font-size:11px !important;}
+}
 @media (max-width: 640px){
   .screen{align-items:flex-start; padding:calc(env(safe-area-inset-top,0px) + 10px) 10px calc(env(safe-area-inset-bottom,0px) + 10px);}
   .screen > .glass{margin:auto 0; border-radius:22px; padding:14px;}
   #s-menu h1{font-size:clamp(26px,7vw,34px);}
-  #joy{width:clamp(96px,28vw,132px); height:clamp(96px,28vw,132px);}
-  #touch .tbtn.skill{width:clamp(50px,14vw,62px); height:clamp(40px,11vw,46px); font-size:13px;}
-  #hitBtn{width:clamp(80px,23vw,96px); height:clamp(80px,23vw,96px);}
   #hint{bottom:calc(env(safe-area-inset-bottom,0px) + 150px) !important; font-size:13px; white-space:nowrap;}
 }
 @media (max-height: 500px) and (orientation: landscape){
   .screen{padding:8px; align-items:flex-start;}
   .screen > .glass{padding:10px 14px;}
-  #joy{width:96px;height:96px;}
-  #touch .tbtn.skill{height:38px;}
-  #hitBtn{width:80px;height:80px;}
-  #serveBtn{bottom:calc(env(safe-area-inset-bottom,0px) + 14px);}
   #hint{bottom:calc(env(safe-area-inset-bottom,0px) + 70px) !important;}
 }
 @media (prefers-reduced-motion: reduce){
+  .screen:not(.off) > .glass > *{animation:none;}
   .pulse,.logo-ball,.pop,.screen:not(.off) > .glass{animation:none;}
   #toast{transition:none;}
 }
+</style>
+<style id="utilities">
+/* base reset (replaces Tailwind's preflight) */
+*,::before,::after{box-sizing:border-box;border-width:0;border-style:solid;border-color:currentColor}
+html{line-height:1.5;-webkit-text-size-adjust:100%;tab-size:4}
+body{margin:0;line-height:inherit}
+h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit;margin:0}
+p,dl,dd,ol,ul,blockquote,figure{margin:0}
+ol,ul{list-style:none;padding:0}
+a{color:inherit;text-decoration:inherit}
+b,strong{font-weight:bolder}
+button,input,select,textarea{font-family:inherit;font-size:100%;font-weight:inherit;line-height:inherit;color:inherit;margin:0;padding:0}
+button{-webkit-appearance:button;background-color:transparent;background-image:none;cursor:pointer}
+img,svg,video,canvas{display:block;vertical-align:middle}
+input::placeholder{opacity:1;color:#8492a6}
+[hidden]{display:none}
+/* utilities used by the game (generated) */
+.-translate-x-1\/2{transform:translateX(-50%)}
+.absolute{position:absolute}
+.align-\[-3px\]{vertical-align:-3px}
+.bg-\[var\(--accent\)\]{background-color:var(--accent)}
+.bg-\[var\(--ball\)\]{background-color:var(--ball)}
+.bg-\[var\(--muted\)\]{background-color:var(--muted)}
+.bg-\[var\(--panel\)\]{background-color:var(--panel)}
+.bg-\[var\(--panel2\)\]{background-color:var(--panel2)}
+.bg-white\/85{background-color:rgba(255,255,255,.85)}
+.block{display:block}
+.border-\[3px\]{border-width:3px;border-style:solid}
+.border-\[var\(--accent\)\]{border-color:var(--accent)}
+.border-\[var\(--line\)\]{border-color:var(--line)}
+.border-dashed{border-style:dashed}
+.bottom-0{bottom:0}
+.content-start{align-content:flex-start}
+.decoration-2{text-decoration-thickness:2px}
+.decoration-\[var\(--accent\)\]{text-decoration-color:var(--accent)}
+.fixed{position:fixed}
+.flex{display:flex}
+.flex-1{flex:1 1 0%}
+.flex-col{flex-direction:column}
+.flex-wrap{flex-wrap:wrap}
+.font-bold{font-weight:700}
+.font-display{font-family:"Russo One",Impact,system-ui,sans-serif}
+.font-extrabold{font-weight:800}
+.font-medium{font-weight:500}
+.font-semibold{font-weight:600}
+.gap-1\.5{gap:0.375rem}
+.gap-2{gap:0.5rem}
+.gap-2\.5{gap:0.625rem}
+.gap-3{gap:0.75rem}
+.gap-4{gap:1rem}
+.gap-5{gap:1.25rem}
+.gap-x-3{column-gap:0.75rem}
+.gap-x-4{column-gap:1rem}
+.gap-y-1{row-gap:0.25rem}
+.gap-y-1\.5{row-gap:0.375rem}
+.grid{display:grid}
+.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid-cols-\[auto_1fr\]{grid-template-columns:auto 1fr}
+.h-3{height:0.75rem}
+.h-9{height:2.25rem}
+.h-\[100px\]{height:100px}
+.h-\[112px\]{height:112px}
+.h-\[132px\]{height:132px}
+.h-\[270px\]{height:270px}
+.h-\[46\%\]{height:46%}
+.h-\[52px\]{height:52px}
+.h-\[76px\]{height:76px}
+.hidden{display:none}
+.inline-block{display:inline-block}
+.inset-x-0{left:0;right:0}
+.items-baseline{align-items:baseline}
+.items-center{align-items:center}
+.items-end{align-items:flex-end}
+.items-start{align-items:flex-start}
+.justify-between{justify-content:space-between}
+.justify-center{justify-content:center}
+.leading-none{line-height:1}
+.left-1\/2{left:50%}
+.list-decimal{list-style-type:decimal}
+.max-h-\[180px\]{max-height:180px}
+.max-h-\[220px\]{max-height:220px}
+.max-h-\[260px\]{max-height:260px}
+.max-h-\[58vh\]{max-height:58vh}
+.max-h-\[66vh\]{max-height:66vh}
+.max-w-\[340px\]{max-width:340px}
+.max-w-\[380px\]{max-width:380px}
+.max-w-\[420px\]{max-width:420px}
+.max-w-\[460px\]{max-width:460px}
+.max-w-\[470px\]{max-width:470px}
+.max-w-\[480px\]{max-width:480px}
+.max-w-\[500px\]{max-width:500px}
+.max-w-\[540px\]{max-width:540px}
+.max-w-\[640px\]{max-width:640px}
+.max-w-\[820px\]{max-width:820px}
+.max-w-\[860px\]{max-width:860px}
+.mb-1{margin-bottom:0.25rem}
+.mb-1\.5{margin-bottom:0.375rem}
+.mb-2{margin-bottom:0.5rem}
+.min-h-\[16px\]{min-height:16px}
+.min-h-\[20px\]{min-height:20px}
+.min-w-0{min-width:0}
+.min-w-\[160px\]{min-width:160px}
+.mt-0\.5{margin-top:0.125rem}
+.mt-1{margin-top:0.25rem}
+.mt-1\.5{margin-top:0.375rem}
+.mt-2{margin-top:0.5rem}
+.mt-3{margin-top:0.75rem}
+.mt-4{margin-top:1rem}
+.mt-5{margin-top:1.25rem}
+.mt-6{margin-top:1.5rem}
+.opacity-60{opacity:0.6}
+.opacity-80{opacity:0.8}
+.opacity-85{opacity:0.85}
+.opacity-90{opacity:0.9}
+.overflow-hidden{overflow:hidden}
+.overflow-y-auto{overflow-y:auto}
+.p-2\.5{padding:0.625rem}
+.p-3{padding:0.75rem}
+.p-3\.5{padding:0.875rem}
+.p-4{padding:1rem}
+.p-5{padding:1.25rem}
+.p-6{padding:1.5rem}
+.pl-5{padding-left:1.25rem}
+.pointer-events-auto{pointer-events:auto}
+.pointer-events-none{pointer-events:none}
+.pr-1{padding-right:0.25rem}
+.px-1{padding-left:0.25rem;padding-right:0.25rem}
+.px-1\.5{padding-left:0.375rem;padding-right:0.375rem}
+.px-2{padding-left:0.5rem;padding-right:0.5rem}
+.px-3{padding-left:0.75rem;padding-right:0.75rem}
+.px-4{padding-left:1rem;padding-right:1rem}
+.px-5{padding-left:1.25rem;padding-right:1.25rem}
+.px-8{padding-left:2rem;padding-right:2rem}
+.py-0\.5{padding-top:0.125rem;padding-bottom:0.125rem}
+.py-1{padding-top:0.25rem;padding-bottom:0.25rem}
+.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}
+.py-2{padding-top:0.5rem;padding-bottom:0.5rem}
+.py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem}
+.py-3{padding-top:0.75rem;padding-bottom:0.75rem}
+.py-3\.5{padding-top:0.875rem;padding-bottom:0.875rem}
+.py-4{padding-top:1rem;padding-bottom:1rem}
+.relative{position:relative}
+.rounded-2xl{border-radius:1rem}
+.rounded-\[30px\]{border-radius:30px}
+.rounded-full{border-radius:9999px}
+.rounded-lg{border-radius:.5rem}
+.rounded-md{border-radius:.375rem}
+.rounded-xl{border-radius:.75rem}
+.select-none{-webkit-user-select:none;user-select:none}
+.self-start{align-self:flex-start}
+.shadow-2xl{box-shadow:0 25px 50px -12px rgba(0,0,0,.25)}
+.shrink-0{flex-shrink:0}
+.tabular-nums{font-variant-numeric:tabular-nums}
+.text-2xl{font-size:1.5rem;line-height:2rem}
+.text-3xl{font-size:1.875rem;line-height:2.25rem}
+.text-\[\#243000\]{color:#243000}
+.text-\[11px\]{font-size:11px}
+.text-\[13px\]{font-size:13px}
+.text-\[15px\]{font-size:15px}
+.text-\[30px\]{font-size:30px}
+.text-\[34px\]{font-size:34px}
+.text-\[38px\]{font-size:38px}
+.text-\[42px\]{font-size:42px}
+.text-\[44px\]{font-size:44px}
+.text-\[48px\]{font-size:48px}
+.text-\[58px\]{font-size:58px}
+.text-\[60px\]{font-size:60px}
+.text-\[var\(--accent-ink\)\]{color:var(--accent-ink)}
+.text-\[var\(--hud-muted\)\]{color:var(--hud-muted)}
+.text-\[var\(--muted\)\]{color:var(--muted)}
+.text-\[var\(--text\)\]{color:var(--text)}
+.text-center{text-align:center}
+.text-left{text-align:left}
+.text-lg{font-size:1.125rem;line-height:1.75rem}
+.text-right{text-align:right}
+.text-sm{font-size:.875rem;line-height:1.25rem}
+.text-white{color:#fff}
+.text-white\/90{color:rgba(255,255,255,.9)}
+.text-xl{font-size:1.25rem;line-height:1.75rem}
+.text-xs{font-size:.75rem;line-height:1rem}
+.top-0{top:0}
+.top-1\/2{top:50%}
+.tracking-\[\.12em\]{letter-spacing:.12em}
+.tracking-\[\.3em\]{letter-spacing:.3em}
+.tracking-tight{letter-spacing:-.025em}
+.tracking-widest{letter-spacing:.1em}
+.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.underline{text-decoration-line:underline}
+.underline-offset-4{text-underline-offset:4px}
+.uppercase{text-transform:uppercase}
+.w-12{width:3rem}
+.w-14{width:3.5rem}
+.w-3{width:0.75rem}
+.w-5{width:1.25rem}
+.w-7{width:1.75rem}
+.w-9{width:2.25rem}
+.w-\[132px\]{width:132px}
+.w-\[46\%\]{width:46%}
+.w-\[60px\]{width:60px}
+.w-\[76px\]{width:76px}
+.w-full{width:100%}
+.z-10{z-index:10}
+.z-30{z-index:30}
+@media (min-width:640px){.sm\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.sm\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.sm\:grid-cols-\[250px_1fr\]{grid-template-columns:250px 1fr}.sm\:p-6{padding:1.5rem}}
 </style>
 </head>
 <body class="overflow-hidden select-none">
@@ -215,7 +426,7 @@ input{font-size:16px;} /* stops iOS zooming into inputs */
         </div>
       </div>
       <button data-act="rank" class="text-right px-1 shrink-0" aria-label="Open ranking">
-        <div id="mMmr" class="font-display text-[38px] leading-none tabular-nums">0</div>
+        <div id="mMmr" class="font-display text-[38px] leading-none tabular-nums hot">0</div>
         <div class="text-xs font-semibold text-[var(--muted)] mt-1">MMR</div>
       </button>
     </div>
@@ -301,7 +512,7 @@ input{font-size:16px;} /* stops iOS zooming into inputs */
     <p class="text-[var(--muted)] mt-1">Two players per side. Partners cover their own half of the court.</p>
     <div class="mt-4 grid gap-2.5">
       <button data-act="duoPick" data-m="duo-ai" class="tile rounded-2xl p-4 text-left">
-        <div class="flex items-center justify-between"><span class="font-display text-xl">You + AI partner</span><span class="text-sm font-bold" style="color:var(--good)">Ranked</span></div>
+        <div class="flex items-center justify-between"><span class="font-display text-xl">You + AI partner</span><span class="text-sm font-bold hot">Ranked</span></div>
         <div class="text-sm text-[var(--muted)] mt-1">Team up with Ace against an AI pair.</div>
       </button>
       <button data-act="duoPick" data-m="duo-coop" class="tile rounded-2xl p-4 text-left">
@@ -459,7 +670,7 @@ input{font-size:16px;} /* stops iOS zooming into inputs */
       </div>
       <div class="flex items-center justify-between gap-3 flex-wrap">
         <div><div class="font-bold">Shake, sound and FPS</div><div class="text-sm text-[var(--muted)]">FPS shows your frame rate (and ping online) in the corner</div></div>
-        <div class="flex gap-2"><button id="optShake" data-act="optToggle" data-k="shake" class="tile rounded-xl px-3 py-1.5 font-bold">Shake</button><button id="optSound" data-act="sound" class="tile rounded-xl px-3 py-1.5 font-bold">Sound</button><button id="optFps" data-act="optToggle" data-k="fps" class="tile rounded-xl px-3 py-1.5 font-bold">FPS</button></div>
+        <div class="flex gap-2"><button id="optShake" data-act="optToggle" data-k="shake" class="tile rounded-xl px-3 py-1.5 font-bold">Shake</button><button id="optSound" data-act="sound" class="tile rounded-xl px-3 py-1.5 font-bold">Sound</button><button id="optFps" data-act="optToggle" data-k="fps" class="tile rounded-xl px-3 py-1.5 font-bold">FPS</button><button id="optFull" data-act="optToggle" data-k="fullscreen" class="tile rounded-xl px-3 py-1.5 font-bold">Fullscreen</button></div>
       </div>
       <div class="flex items-center justify-between gap-3">
         <div><div class="font-bold">Gamepads</div><div id="padInfo" class="text-sm text-[var(--muted)]">Press any button on a gamepad to connect it.</div></div>
@@ -584,6 +795,7 @@ input{font-size:16px;} /* stops iOS zooming into inputs */
   </div>
 </div>
 <div id="ctrlBtns" class="hidden"></div>
+<div id="netWarn" class="hidden fixed left-1/2 -translate-x-1/2 z-30 hud rounded-full px-4 py-2 text-sm font-bold pulse pointer-events-none" style="top:calc(env(safe-area-inset-top,0px) + 74px); color:#fde047">Reconnecting…</div>
 <div id="fpsBox" class="fixed z-30 hidden pointer-events-none hud rounded-lg px-2 py-1 text-xs font-bold tabular-nums" style="left:8px; top:calc(env(safe-area-inset-top,0px) + 6px)">60 fps</div>
 <div id="toast"><div id="tTitle" class="font-display text-white text-[44px] leading-none" style="text-shadow:0 4px 24px rgba(0,0,0,.6)"></div><div id="tSub" class="text-white/90 font-semibold mt-2 text-lg" style="text-shadow:0 2px 10px rgba(0,0,0,.7)"></div></div>
 <div id="callBanner"><div class="hud rounded-2xl px-4 py-2.5"><div id="cbNum" class="font-display text-[30px] leading-none tabular-nums"></div><div id="cbSub" class="text-[13px] font-semibold text-[var(--hud-muted)] mt-1.5"></div></div></div>
@@ -592,20 +804,19 @@ input{font-size:16px;} /* stops iOS zooming into inputs */
 
 <!-- ============ TOUCH ============ -->
 <button id="serveBtn" data-t="serve" class="tbtn primary hidden rounded-full px-8 h-[52px] font-display text-lg shadow-2xl">Serve</button>
-<div id="touch" class="fixed inset-x-0 bottom-0 z-10 hidden pointer-events-none">
-  <div class="flex items-end justify-between px-4 gap-3">
-    <div id="joy" class="pointer-events-auto relative w-[132px] h-[132px] rounded-full hud opacity-90 shrink-0" aria-label="Movement pad">
-      <div id="knob" class="absolute left-1/2 top-1/2 w-[46%] h-[46%] rounded-full bg-white/85" style="transform:translate(-50%,-50%)"></div>
+<div id="touch" class="hidden">
+  <div id="joyZone" aria-label="Movement: touch and drag anywhere on the left side"></div>
+  <div id="joy" class="rounded-full hud">
+    <div id="knob" class="absolute left-1/2 top-1/2 w-[46%] h-[46%] rounded-full bg-white/85" style="transform:translate(-50%,-50%)"></div>
+  </div>
+  <div id="touchR">
+    <div class="grid grid-cols-2 gap-1.5">
+      <button data-t="slice" class="tbtn skill hud rounded-xl font-bold">Slice</button>
+      <button data-t="curve" class="tbtn skill hud rounded-xl font-bold">Curve</button>
+      <button data-t="dink" class="tbtn skill hud rounded-xl font-bold">Dink</button>
+      <button data-t="spike" class="tbtn skill hud rounded-xl font-bold">Spike</button>
     </div>
-    <div class="pointer-events-auto flex items-end gap-2">
-      <div class="grid grid-cols-2 gap-1.5">
-        <button data-t="slice" class="tbtn skill hud rounded-xl font-bold">Slice</button>
-        <button data-t="curve" class="tbtn skill hud rounded-xl font-bold">Curve</button>
-        <button data-t="dink" class="tbtn skill hud rounded-xl font-bold">Dink</button>
-        <button data-t="spike" class="tbtn skill hud rounded-xl font-bold">Spike</button>
-      </div>
-      <button id="hitBtn" data-t="hit" class="tbtn rounded-full font-display text-xl primary">Hit</button>
-    </div>
+    <button id="hitBtn" data-t="hit" class="tbtn rounded-full font-display primary">Hit</button>
   </div>
 </div>
 <script src="catalog.js"></script>
@@ -671,7 +882,7 @@ const DEF_BINDS = {
 };
 const DEF = { p1:{ name:'Player 1', gender:'boy', skin:1, hair:0, hairStyle:'short' },
   p2:{ name:'Player 2', gender:'girl', skin:0, hair:1, hairStyle:'ponytail', equip:{ head:'head_none', top:'tee_blue', bottom:'shorts_black', shoes:'sneak_black', paddle:'pad_wood', ball:'ball_classic' } },
-  bestRally:0, sound:true, binds:JSON.parse(JSON.stringify(DEF_BINDS)), opts:{ meter:'normal', swing:'auto', touch:'normal', shake:true, gfx:'auto', fps:false },
+  bestRally:0, sound:true, binds:JSON.parse(JSON.stringify(DEF_BINDS)), opts:{ meter:'normal', swing:'auto', touch:'normal', shake:true, gfx:'auto', fps:false, fullscreen:true },
   localAcc:null, token:null };
 const clone = o => JSON.parse(JSON.stringify(o));
 function load(){
@@ -717,7 +928,7 @@ async function detectServer(){
     const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 2500);
     const r = await fetch('api/health', { signal:ctl.signal, cache:'no-store' }); clearTimeout(to);
     const j = await r.json();
-    ACC.server = !!(j && j.ok && j.game === 'pickle-rush');
+    ACC.server = !!(j && j.ok && j.game === 'pickle-rush'); ACC.temporary = !!(j && j.temporary);
   } catch (e) { ACC.server = false; }
   ACC.checked = true;
   if (ACC.server && data.token){
@@ -837,14 +1048,21 @@ const rectOf = cv2 => cv2._r || (cv2._r = { width:cv2.clientWidth, height:cv2.cl
 function invalidateRects(){ for (const k of document.getElementsByTagName('canvas')) k._r = null; }
 function resize(){
   DPR = Math.min(GFX.cap, window.devicePixelRatio || 1);
-  VW = document.documentElement.clientWidth || window.innerWidth;
-  VH = Math.round((window.visualViewport && window.visualViewport.height) || document.documentElement.clientHeight || window.innerHeight);
+  const vv = window.visualViewport;
+  VW = Math.round((vv && vv.width) || window.innerWidth || document.documentElement.clientWidth);
+  VH = Math.round((vv && vv.height) || window.innerHeight || document.documentElement.clientHeight);
+  // the canvas is sized to exactly what is visible, so the court can never end up in a corner
   cv.width = Math.round(VW * DPR); cv.height = Math.round(VH * DPR);
-  const top = 88, bottom = isTouch ? 44 : 26, avail = VH - top - bottom;
-  const F = Math.min(avail / .645, VW * 1.15);
+  cv.style.width = VW + 'px'; cv.style.height = VH + 'px';
+  // taller screens (phones held upright) get a higher camera so the court fills the space
+  CAM.H = clamp(5.5 + (VH / VW - .55) * 4.2, 5.5, 10.5);
+  const dyN = CAM.D - 1.2, dyF = CAM.D + L + .9;
+  const content = CAM.H * (1 / dyN - 1 / dyF) + 1.9 / dyF;        // near feet to the far player's head, per unit of F
+  const top = VH < 500 ? 78 : 92, bottom = isTouch ? (VH < 500 ? 10 : 24) : 22, avail = Math.max(120, VH - top - bottom);
+  const F = Math.min(avail / content, VW * 1.2);                   // whole court visible, both ways
   CAM.F = F; CAM.baseCx = CAM.cx = VW / 2;
-  const bottomY = VH - bottom - Math.max(0, (avail - .645 * F) / 2);
-  CAM.hy = bottomY - CAM.H * F / (CAM.D - 1.2);
+  const bottomY = VH - bottom - Math.max(0, (avail - content * F) / 2);
+  CAM.hy = bottomY - CAM.H * F / dyN;
   buildCrowd(); invalidateRects();
 }
 function projRaw(x, y, z){ const dy = Math.max(.5, y + CAM.D), s = CAM.F / dy; return [CAM.cx + x * s, CAM.hy + (CAM.H - z) * s, s]; }
@@ -1665,7 +1883,7 @@ function showRewards(r){
   if (r.skills && r.skills.length) lines.push(`<div class="font-semibold">New skill: ${r.skills.map(k => LABEL[k]).join(', ')}</div>`);
   if (r.unlockedAi && AIS[r.unlockedAi]) lines.push(`<div class="font-semibold">New opponent unlocked: ${esc(AIS[r.unlockedAi].name)}</div>`);
   if (r.newItems) lines.push(`<div class="text-sm text-[var(--muted)]">${r.newItems} new item${r.newItems > 1 ? 's' : ''} in the shop</div>`);
-  el.innerHTML = `<div class="flex items-center justify-between font-bold"><span><span style="color:#c79a00">+${r.coins}</span> coins</span><span><span style="color:var(--accent)">+${r.xp}</span> XP</span><span class="text-sm text-[var(--muted)]">Lv ${lv.level} · ${lv.into}/${lv.need}</span></div>
+  el.innerHTML = `<div class="flex items-center justify-between font-bold"><span><span style="color:#f5c542">+${r.coins}</span> coins</span><span><span style="color:var(--accent)">+${r.xp}</span> XP</span><span class="text-sm text-[var(--muted)]">Lv ${lv.level} · ${lv.into}/${lv.need}</span></div>
     <div class="bar mt-2" style="background:var(--line)"><i style="background:var(--accent); width:${Math.round(lv.into / lv.need * 100)}%"></i></div>${lines.join('')}`;
   el.classList.remove('hidden');
 }
@@ -2139,8 +2357,10 @@ function updateHUD(){
   $('#netBadge').classList.toggle('hidden', G.mode !== 'online');
   const tOn = touchOn();
   $('#touch').classList.toggle('hidden', !tOn); $('#touch').classList.toggle('big', data.opts.touch === 'big');
+  if (document.body.classList.contains('touchui') !== tOn){ document.body.classList.toggle('touchui', tOn); if (tOn) requestAnimationFrame(() => { const h = $('#hitBtn').offsetHeight; if (h) document.body.style.setProperty('--hitpx', h + 'px'); }); }
   const me = meP();
-  $('#serveBtn').classList.toggle('hidden', !(tOn && G.state === 'serve' && me && G.serverP === me));
+  const serveNow = tOn && G.state === 'serve' && me && G.serverP === me && !G.serveDrop;
+  const hb = $('#hitBtn'); if (hb.classList.contains('serve') !== !!serveNow){ hb.classList.toggle('serve', !!serveNow); hb.textContent = serveNow ? 'Serve' : 'Hit'; }
   if (!inGame || !G.players.length){ $('#hint').classList.add('hidden'); return; }
   const rally = G.mode === 'rally';
   const n1 = sbNames(1), n2 = sbNames(2), e1 = $('#sbN1'), e2 = $('#sbN2');
@@ -2174,7 +2394,7 @@ function updateHUD(){
   $('#hint').classList.toggle('hidden', !showHint);
   if (showHint){
     const bs = data.binds[s.human.set], st = SERVE_NAME[s.serveType || 'volley'];
-    setTxt('#hint', tOn ? `${st} · pick Volley, Curve or Drop, then tap Serve` : `${st} · ${keyName(bs.slice)} volley · ${keyName(bs.curve)} curve · ${keyName(bs.dink)} drop · hold ${keyName(bs.hit)} and release to serve`);
+    setTxt('#hint', tOn ? `${st} · tap Serve, hold for power` : `${st} · ${keyName(bs.slice)} volley · ${keyName(bs.curve)} curve · ${keyName(bs.dink)} drop · hold ${keyName(bs.hit)} and release to serve`);
   }
 }
 function popEl(el){ el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
@@ -2209,7 +2429,7 @@ function show(id){
 }
 let rotTimer = 0;
 function playGame(mode, diff){
-  ensureAudio(); startMatch(mode, diff); show(null);
+  ensureAudio(); goFullscreen(); startMatch(mode, diff); show(null);
   if (isTouch && VH > VW){ $('#rotTip').classList.remove('hidden'); clearTimeout(rotTimer); rotTimer = setTimeout(() => $('#rotTip').classList.add('hidden'), 4000); }
 }
 function refreshMenu(){
@@ -2233,7 +2453,7 @@ function refreshMenu(){
 function renderGate(){
   const ok = ACC.server, chk = ACC.checked;
   $('#gLogin').disabled = !ok; $('#gSignup').disabled = !ok;
-  $('#gNote').textContent = !chk ? 'Checking for the server…' : ok ? 'Anonymous progress stays in this browser. An account keeps it on the server and puts you on the leaderboard.' : 'No server found, so accounts are off. Anonymous progress is saved in this browser.';
+  $('#gNote').textContent = !chk ? 'Checking for the server…' : ok ? (ACC.temporary ? '⚠ This server has no permanent database yet, so accounts are deleted whenever it restarts. The owner needs to connect Upstash (see README).' : 'Anonymous progress stays in this browser. An account keeps it on the server and puts you on the leaderboard.') : 'No server found, so accounts are off. Anonymous progress is saved in this browser.';
 }
 function renderDiff(){
   const m = G.pendingMode || '1p', ranked = RANKED(m), a = getAcc() || ensureLocal(), mmr = a.mmr;
@@ -2416,6 +2636,7 @@ function renderCtrl(){
   $$('#optTouch button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === data.opts.touch));
   $$('#optGfx button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === (data.opts.gfx || 'auto')));
   $('#optFps').classList.toggle('chip-on', !!data.opts.fps);
+  $('#optFull').classList.toggle('chip-on', data.opts.fullscreen !== false);
   $('#optShake').classList.toggle('chip-on', !!data.opts.shake); $('#optSound').classList.toggle('chip-on', !!data.sound);
   $('#padInfo').textContent = padsSeen ? `${padsSeen} gamepad${padsSeen > 1 ? 's' : ''} connected. Gamepad 1 controls Player 1, gamepad 2 Player 2, and so on.` : 'Press any button on a gamepad to connect it.';
 }
@@ -2460,10 +2681,10 @@ function act(name, el){
     case 'online': netConnect(); show('s-online'); break;
     case 'onMode': NW.mode = el.dataset.v; renderOnline(); break;
     case 'onCreate': NW.err = ''; netSend({ t:'create', mode:NW.mode, name:myName() + '’s room' }); break;
-    case 'onJoinCode': NW.err = ''; netSend({ t:'join', code:$('#onCode').value }); break;
-    case 'onJoin': NW.err = ''; netSend({ t:'join', code:el.dataset.code }); break;
-    case 'onLeave': netSend({ t:'leave' }); NW.room = null; show('s-online'); break;
-    case 'onStart': netSend({ t:'start' }); break;
+    case 'onJoinCode': goFullscreen(); NW.err = ''; netSend({ t:'join', code:$('#onCode').value }); break;
+    case 'onJoin': goFullscreen(); NW.err = ''; netSend({ t:'join', code:el.dataset.code }); break;
+    case 'onLeave': clearRejoin(); netSend({ t:'leave' }); NW.room = null; show('s-online'); break;
+    case 'onStart': goFullscreen(); netSend({ t:'start' }); break;
     case 'onInvite': {
       if (!NW.room) break;
       const url = location.origin + location.pathname + '?room=' + NW.room.code;
@@ -2526,7 +2747,7 @@ function act(name, el){
     case 'quit':
       if (G.mode === 'online'){
         if (screenNow === 'result' && G.netRole === 'host'){ netSend({ t:'lobby' }); break; }
-        netSend({ t:'leave' }); leaveOnline();
+        NW.leaving = false; clearRejoin(); netSend({ t:'leave' }); leaveOnline();
       } else show('s-menu');
       break;
   }
@@ -2558,21 +2779,39 @@ addEventListener('blur', () => { for (const k in K) K[k] = false; for (const p o
 document.addEventListener('visibilitychange', () => { if (document.hidden) togglePause(true); });
 addEventListener('touchstart', () => { if (!isTouch){ isTouch = true; resize(); updateHUD(); } }, { passive:true, once:true });
 document.addEventListener('gesturestart', e => e.preventDefault());
+document.addEventListener('touchmove', e => { if (['game', 'pause'].includes(screenNow)) e.preventDefault(); }, { passive:false });
+function goFullscreen(){
+  if (!isTouch || data.opts.fullscreen === false || document.fullscreenElement) return;
+  const el = document.documentElement, fn = el.requestFullscreen || el.webkitRequestFullscreen;
+  if (fn) try { const r = fn.call(el, { navigationUI:'hide' }); if (r && r.catch) r.catch(() => {}); } catch (e) {}
+}
+document.addEventListener('fullscreenchange', () => setTimeout(resize, 120));
 document.addEventListener('dblclick', e => e.preventDefault());
 
 /* ---------- touch ---------- */
-const joy = $('#joy'), knob = $('#knob');
+const joy = $('#joy'), knob = $('#knob'), zone = $('#joyZone');
+const JOY = { cx:0, cy:0, r:60 };
 function moveJoy(e){
-  const r = joy.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-  let dx = (e.clientX - cx) / (r.width / 2), dy = (e.clientY - cy) / (r.height / 2);
+  let dx = (e.clientX - JOY.cx) / JOY.r, dy = (e.clientY - JOY.cy) / JOY.r;
   const m = Math.hypot(dx, dy); if (m > 1){ dx /= m; dy /= m; }
   touch.x = dx; touch.y = -dy;
-  knob.style.transform = `translate(calc(-50% + ${dx * r.width * .3}px), calc(-50% + ${dy * r.height * .3}px))`;
+  knob.style.transform = `translate(calc(-50% + ${dx * JOY.r * .62}px), calc(-50% + ${dy * JOY.r * .62}px))`;
 }
-joy.addEventListener('pointerdown', e => { e.preventDefault(); ensureAudio(); touch.id = e.pointerId; try { joy.setPointerCapture(e.pointerId); } catch (_) {} touch.active = true; moveJoy(e); });
-joy.addEventListener('pointermove', e => { if (e.pointerId === touch.id) moveJoy(e); });
-const endJoy = e => { if (e.pointerId === touch.id){ touch.active = false; touch.x = touch.y = 0; touch.id = null; knob.style.transform = 'translate(-50%,-50%)'; } };
-joy.addEventListener('pointerup', endJoy); joy.addEventListener('pointercancel', endJoy);
+zone.addEventListener('pointerdown', e => {
+  e.preventDefault(); ensureAudio();
+  const size = joy.offsetWidth || 120; JOY.r = size / 2;
+  // the stick appears where the thumb lands
+  JOY.cx = clamp(e.clientX, JOY.r + 6, VW * .5 - JOY.r); JOY.cy = clamp(e.clientY, JOY.r + 70, VH - JOY.r - 6);
+  joy.style.left = (JOY.cx - JOY.r) + 'px'; joy.style.top = (JOY.cy - JOY.r) + 'px'; joy.style.bottom = 'auto'; joy.classList.add('live');
+  touch.id = e.pointerId; try { zone.setPointerCapture(e.pointerId); } catch (_) {} touch.active = true; moveJoy(e);
+});
+zone.addEventListener('pointermove', e => { if (e.pointerId === touch.id) moveJoy(e); });
+const endJoy = e => {
+  if (e.pointerId !== touch.id) return;
+  touch.active = false; touch.x = touch.y = 0; touch.id = null;
+  knob.style.transform = 'translate(-50%,-50%)'; joy.classList.remove('live'); joy.style.left = joy.style.top = joy.style.bottom = '';
+};
+zone.addEventListener('pointerup', endJoy); zone.addEventListener('pointercancel', endJoy);
 let hitPtr = null;
 $$('.tbtn').forEach(b => {
   b.addEventListener('contextmenu', e => e.preventDefault());
@@ -2594,18 +2833,40 @@ const FAKE_LAG = Math.min(500, +(new URLSearchParams(location.search).get('lag')
 const NW = { ws:null, open:false, name:'', account:false, rooms:[], room:null, you:-1, mode:'1v1', hit:false, arms:[], lastIn:0, lastSt:0, snaps:[], ping:0, pingT:0, err:'' };
 const SLOT_COL = ['#e8ff3d', '#ff8a5b', '#22d3ee', '#ff5c9a'];
 function wsUrl(){ return (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws'; }
+/* rejoin info survives a page reload for a short time, so a dropped phone can get its slot back */
+const REJOIN_KEY = 'pickleRush.rejoin';
+function saveRejoin(){ try { if (NW.room && NW.rid) localStorage.setItem(REJOIN_KEY, JSON.stringify({ code:NW.room.code, rid:NW.rid, t:Date.now() })); } catch (e) {} }
+function loadRejoin(){ try { const r = JSON.parse(localStorage.getItem(REJOIN_KEY) || 'null'); return r && Date.now() - r.t < 40000 ? r : null; } catch (e) { return null; } }
+function clearRejoin(){ try { localStorage.removeItem(REJOIN_KEY); } catch (e) {} NW.rid = null; }
 function netConnect(){
   if (!ACC.server || NW.ws) return;
   let ws; try { ws = new WebSocket(wsUrl()); } catch (e) { return; }
-  NW.ws = ws;
-  ws.onopen = () => { NW.open = true; netHello(); renderOnline(); if (NW.autoJoin){ netSend({ t:'join', code:NW.autoJoin }); NW.autoJoin = null; } };
-  ws.onmessage = e => { let m; try { m = JSON.parse(e.data); } catch (_) { return; } if (FAKE_LAG) setTimeout(() => netMsg(m), FAKE_LAG); else netMsg(m); };
+  NW.ws = ws; NW.lastMsg = performance.now();
+  ws.onopen = () => {
+    NW.open = true; NW.lastMsg = performance.now(); netHello(); renderOnline();
+    const rj = NW.reconnecting ? { code:NW.reconnecting.code, rid:NW.reconnecting.rid } : NW.rejoinOnLoad;
+    if (rj){ netSend({ t:'rejoin', code:rj.code, rid:rj.rid }); NW.rejoinOnLoad = null; }
+    else if (NW.autoJoin){ netSend({ t:'join', code:NW.autoJoin }); NW.autoJoin = null; }
+  };
+  ws.onmessage = e => { NW.lastMsg = performance.now(); let m; try { m = JSON.parse(e.data); } catch (_) { return; } if (FAKE_LAG) setTimeout(() => netMsg(m), FAKE_LAG); else netMsg(m); };
   ws.onclose = () => {
     const was = NW.room; NW.ws = null; NW.open = false;
-    if (was) leaveOnline('Lost the connection to the server.');
+    if (was && !NW.leaving){
+      // unexpected drop: keep the match, try to get back in for up to 30 seconds
+      if (!NW.reconnecting) NW.reconnecting = { code:was.code, rid:NW.rid, since:performance.now() };
+      setNetBanner('Connection lost · reconnecting…');
+      if (performance.now() - NW.reconnecting.since > 30000){ NW.reconnecting = null; setNetBanner(''); clearRejoin(); leaveOnline('Couldn’t reconnect to the server.'); return; }
+      setTimeout(netConnect, 1000);
+      return;
+    }
+    NW.leaving = false;
     renderOnline();
     setTimeout(() => { if (['online', 'room'].includes(screenNow)) netConnect(); }, 2000);
   };
+}
+function setNetBanner(txt){
+  const el = $('#netWarn'); if (!el) return;
+  el.classList.toggle('hidden', !txt); if (txt) setTxt('#netWarn', txt);
 }
 function netSend(o){
   if (!(NW.ws && NW.open)) return;
@@ -2618,7 +2879,7 @@ function netMsg(m){
     case 'welcome': NW.name = m.name; NW.account = m.account; renderOnline(); break;
     case 'rooms': NW.rooms = m.rooms || []; renderOnline(); break;
     case 'room': {
-      NW.room = m.room; NW.you = m.you;
+      NW.room = m.room; NW.you = m.you; if (m.rid) NW.rid = m.rid; saveRejoin();
       if (G.mode === 'online' && ['game', 'pause', 'result', 'ctrl'].includes(screenNow)){
         if (m.room.state === 'lobby'){ G.netRole = null; show('s-room'); break; }
         syncSlots(m.room);
@@ -2626,10 +2887,19 @@ function netMsg(m){
       renderRoom();
       break;
     }
-    case 'start': NW.room = m.room; NW.you = m.you; beginOnline(); break;
+    case 'start': {
+      const wasReconnect = !!NW.reconnecting;
+      NW.reconnecting = null; setNetBanner('');
+      NW.room = m.room; NW.you = m.you; saveRejoin();
+      // a host whose page never reloaded still has the match: just carry on
+      if (m.rejoin && G.mode === 'online' && G.netRole === 'host' && m.room.host === m.you){ showToast('Reconnected', 'The match continues'); break; }
+      beginOnline(); if (wasReconnect || m.rejoin) showToast('Reconnected', 'You’re back in the match');
+      break;
+    }
+    case 'rejoinFail': NW.reconnecting = null; setNetBanner(''); clearRejoin(); if (G.mode === 'online') leaveOnline(m.msg); break;
     case 'in': hostInput(m); break;
     case 'st': if (G.netRole === 'guest') guestSnap(m); break;
-    case 'closed': leaveOnline(m.reason); break;
+    case 'closed': clearRejoin(); leaveOnline(m.reason); break;
     case 'error': NW.err = m.msg; renderOnline(); break;
     case 'mmr':
       if (m.ranked && m.user){ const before = ACC.user ? ACC.user.mmr : m.user.mmr - m.delta; ACC.user = m.user; showDelta(before, m.user.mmr, m.delta); $('#resRank').textContent = 'Saved to the player leaderboard'; showRewards(m.result); }
@@ -2696,12 +2966,35 @@ function beginOnline(){
 }
 function syncSlots(room){
   G.players.forEach((p, i) => {
-    if (p.human && p.human.remote && !room.slots[i]){ p.human = null; p.ai = mkAI(AIS.pro); p.name = 'CPU'; showToast('Player left', 'The AI takes their place'); }
+    const sl = room.slots[i];
+    if (p.human && p.human.remote && !sl){ p.human = null; p.ai = mkAI(AIS.pro); p.name = 'CPU'; p.away = false; showToast('Player left', 'The AI takes their place'); }
+    else if (p.human && p.human.remote && sl){
+      if (sl.away && !p.away) showToast(`${p.name} disconnected`, 'Waiting up to 30 seconds for them to come back');
+      if (!sl.away && p.away) showToast(`${p.name} is back`, 'The match continues');
+      p.away = !!sl.away;
+      if (p.away){ p.netIn.x = p.netIn.y = 0; if (p.netIn.h){ p.netIn.h = 0; release(p); } }
+    }
   });
   updateHUD();
 }
+function guestWaiting(){
+  if (NW.reconnecting || !NW.open) return 'Connection lost · reconnecting…';
+  const hs = NW.room && NW.room.slots[NW.room.host];
+  if (hs && hs.away) return `Waiting for the host to reconnect${hs.awayLeft ? ` (${hs.awayLeft}s)` : ''}…`;
+  return (NW.snaps.length && NW.snaps[NW.snaps.length - 1].wait) || '';
+}
+/* the host pauses the match while a player is reconnecting (and while the host itself is offline) */
+function netWaiting(){
+  if (G.mode !== 'online') return '';
+  if (G.netRole === 'host'){
+    if (!NW.open) return 'Connection lost · reconnecting…';
+    const away = G.players.filter(p => p.away);
+    if (away.length && NW.room){ const sl = NW.room.slots[G.players.indexOf(away[0])]; return `Waiting for ${away.map(p => p.name).join(' & ')} to reconnect${sl && sl.awayLeft ? ` (${sl.awayLeft}s)` : ''}…`; }
+  }
+  return '';
+}
 function leaveOnline(reason){
-  NW.room = null; NW.snaps = []; G.netRole = null; G.flip = false;
+  NW.room = null; NW.snaps = []; G.netRole = null; G.flip = false; NW.reconnecting = null; setNetBanner('');
   if (reason) showToast('Left the room', reason);
   show(ACC.server ? 's-online' : 's-menu');
 }
@@ -2717,7 +3010,7 @@ function hostInput(m){
 }
 function hostSnapshot(){
   const b = G.ball;
-  return { t:'st', s:G.state, sc:G.score, sv:G.server, sp:G.players.indexOf(G.serverP), rp:G.players.indexOf(G.recvP), sn:G.serveNum, sty:SERVES.indexOf(G.serverP ? G.serverP.serveType || 'volley' : 'volley'), mt:Math.round(G.matchT), r:G.rally,
+  return { t:'st', s:G.state, sc:G.score, sv:G.server, sp:G.players.indexOf(G.serverP), rp:G.players.indexOf(G.recvP), sn:G.serveNum, wait:netWaiting(), sty:SERVES.indexOf(G.serverP ? G.serverP.serveType || 'volley' : 'volley'), mt:Math.round(G.matchT), r:G.rally,
     b:[r3(b.x), r3(b.y), r3(b.z), TYPES.indexOf(b.type), b.live ? 1 : 0, b.hitCount, b.lastHitter, b.serveSign, BALL_IDS.indexOf(b.skin || 'ball_classic')], ct:COURT_IDS.indexOf(G.court),
     p:G.players.map(p => [r3(p.x), r3(p.y), r3(p.swing), r3(p.run), p.moving ? 1 : 0, Math.round(p.energy), ARMS.indexOf(p.armed), p.charging ? 1 : 0, r3(p.charge), r3(p.meterT), r3(p.meterQ)]),
     ev:G.netEv.splice(0) };
@@ -2813,7 +3106,7 @@ addEventListener('resize', () => { HUD_RECT = CB_RECT = null; });
 function hudAutoHide(dt){
   const hud = $('#hud'), cb = $('#callBanner');
   if (hud.classList.contains('hidden') || G.mode === 'demo'){ if (hud.classList.contains('sb-dim')) hud.classList.remove('sb-dim'); return; }
-  if (!HUD_RECT || !HUD_RECT.w){ const r = $('.sb').getBoundingClientRect(); HUD_RECT = { l:r.left - 14, t:r.top - 14, r:r.right + 14, b:r.bottom + 18, w:r.width }; }
+  if (!HUD_RECT || !HUD_RECT.w){ const r = $('.sb').getBoundingClientRect(); HUD_RECT = { l:r.left - 6, t:r.top - 6, r:r.right + 6, b:r.bottom + 4, w:r.width }; }
   const inside = (R, x, y) => R && x > R.l && x < R.r && y > R.t && y < R.b;
   const b = G.ball, nearTeam = G.flip ? 2 : 1, pts = [];
   if (b && (b.live || G.state === 'serve')){ const q = proj(b.x, b.y, b.z); pts.push(q); }
@@ -2848,9 +3141,16 @@ function frame(nowMs){
   }
   pollPads();
   if (G.netRole === 'guest'){ guestInterp(); guestTick(d); }
-  else if (!G.paused){ accT += d; while (accT >= DT){ update(DT); accT -= DT; } }
+  else if (!G.paused && !(G.netRole === 'host' && netWaiting())){ accT += d; while (accT >= DT){ update(DT); accT -= DT; } }
+  if (G.mode === 'online'){
+    const w = G.netRole === 'host' ? netWaiting() : guestWaiting();
+    setNetBanner(w);
+    // no message for 6 seconds means the connection is dead even if the phone hasn't noticed yet
+    if (NW.open && NW.ws && performance.now() - (NW.lastMsg || 0) > 6000){ try { NW.ws.close(); } catch (e) {} }
+    if ((NW.saveT = (NW.saveT || 0) + d) > 5){ NW.saveT = 0; saveRejoin(); }
+  }
   if (G.netRole === 'host' && now - NW.lastSt >= .014){ NW.lastSt = now; netSend(hostSnapshot()); }
-  if (G.mode === 'online' && (pingTick += d) > 2){ pingTick = 0; netSend({ t:'ping', ts:performance.now() }); }
+  if ((G.mode === 'online' || NW.room) && (pingTick += d) > 2){ pingTick = 0; netSend({ t:'ping', ts:performance.now() }); }
   const inPlay = screenNow === 'game' || screenNow === 'pause' || screenNow === 'result';
   if (inPlay || now - lastRender >= 1 / 30 - .004){   // menus run at 30 fps, which saves battery
     lastRender = now;
@@ -2877,10 +3177,13 @@ show('s-gate');
 const inviteCode = new URLSearchParams(location.search).get('room');
 if (inviteCode) history.replaceState(null, '', location.pathname);
 detectServer().then(() => {
+  const rj = loadRejoin();
+  if (rj && ACC.server && !inviteCode){ NW.rejoinOnLoad = rj; NW.rid = rj.rid; netConnect(); showToast('Rejoining your match…', `Room ${rj.code}`); return; }
   if (!inviteCode) return;
   if (!ACC.server){ showToast('Online play is unavailable', 'This link needs the Pickle Rush server'); return; }
   NW.autoJoin = inviteCode.toUpperCase().slice(0, 4); netConnect(); show('s-online');
 });
+window.__pickleRushNet = { drop(){ try { if (NW.ws) NW.ws.close(); } catch (e) {} } };   // used by the automated tests to simulate a lost connection
 window.__pickleRush = () => ({ mode:G.mode, role:G.netRole, state:G.state, score:G.score.slice(), screen:screenNow, players:G.players.map(p => [p.name, +p.x.toFixed(2), +p.y.toFixed(2), p.charging]) });
 requestAnimationFrame(frame);
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(() => {});
