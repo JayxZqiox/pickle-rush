@@ -107,6 +107,16 @@
     return { level: lvl, into: xp, need };
   }
 
+  /* ---------- DUPR-style rating ----------
+   * DUPR is pickleball's real rating scale (2.000 beginner to 8.000 top pro). The game can't read
+   * official DUPR, so this estimates a rating on the same scale from in-game MMR. */
+  function dupr(mmr) { return Math.min(8, 2 + 6 * (1 - Math.exp(-Math.max(0, mmr || 0) / 1800))); }
+  function duprTier(d) {
+    return d < 3 ? 'Beginner' : d < 3.5 ? 'Intermediate' : d < 4 ? 'Advanced intermediate' : d < 4.5 ? 'Advanced' : d < 5 ? 'Expert' : d < 5.5 ? 'Pro level' : 'Elite pro';
+  }
+  // total XP needed to reach a level (used to set up the owner account)
+  function xpForLevel(level) { let xp = 0; for (let n = 1; n < level; n++) xp += 100 + 60 * (n - 1); return xp; }
+
   /* ---------- rewards ---------- */
   function aiIndex(key) { return LADDER.findIndex(a => a.key === key); }
   function matchRewards(key, won) {
@@ -207,7 +217,7 @@
   }
 
   const API = { LADDER, SKILL_LEVELS, ITEMS, BY_ID, SLOTS, STARTER, DEFAULT_EQUIP, HAIR_STYLES,
-    levelInfo, aiIndex, matchRewards, rallyRewards, onlineRewards, elo, aiUnlocked,
+    levelInfo, aiIndex, dupr, duprTier, xpForLevel, matchRewards, rallyRewards, onlineRewards, elo, aiUnlocked,
     newProgress, normalize, addRewards, applyMatch, buy, equip, cleanLook };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
   else root.PR_CATALOG = API;

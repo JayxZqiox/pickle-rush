@@ -17,6 +17,28 @@ pickle-rush/
 - **6 shots**, all available from level 1: Drive (normal), Slice (Q), Curve (E), Dink (R), Spike (T) and Smash, which fires on its own on high balls.
 - **3 serves**, picked before serving: **Volley** (Q, let go of the ball and hit it before it lands), **Curve** (E, a volley serve with sidespin), **Drop** (R, let the ball bounce once, then hit it; slower but more accurate). On touch screens the skill buttons turn into Volley, Curve and Drop while you serve.
 
+## Your owner account (everything unlocked)
+
+Set two environment variables and the server creates (or updates) that account on every start with every item, every opponent, level 30 and 99,999 coins. The password is never stored in the code, so it stays private even though the repo is public.
+
+- **Render:** your service → **Environment** → add `OWNER_USERNAME` = `Jay` and `OWNER_PASSWORD` = your password → **Save**.
+- **Your PC (VS Code terminal, PowerShell):** `$env:OWNER_USERNAME="Jay"; $env:OWNER_PASSWORD="your password"; npm start`
+
+Then log in with that username and password. MMR and DUPR still start at 0 / 2.000 and are earned in ranked games.
+
+## DUPR rating
+
+The dashboard, ranking page, leaderboard, lobby cards and opponent list show a **DUPR (est.)** rating on pickleball's real 2.000–8.000 scale. It is estimated from your in-game MMR (the game can't read official DUPR): 0 MMR ≈ 2.0 Beginner, 400 ≈ 3.2 Intermediate, 1000 ≈ 4.6 Expert, 1800 ≈ 5.8 Elite pro.
+
+## Sprint
+
+Hold **Shift** (Player 2: right Shift, gamepad: LB) to sprint about 40% faster. It uses stamina, shown above your head; run it dry and you're tired until it refills. On touch screens, push the stick all the way to the edge. The AI sprints too when it has far to go.
+
+## Cameras and AI
+
+- **6 camera presets:** Classic, Action (zoomed, follows you and the ball), Low, Sky, Broadcast (TV side view) and Corner. Press **C** in a match, tap the camera button in the scoreboard, or pick one in Settings. Controls follow the camera.
+- **Kitchen play:** the AI uses real pickleball strategy. The returning side moves up after the return of serve, the serving side after the third shot (often a soft drop into the kitchen), then they dink. High balls get sped up or smashed. Stronger AIs play this way more often (Rookie about a third of the time, Champion and up every rally). Your AI teammate in 2v2 does it too.
+
 ## Progression
 
 - The first screen asks: **Play anonymously** (progress saved in that browser) or **Log in / Sign up** (progress saved on the server, shown on the leaderboard).

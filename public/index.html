@@ -140,6 +140,14 @@ input{font-size:16px;} /* stops iOS zooming into inputs */
   .modeRow{grid-template-columns:repeat(2, minmax(0,1fr));}
 }
 @media (max-height: 500px) and (orientation: landscape){ .hero{min-height:250px;} .heroStage{min-height:220px;} }
+/* DUPR */
+.duprTile{display:flex; justify-content:space-between; align-items:center; gap:12px; padding:12px 14px; border-radius:16px; border:1px solid rgba(255,122,61,.35);
+  background:radial-gradient(120% 140% at 0% 0%, rgba(255,122,61,.18), transparent 60%), rgba(0,0,0,.25);}
+.duprTile span{display:block; font-size:11px; font-weight:800; letter-spacing:.1em; color:var(--muted); text-transform:uppercase;} .duprTile span i{font-style:normal; text-transform:none; letter-spacing:0; font-weight:600;}
+.duprTile b{font-family:"Russo One",Impact,sans-serif; font-size:30px; font-weight:400; line-height:1.1; color:var(--hot); text-shadow:0 0 18px rgba(255,122,61,.4);}
+.duprTile #mDuprTier{color:var(--text); text-transform:none; letter-spacing:0; font-size:14px;}
+.duprTile em{display:block; font-style:normal; font-size:10px; color:var(--muted); margin-top:3px;}
+.duprBar{width:110px; height:6px; border-radius:99px; background:rgba(255,255,255,.1); margin:6px 0 0 auto; overflow:hidden;} .duprBar i{display:block; height:100%; width:0; border-radius:99px; background:linear-gradient(90deg, var(--accent), var(--hot)); transition:width .9s var(--ease);}
 /* lobby */
 .lobbyTag{display:inline-block; font-size:11px; font-weight:800; letter-spacing:.14em; padding:3px 10px; border-radius:999px; color:var(--hot); background:rgba(255,122,61,.12); border:1px solid rgba(255,122,61,.35);}
 .lobbyHead{display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:center;}
@@ -530,6 +538,10 @@ input::placeholder{opacity:1;color:#8492a6}
         <div class="ringTxt"><span>LEVEL</span><b id="mLevel">1</b></div>
         <div class="min-w-0"><div class="font-bold">Season XP</div><div id="mXpText" class="text-sm text-[var(--muted)]">0 / 100 XP</div><div class="bar mt-2" style="background:var(--line)"><i id="mXp" style="background:var(--accent)"></i></div></div>
       </div>
+      <div class="duprTile">
+        <div><span>DUPR <i>(est.)</i></span><b id="mDupr" class="tabular-nums">2.000</b></div>
+        <div class="text-right min-w-0"><span id="mDuprTier">Beginner</span><div class="duprBar"><i id="mDuprBar"></i></div><em>2.0 → 8.0 scale</em></div>
+      </div>
       <div class="statGrid">
         <div class="statTile"><span>MMR</span><b id="mMmr" class="hot">0</b></div>
         <div class="statTile"><span>Wins</span><b id="mWins">0</b></div>
@@ -754,6 +766,10 @@ input::placeholder{opacity:1;color:#8492a6}
         <div id="optTouch" class="seg"><button data-act="opt" data-k="touch" data-v="normal">Normal</button><button data-act="opt" data-k="touch" data-v="big">Big</button></div>
       </div>
       <div class="flex items-center justify-between gap-3 flex-wrap">
+        <div><div class="font-bold">Camera</div><div class="text-sm text-[var(--muted)]">Also the C key or the camera button during a match</div></div>
+        <div id="optCam" class="seg flex-wrap"><button data-act="opt" data-k="camera" data-v="classic">Classic</button><button data-act="opt" data-k="camera" data-v="action">Action</button><button data-act="opt" data-k="camera" data-v="low">Low</button><button data-act="opt" data-k="camera" data-v="sky">Sky</button><button data-act="opt" data-k="camera" data-v="broadcast">Broadcast</button><button data-act="opt" data-k="camera" data-v="corner">Corner</button></div>
+      </div>
+      <div class="flex items-center justify-between gap-3 flex-wrap">
         <div><div class="font-bold">Graphics</div><div class="text-sm text-[var(--muted)]">Auto lowers detail by itself if your device struggles</div></div>
         <div id="optGfx" class="seg"><button data-act="opt" data-k="gfx" data-v="auto">Auto</button><button data-act="opt" data-k="gfx" data-v="high">High</button><button data-act="opt" data-k="gfx" data-v="low">Low</button></div>
       </div>
@@ -763,7 +779,7 @@ input::placeholder{opacity:1;color:#8492a6}
       </div>
       <div class="flex items-center justify-between gap-3">
         <div><div class="font-bold">Gamepads</div><div id="padInfo" class="text-sm text-[var(--muted)]">Press any button on a gamepad to connect it.</div></div>
-        <div class="text-sm text-right text-[var(--muted)] shrink-0">Stick move · A hit<br>X slice · Y curve · B dink · RB spike</div>
+        <div class="text-sm text-right text-[var(--muted)] shrink-0">Stick move · LB sprint · A hit<br>X slice · Y curve · B dink · RB spike</div>
       </div>
     </div>
     <button data-act="resetBinds" class="mt-3 text-sm font-semibold text-[var(--muted)] underline underline-offset-4">Reset this player’s keys</button>
@@ -797,6 +813,8 @@ input::placeholder{opacity:1;color:#8492a6}
       <h3 class="font-bold">The power meter</h3>
       <p class="mt-1">Hold <b>Hit</b> (Space) and a meter fills beside your player. The shot uses the meter level at the moment you hit the ball. Inside the green band is a <b>Perfect</b> shot: faster and more accurate. Below it is weaker and shorter; past it, in red, the ball flies long. If you don’t hold Hit at all, you still return a normal shot.</p>
       <p class="mt-2"><b>Serves:</b> before serving, pick <b>Volley</b> (Q: let go of the ball and hit it before it lands), <b>Curve</b> (E: a volley serve with sidespin that bends and kicks away), or <b>Drop</b> (R: let the ball bounce once, then hit it; slower but more accurate). On touch screens the skill buttons turn into Volley, Curve and Drop while you serve.</p>
+      <p class="mt-2"><b>Cameras:</b> press <b>C</b> or the camera button in the scoreboard to switch between Classic, Action, Low, Sky, Broadcast and Corner. Controls follow the camera: up always moves away from you on screen.</p>
+      <p class="mt-2"><b>Play the kitchen:</b> like real pickleball, the AI moves up to the kitchen line after the return of serve (or after its third shot) and dinks. Pop a dink up too high and it will speed it up or smash it.</p>
       <p class="mt-2">Hold left or right while hitting to aim. Load a shot first with <b>Q</b> slice, <b>E</b> curve, <b>R</b> dink or <b>T</b> spike. Slice, curve and spike cost energy, which fills as you hit.</p>
     </div>
     <div class="tile rounded-2xl p-4 mt-3 text-[15px]">
@@ -807,7 +825,7 @@ input::placeholder{opacity:1;color:#8492a6}
       <div class="tile rounded-2xl p-4">
         <h3 class="font-bold">Default keys</h3>
         <dl class="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
-          <dt class="font-semibold">Player 1</dt><dd>WASD, Space, Q E R T</dd>
+          <dt class="font-semibold">Player 1</dt><dd>WASD, Shift sprint, Space, Q E R T</dd>
           <dt class="font-semibold">Player 2</dt><dd>Arrows, Enter, K L I O</dd>
           <dt class="font-semibold">Player 3</dt><dd>Numpad 8456, Num 0, Num 1 2 3 .</dd>
           <dt class="font-semibold">Player 4</dt><dd>Y G H J, B, V N M U</dd>
@@ -871,7 +889,7 @@ input::placeholder{opacity:1;color:#8492a6}
         <div id="h1Score" class="sbScore">0</div>
       </div>
       <div class="sbMid">
-        <div class="sbRow"><span id="sbClock" class="sbClock">0:00</span><button data-act="pause" class="sbPause" aria-label="Pause">II</button></div>
+        <div class="sbRow"><span id="sbClock" class="sbClock">0:00</span><button data-act="camCycle" class="sbPause" aria-label="Change camera" title="Camera (C)"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13.5" r="3.2"/></svg></button><button data-act="pause" class="sbPause" aria-label="Pause">II</button></div>
         <div id="sbCall" class="sbCall">0-0-2</div>
         <div class="sbRow"><span id="sbTag" class="sbTag hidden">GAME POINT</span><span id="netBadge" class="sbPing hidden">LAN</span></div>
       </div>
@@ -956,22 +974,24 @@ const AIS = {
   coach:       { key:'coach', name:'Coach', mmr:0, speed:6.2, react:.08, aimSd:.15, mistake:0, skill:0, smash:0, tScale:1.28, judge:0, depth:5.4, netRush:false, acc:0, coach:true },
 };
 for (const a of CAT.LADDER){ Object.assign(AIS[a.key], { mmr:a.mmr, name:a.name, name2:a.name2 }); }
-for (const m of itemsOf('partner')) AIS[m.id] = { key:m.id, name:m.name, mmr:0, speed:m.speed, react:m.react, aimSd:m.aimSd, mistake:m.mistake, skill:m.skill, smash:m.smash, tScale:m.tScale, judge:m.judge, depth:5.0, netRush:false, acc:m.acc };
+const KITCHEN_PLAY = { rookie:.3, amateur:.45, club:.6, pro:.75, veteran:.85, elite:.9, legend:.95, champion:1, grandmaster:1, nightmare:1 };
+for (const k in KITCHEN_PLAY) AIS[k].kitchen = KITCHEN_PLAY[k];
+for (const m of itemsOf('partner')) AIS[m.id] = { key:m.id, name:m.name, mmr:0, speed:m.speed, react:m.react, aimSd:m.aimSd, mistake:m.mistake, skill:m.skill, smash:m.smash, tScale:m.tScale, judge:m.judge, depth:5.0, netRush:false, acc:m.acc, kitchen:.85 };
 const LADDER = CAT.LADDER.map(a => a.key);
 const RANKED = m => m === '1p' || m === 'duo-ai';
 
 /* ---------- local save ---------- */
 const KEY = 'pickleRush.v3';
-const ACTIONS = [['up','Move up'],['down','Move down'],['left','Move left'],['right','Move right'],['hit','Hit / serve (hold)'],['slice','Slice'],['curve','Curve'],['dink','Dink'],['spike','Spike']];
+const ACTIONS = [['up','Move up'],['down','Move down'],['left','Move left'],['right','Move right'],['sprint','Sprint (hold)'],['hit','Hit / serve (hold)'],['slice','Slice'],['curve','Curve'],['dink','Dink'],['spike','Spike']];
 const DEF_BINDS = {
-  p1:{ up:'KeyW', down:'KeyS', left:'KeyA', right:'KeyD', hit:'Space', slice:'KeyQ', curve:'KeyE', dink:'KeyR', spike:'KeyT' },
-  p2:{ up:'ArrowUp', down:'ArrowDown', left:'ArrowLeft', right:'ArrowRight', hit:'Enter', slice:'KeyK', curve:'KeyL', dink:'KeyI', spike:'KeyO' },
-  p3:{ up:'Numpad8', down:'Numpad5', left:'Numpad4', right:'Numpad6', hit:'Numpad0', slice:'Numpad1', curve:'Numpad2', dink:'Numpad3', spike:'NumpadDecimal' },
-  p4:{ up:'KeyY', down:'KeyH', left:'KeyG', right:'KeyJ', hit:'KeyB', slice:'KeyV', curve:'KeyN', dink:'KeyM', spike:'KeyU' },
+  p1:{ up:'KeyW', down:'KeyS', left:'KeyA', right:'KeyD', sprint:'ShiftLeft', hit:'Space', slice:'KeyQ', curve:'KeyE', dink:'KeyR', spike:'KeyT' },
+  p2:{ up:'ArrowUp', down:'ArrowDown', left:'ArrowLeft', right:'ArrowRight', sprint:'ShiftRight', hit:'Enter', slice:'KeyK', curve:'KeyL', dink:'KeyI', spike:'KeyO' },
+  p3:{ up:'Numpad8', down:'Numpad5', left:'Numpad4', right:'Numpad6', sprint:'NumpadAdd', hit:'Numpad0', slice:'Numpad1', curve:'Numpad2', dink:'Numpad3', spike:'NumpadDecimal' },
+  p4:{ up:'KeyY', down:'KeyH', left:'KeyG', right:'KeyJ', sprint:'KeyF', hit:'KeyB', slice:'KeyV', curve:'KeyN', dink:'KeyM', spike:'KeyU' },
 };
 const DEF = { p1:{ name:'Player 1', gender:'boy', skin:1, hair:0, hairStyle:'short' },
   p2:{ name:'Player 2', gender:'girl', skin:0, hair:1, hairStyle:'ponytail', equip:{ head:'head_none', top:'tee_blue', bottom:'shorts_black', shoes:'sneak_black', paddle:'pad_wood', ball:'ball_classic' } },
-  bestRally:0, sound:true, binds:JSON.parse(JSON.stringify(DEF_BINDS)), opts:{ meter:'normal', swing:'auto', touch:'normal', shake:true, gfx:'auto', fps:false, fullscreen:true },
+  bestRally:0, sound:true, binds:JSON.parse(JSON.stringify(DEF_BINDS)), opts:{ meter:'normal', swing:'auto', touch:'normal', shake:true, gfx:'auto', fps:false, fullscreen:true, camera:'classic' },
   localAcc:null, token:null };
 const clone = o => JSON.parse(JSON.stringify(o));
 function load(){
@@ -1144,23 +1164,63 @@ function resize(){
   // the canvas is sized to exactly what is visible, so the court can never end up in a corner
   cv.width = Math.round(VW * DPR); cv.height = Math.round(VH * DPR);
   cv.style.width = VW + 'px'; cv.style.height = VH + 'px';
-  // taller screens (phones held upright) get a higher camera so the court fills the space
-  CAM.H = clamp(5.5 + (VH / VW - .55) * 4.2, 5.5, 10.5);
-  const dyN = CAM.D - 1.2, dyF = CAM.D + L + .9;
-  const content = CAM.H * (1 / dyN - 1 / dyF) + 1.9 / dyF;        // near feet to the far player's head, per unit of F
-  const top = VH < 500 ? 78 : 92, bottom = isTouch ? (VH < 500 ? 10 : 24) : 22, avail = Math.max(120, VH - top - bottom);
-  const F = Math.min(avail / content, VW * 1.2);                   // whole court visible, both ways
-  CAM.F = F; CAM.baseCx = CAM.cx = VW / 2;
-  const bottomY = VH - bottom - Math.max(0, (avail - content * F) / 2);
-  CAM.hy = bottomY - CAM.H * F / dyN;
+  fitCamera();
   buildCrowd(); invalidateRects();
 }
-function projRaw(x, y, z){ const dy = Math.max(.5, y + CAM.D), s = CAM.F / dy; return [CAM.cx + x * s, CAM.hy + (CAM.H - z) * s, s]; }
-// online players on the far team see the court from their own side
-function proj(x, y, z){ return G.flip ? projRaw(-x, L - y, z) : projRaw(x, y, z); }
+/* Camera presets (like a sports game's camera menu). yaw turns the camera around the court,
+   R is its distance from the court center, H its height; zero pitch keeps players upright. */
+const CAMS = {
+  classic:   { name:'Classic',   yaw:0,     R:14.7, H:0,  follow:.012, hint:'Behind your baseline' },
+  action:    { name:'Action',    yaw:0,     R:14.7, H:0,  follow:.03,  zoom:1.16, hint:'Zoomed in, follows you and the ball' },
+  low:       { name:'Low',       yaw:0,     R:12.6, H:3.1, follow:.03, hint:'Down at the players’ level' },
+  sky:       { name:'Sky',       yaw:0,     R:20,   H:12, follow:.008, hint:'High above the court' },
+  broadcast: { name:'Broadcast', yaw:-Math.PI / 2, R:13.5, H:9, follow:.008, fitW:.94, hint:'TV side view' },
+  corner:    { name:'Corner',    yaw:-.62,  R:16.5, H:7.5, follow:.02, hint:'Angled from the corner' },
+};
+const CAM_ORDER = ['classic', 'action', 'low', 'sky', 'broadcast', 'corner'];
+const camKey = () => G.mode === 'demo' ? 'classic' : (CAMS[data.opts.camera] ? data.opts.camera : 'classic');
+function setBasis(yaw, R){
+  CAM.yaw = yaw; CAM.R = R;
+  CAM.fx = Math.sin(yaw); CAM.fy = Math.cos(yaw); CAM.rx = Math.cos(yaw); CAM.ry = -Math.sin(yaw);
+  CAM.px = -CAM.fx * R; CAM.py = NET - CAM.fy * R;
+}
+function fitCamera(){
+  const P = CAMS[camKey()];
+  CAM.preset = camKey(); CAM.follow = P.follow; CAM.zoom = P.zoom || 1;
+  // online players on the far team see the court from their own side
+  setBasis(P.yaw + (G.flip ? Math.PI : 0), P.R);
+  // taller screens (phones held upright) get a higher camera so the court fills the space
+  CAM.H = P.H || clamp(5.5 + (VH / VW - .55) * 4.2, 5.5, 10.5);
+  CAM.F = 1; CAM.cx = 0; CAM.hy = 0;
+  let u0 = 1e9, u1 = -1e9, v0 = 1e9, v1 = -1e9;
+  const wpts = [[-HW - .3, 0, 0], [HW + .3, 0, 0], [-HW - .3, L, 0], [HW + .3, L, 0], [0, -1.4, 0], [0, L + 1.4, 0]];
+  for (const [x, y, z] of wpts){ const q = projRaw(x, y, z); u0 = Math.min(u0, q[0]); u1 = Math.max(u1, q[0]); }
+  for (const x of [-HW - .3, HW + .3]) for (const y of [-1.2, L + .9]) for (const z of [0, 1.9]){ const q = projRaw(x, y, z); v0 = Math.min(v0, q[1]); v1 = Math.max(v1, q[1]); }
+  const top = VH < 500 ? 78 : 92, bottom = isTouch ? (VH < 500 ? 10 : 24) : 22, avail = Math.max(120, VH - top - bottom);
+  const F = Math.min(avail / (v1 - v0), VW * (P.fitW || 1.08) / (u1 - u0));       // whole court visible, both ways
+  CAM.F = F; CAM.baseCx = CAM.cx = VW / 2 - F * (u0 + u1) / 2;
+  CAM.hy = top + Math.max(0, (avail - (v1 - v0) * F) / 2) - v0 * F;
+  WORLD.key = '';
+  buildCrowd(); invalidateRects();
+}
+function projRaw(x, y, z){
+  const px = x - CAM.px, py = y - CAM.py, d = Math.max(.5, px * CAM.fx + py * CAM.fy), u = px * CAM.rx + py * CAM.ry, s = CAM.F / d;
+  return [CAM.cx + u * s, CAM.hy + (CAM.H - z) * s, s];
+}
+const proj = projRaw;
+const depthOf = (x, y) => (x - CAM.px) * CAM.fx + (y - CAM.py) * CAM.fy;
+// a point in camera-aligned court coordinates: a = sideways, b = away from the camera (0 = court center)
+const projRig = (a, b, z) => projRaw(CAM.rx * a + CAM.fx * b, NET + CAM.ry * a + CAM.fy * b, z);
+function rigExtent(){
+  let far = -1e9, side = 0;
+  for (const [x, y] of [[-HW, 0], [HW, 0], [-HW, L], [HW, L]]){ far = Math.max(far, x * CAM.fx + (y - NET) * CAM.fy); side = Math.max(side, Math.abs(x * CAM.rx + (y - NET) * CAM.ry)); }
+  return { far:far + 3.6, side:side + 5 };
+}
+const nearTeam = () => CAM.fy >= -1e-6 ? 1 : 2;
+function facingOf(p){ const dot = (p.team === 1 ? 1 : -1) * CAM.fy; return dot > .35 ? 'back' : dot < -.35 ? 'front' : (p.team === nearTeam() ? 'back' : 'front'); }
 function buildCrowd(){
   CROWD = []; let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-  const top = projRaw(0, L + 4, .9)[1];
+  const top = projRig(0, rigExtent().far, .9)[1];
   const cols = ['#f87171','#fbbf24','#34d399','#60a5fa','#c084fc','#f472b6','#e5e7eb','#fb923c','#22d3ee','#a3e635'];
   const signs = ['GO!', 'ACE!', 'WOW', '11!', 'DINK!', 'PICKLE'];
   for (let row = 0; row < 7; row++){
@@ -1201,7 +1261,7 @@ function paintCrowd(c, th, cheer, cy){
   c.globalAlpha = 1;
 }
 /* The stadium never changes, so it is drawn once into saved images and reused every frame. */
-const PAD = 64, PADY = 24;
+const PAD = 150, PADY = 24;
 const WORLD = { key:'', L1:null, L2:null, crowd:[null, null], cy:0, ch:0, fontV:0, lamps:null, tickW:0 };
 function mkLayer(w, h){
   const cvs = document.createElement('canvas');
@@ -1209,11 +1269,11 @@ function mkLayer(w, h){
   const x = cvs.getContext('2d'); x.setTransform(DPR, 0, 0, DPR, 0, 0); return [cvs, x];
 }
 function buildWorld(){
-  const key = [VW, VH, DPR, G.court, G.flip ? 1 : 0, GFX.low ? 1 : 0, WORLD.fontV].join('|');
+  const key = [VW, VH, DPR, G.court, CAM.preset, CAM.yaw.toFixed(3), CAM.H.toFixed(2), GFX.low ? 1 : 0, WORLD.fontV].join('|');
   if (WORLD.key === key) return;
   WORLD.key = key;
   const th = theme(), W = VW + PAD * 2, H = VH + PADY * 2, keepCx = CAM.cx; CAM.cx = CAM.baseCx;
-  const boardTop = projRaw(0, L + 4, .9)[1];
+  const EX = rigExtent(), boardTop = projRig(0, EX.far, .9)[1];
   let [a, c] = mkLayer(W, H); WORLD.L1 = a; c.translate(PAD, PADY);
   const g = c.createLinearGradient(0, 0, 0, VH);
   g.addColorStop(0, th.sky[0]); g.addColorStop(.45, th.sky[1]); g.addColorStop(1, th.sky[2]);
@@ -1264,10 +1324,9 @@ function buildWorld(){
     const lx = VW * (i + .5) / 6, ly = boardTop - 160, rg = c.createRadialGradient(lx, ly, 0, lx, ly, 170);
     rg.addColorStop(0, `rgba(${th.light},.14)`); rg.addColorStop(1, `rgba(${th.light},0)`); c.fillStyle = rg; c.fillRect(lx - 170, ly - 170, 340, 340);
   }
-  const fl = G.flip; G.flip = false;
-  c.fillStyle = th.surround; poly(c, [[-8, -3.8], [8, -3.8], [8, L + 4], [-8, L + 4]]);
-  c.fillStyle = th.board; poly(c, [[-8, L + 4, 0], [8, L + 4, 0], [8, L + 4, .9], [-8, L + 4, .9]]);
-  G.flip = fl;
+  const rigPoly = pts => { c.beginPath(); pts.forEach(([pa, pb, pz], i) => { const q = projRig(pa, pb, pz || 0); i ? c.lineTo(q[0], q[1]) : c.moveTo(q[0], q[1]); }); c.closePath(); c.fill(); };
+  c.fillStyle = th.surround; rigPoly([[-40, -CAM.R + .7], [40, -CAM.R + .7], [40, EX.far], [-40, EX.far]]);
+  c.fillStyle = th.board; rigPoly([[-EX.side - 6, EX.far, 0], [EX.side + 6, EX.far, 0], [EX.side + 6, EX.far, .9], [-EX.side - 6, EX.far, .9]]);
   c.fillStyle = th.court; poly(c, [[-HW, 0], [HW, 0], [HW, L], [-HW, L]]);
   c.fillStyle = th.kitchen; poly(c, [[-HW, NET - KIT], [HW, NET - KIT], [HW, NET + KIT], [-HW, NET + KIT]]);
   const sheen = c.createLinearGradient(0, proj(0, L, 0)[1], 0, proj(0, 0, 0)[1]);
@@ -1293,7 +1352,7 @@ function buildWorld(){
   gline(c, -HW, 0, -HW, L, W5); gline(c, HW, 0, HW, L, W5);
   gline(c, -HW, NET - KIT, HW, NET - KIT, W5); gline(c, -HW, NET + KIT, HW, NET + KIT, W5);
   gline(c, 0, 0, 0, NET - KIT, W5); gline(c, 0, NET + KIT, 0, L, W5);
-  c.fillStyle = 'rgba(0,0,0,.2)'; poly(c, [[-HW - .28, NET], [HW + .28, NET], [HW + .7, NET - .8], [-HW + .1, NET - .8]]);   // net shadow
+  if (Math.abs(CAM.fy) > .9){ c.fillStyle = 'rgba(0,0,0,.2)'; poly(c, [[-HW - .28, NET], [HW + .28, NET], [HW + .7, NET - .8], [-HW + .1, NET - .8]]); }   // net shadow (behind-the-baseline views)
   const vg = c.createRadialGradient(VW / 2, VH * .55, Math.min(VW, VH) * .35, VW / 2, VH * .55, Math.max(VW, VH) * .8);
   vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.38)'); c.fillStyle = vg; c.fillRect(-PAD, -PADY, W, H);
   CAM.cx = keepCx;
@@ -1310,11 +1369,11 @@ function drawBeams(c, dx){
   c.restore();
 }
 function drawTicker(c, dx){
-  const th = theme(), a = projRaw(-8, L + 4, .9), b = projRaw(8, L + 4, 0), h = b[1] - a[1];
+  const th = theme(), EX = rigExtent(), a = projRig(-EX.side - 6, EX.far, .9), b = projRig(EX.side + 6, EX.far, 0), h = b[1] - a[1];
   if (h < 4) return;
   const gp = G.mode !== 'demo' && gamePoint(), msg = gp ? 'GAME POINT  ✦  ' : 'PICKLE RUSH  ✦  ';
   c.save(); c.beginPath(); c.rect(a[0] + dx, a[1], b[0] - a[0], h); c.clip();
-  c.font = `${Math.round(h * .62)}px "Russo One", Impact, sans-serif`; c.textBaseline = 'middle'; c.textAlign = 'left';
+  c.font = `${Math.round(Math.min(h * .62, 26))}px "Russo One", Impact, sans-serif`; c.textBaseline = 'middle'; c.textAlign = 'left';
   const tw = c.measureText(msg).width || 100, y = a[1] + h / 2;
   c.fillStyle = gp ? (Math.sin(G.time * 10) > 0 ? '#ff7a3d' : '#ffd0b8') : th.boardText;
   for (let x = a[0] + dx - ((G.time * h * 2.4) % tw); x < b[0] + dx; x += tw) c.fillText(msg, x, y);
@@ -1426,6 +1485,7 @@ function startMatch(mode, diff, players){
   G.ball = newBall(); G.fx = []; G.rings = []; G.texts = []; G.trail = []; G.confetti = []; G.flashes = []; G.lastWin = 0; G.hitstop = 0;
   G.stats = { perfect:0, winners:0, longest:0, cur:0 };
   if (mode !== 'online') { G.netRole = null; G.flip = false; }
+  if (CAM.preset !== camKey() || (mode !== 'online' && CAM.yaw !== CAMS[camKey()].yaw)) fitCamera();
   setupServe(); updateHUD();
 }
 
@@ -1459,7 +1519,7 @@ function setupServe(){
   G.serverP = server; G.recvP = recv; G.serveDrop = null;
   Object.assign(b, { live:false, bounces:0, hitCount:0, lastHitter:0, lastP:null, netHit:false, rolling:false, ax:0, vx:0, vy:0, vz:0, serveSign:recvLane });
   G.trail.length = 0; G.state = 'serve'; G.pred = null; G.stats.cur = 0;
-  for (const p of G.players) if (p.ai){ p.ai.serveT = rand(.8, 1.2); p.ai.plannedFor = -1; p.ai.target = null; p.ai.leave = false; }
+  for (const p of G.players) if (p.ai){ p.ai.serveT = rand(.8, 1.2); p.ai.plannedFor = -1; p.ai.target = null; p.ai.leave = false; p.ai.style = Math.random() < (p.ai.d.kitchen ?? .6) ? 'kitchen' : 'base'; }
   updateHUD(); announceCall();
 }
 let callT = 0;
@@ -1518,7 +1578,7 @@ function launch(p, type, tx, depth, tScale = 1, err = null, label = null, lcol =
   b.hitCount++; G.pred = null;
   p.swing = 1;
   hitFx(type, x0, y0, z0);
-  const txt = label || (type !== 'drive' && type !== 'serve' ? LABEL[type] + '!' : null);
+  const txt = label === '' ? null : label || (type !== 'drive' && type !== 'serve' ? LABEL[type] + '!' : null);
   if (txt) addText({ txt, x:p.x, y:p.y, z:2.2, life:.9, max:.9, color:lcol || S.color });
   if (type === 'smash' || type === 'spike'){ p.jumpT = .5; G.punch = .3; shake(type === 'spike' ? .34 : .28); sfx('smash'); if (p.human) vibrate(30); }
   else { sfx('hit'); if (type === 'slice' || type === 'curve') sfx('skill'); if (p.human) vibrate(10); }
@@ -1575,12 +1635,21 @@ function humanShot(p, d, q, metered){
 function aiShot(p){
   const D = p.ai.d, b = G.ball;
   if (D.coach){ consume(p, 'drive'); launch(p, 'drive', rand(-1.1, 1.1), rand(4.2, 5.4), D.tScale); return; }
-  let type = 'drive';
+  let type = 'drive', depth = null, ts = D.tScale, why = '';
+  const opps = team(other(p.team)), atNet = Math.abs(p.y - NET) < KIT + .9;
+  const oppsUp = opps.every(o => Math.abs(o.y - NET) < KIT + 1.3);
+  const kitchenGame = p.ai.style === 'kitchen';
   if (b.z > 1.7 && Math.random() < D.smash) type = 'smash';
-  else if (Math.abs(p.y - NET) < KIT + 1 && b.z < .75 && Math.random() < .5) type = 'dink';
+  else if (kitchenGame && atNet && b.z > 1.15 && Math.random() < .55 + D.acc * .35){ type = 'drive'; depth = rand(KIT + .4, KIT + 2.2); ts *= .82; why = 'speedup'; }      // put away a high ball, at the feet
+  else if (kitchenGame && atNet && Math.random() < (oppsUp ? .85 : .6)) type = 'dink';                                                                       // dink rally
+  else if (kitchenGame && !atNet && oppsUp && b.hitCount === 2 && Math.random() < .45 + D.acc * .4){ type = 'dink'; why = 'drop'; }                         // third-shot drop
+  else if (!kitchenGame && Math.abs(p.y - NET) < KIT + 1 && b.z < .75 && Math.random() < .5) type = 'dink';
   else if (p.energy >= COST && Math.random() < D.skill){ const r = Math.random(); type = b.z > .9 && r < .25 ? 'spike' : r < .62 ? 'slice' : 'curve'; }
   let tx = openTarget(p, 1.6 * (1 - D.acc) + .3) * (.75 + .25 * D.acc);
-  let depth = DEPTH(type);
+  if (type === 'dink' && kitchenGame && Math.random() < .55){ const o = opps[0]; tx = clamp(-(o ? o.x : 0) * .8 + gauss() * .6, -2.3, 2.3); }   // cross-court dinks
+  if (depth === null) depth = DEPTH(type);
+  // a loose dink pops up and invites an attack
+  if (type === 'dink' && Math.random() < D.mistake * 2.2) ts *= 1.55;
   if (type === 'dink') tx = clamp(tx, -2.2, 2.2);
   tx += gauss() * D.aimSd; depth += gauss() * D.aimSd * .8;
   if (type === 'curve') tx = clamp(tx, -2.7, 2.7);
@@ -1592,7 +1661,7 @@ function aiShot(p){
     else err = 'net';
   }
   consume(p, type);
-  launch(p, type, tx, depth, D.tScale, err);
+  launch(p, type, tx, depth, ts, err, why === 'drop' ? 'Drop shot' : why === 'speedup' ? 'Speed-up!' : (type === 'dink' ? '' : null), why === 'drop' ? '#a3e635' : why === 'speedup' ? '#ff7a3d' : null);
   updateHUD();
 }
 
@@ -1794,8 +1863,13 @@ function aiUpdate(p, dt){
   if (G.state === 'serve'){ movePlayer(p, 0, 0, dt, D.speed); return; }
   const dir = p.team === 1 ? -1 : 1;
   let depth = D.depth;
-  if (D.netRush && b.hitCount >= 2) depth = KIT + .35;
-  let tx = G.doubles ? p.lane * 1.45 + clamp(b.x * .15, -.5, .5) : clamp(b.x * .35, -1.4, 1.4), ty = NET + dir * depth;
+  // real pickleball: the returning side moves up right after the return of serve,
+  // the serving side waits for the return to bounce and moves up after the third shot
+  const ourReturnDone = b.hitCount >= 2 && (b.hitCount >= 3 || b.lastHitter === p.team);
+  const atKitchen = !D.coach && b.live && (ourReturnDone && (p.ai.style === 'kitchen' || (D.netRush && b.hitCount >= 2)));
+  if (atKitchen) depth = KIT + .3;
+  p.ai.atLine = atKitchen;
+  let tx = G.doubles ? p.lane * 1.45 + clamp(b.x * (atKitchen ? .3 : .15), -.6, .6) : clamp(b.x * (atKitchen ? .5 : .35), -1.6, 1.6), ty = NET + dir * depth;
   const incoming = G.state === 'play' && b.live && b.lastHitter !== p.team && !b.netHit;
   if (incoming){
     if (a.plannedFor !== b.hitCount){ a.react -= dt; if (a.react <= 0){ plan(p); a.plannedFor = b.hitCount; } }
@@ -1804,11 +1878,25 @@ function aiUpdate(p, dt){
   const dx = tx - p.x, dy = ty - p.y, dist = Math.hypot(dx, dy);
   let ix = 0, iy = 0;
   if (dist > .04){ const k = Math.min(1, dist * 2.5); ix = dx / dist * k; iy = dy / dist * k; }
-  movePlayer(p, ix, iy, dt, D.speed); p.inX = ix;
+  updateStamina(p, !D.coach && dist > 2.2 && (incoming || G.state === 'play'), dt);
+  movePlayer(p, ix, iy, dt, D.speed * (p.sprinting ? 1.25 : 1)); p.inX = ix;
 }
 
 /* ---------- movement + input ---------- */
 const K = {};
+/* sprint: about 40% faster while stamina lasts; an empty tank makes you tired until it refills to 30 */
+const SPRINT = { mult:1.4, drain:38, regen:22, recover:30 };
+function updateStamina(p, want, dt){
+  if (p.stamina === undefined) p.stamina = 100;
+  if (p.tired && p.stamina >= SPRINT.recover) p.tired = false;
+  p.sprinting = !!want && !p.tired && p.stamina > 0;
+  if (p.sprinting){ p.stamina = Math.max(0, p.stamina - SPRINT.drain * dt); if (p.stamina <= 0) p.tired = true; }
+  else p.stamina = Math.min(100, p.stamina + SPRINT.regen * dt);
+}
+function wantsSprint(p){
+  if (p.human.remote) return !!p.netIn.s;
+  return held(p, 'sprint') || !!p.padSprint || (p.human.set === 'p1' && touch.active && Math.hypot(touch.x, touch.y) > .93);
+}
 const touch = { active:false, x:0, y:0, id:null };
 function movePlayer(p, ix, iy, dt, speed){
   const k = Math.min(1, dt * 14);
@@ -1828,7 +1916,8 @@ function readInput(p){
   if (held(p, 'up')) iy += 1; if (held(p, 'down')) iy -= 1;
   if (p.human.set === 'p1' && touch.active){ ix += touch.x; iy += touch.y; }
   ix += p.padX; iy += p.padY;
-  if (G.flip){ ix = -ix; iy = -iy; }
+  // controls follow the camera: up = away from you on screen, right = right on screen
+  { const wx = CAM.rx * ix + CAM.fx * iy, wy = CAM.ry * ix + CAM.fy * iy; ix = wx; iy = wy; }
   const m = Math.hypot(ix, iy); if (m > 1){ ix /= m; iy /= m; }
   p.inX = ix; p.inY = iy;
 }
@@ -1879,7 +1968,7 @@ function pollPads(){
     let x = gp.axes[0] || 0, y = gp.axes[1] || 0;
     if (Math.hypot(x, y) < .22){ x = 0; y = 0; }
     if (bt(14)) x = -1; if (bt(15)) x = 1; if (bt(12)) y = -1; if (bt(13)) y = 1;
-    p.padX = x; p.padY = -y;
+    p.padX = x; p.padY = -y; p.padSprint = bt(4) || bt(6) || bt(10);
     const now = [bt(0), bt(2), bt(3), bt(1), bt(5), bt(9)], prev = p.padPrev;
     if (now[5] && !prev[5]){ if (screenNow === 'game') togglePause(true); else if (screenNow === 'pause') togglePause(false); }
     if (screenNow === 'game' && !G.paused){
@@ -1907,8 +1996,8 @@ function update(dt){
     if (p.ai) aiUpdate(p, dt);
     else {
       readInput(p);
-      if (G.state === 'serve' && G.serverP === p){ p.vx = p.vy = 0; p.moving = false; }
-      else movePlayer(p, p.inX, p.inY, dt, 5.2);
+      if (G.state === 'serve' && G.serverP === p){ p.vx = p.vy = 0; p.moving = false; updateStamina(p, false, dt); }
+      else { updateStamina(p, wantsSprint(p) && Math.hypot(p.inX, p.inY) > .25, dt); movePlayer(p, p.inX, p.inY, dt, 5.2 * (p.sprinting ? SPRINT.mult : 1)); }
       if (p.charging) p.charge = Math.min(PMAX, p.charge + dt / mt);
       if (p.swingT > 0) p.swingT -= dt;
       if (p.meterT > 0) p.meterT -= dt;
@@ -1969,7 +2058,7 @@ function tickEffects(dt){
     if (p.jumpT > 0) p.jumpT = Math.max(0, p.jumpT - dt);
     const sp = p._rx === undefined ? 0 : Math.hypot(p.x - p._rx, p.y - p._ry) / Math.max(dt, 1e-3);
     p._rx = p.x; p._ry = p.y;
-    if (sp > 3.4 && sp < 20 && !(p.jumpT > 0) && Math.random() < dt * 10 && !GFX.low)
+    if (sp > 3.4 && sp < 20 && !(p.jumpT > 0) && Math.random() < dt * (p.sprinting ? 26 : 10) && !GFX.low)
       G.fx.push({ x:p.x + rand(-.15, .15), y:p.y + rand(-.1, .1), z:.02, vx:rand(-.4, .4), vy:rand(-.4, .4), vz:rand(.2, .6), life:.45, max:.45, color:'#d8d2c4', r:rand(.04, .07), dust:true });
   }
   for (const f of G.flashes) f.life -= dt; G.flashes = G.flashes.filter(f => f.life > 0);
@@ -1981,7 +2070,7 @@ function tickEffects(dt){
     G.spin += Math.hypot(b.vx || 0, b.vy || 0) * dt * 3 + dt * 2;
     if ((G.trailTick += dt) > 1 / 70){ G.trailTick = 0; G.trail.push({ x:b.x, y:b.y, z:b.z }); if (G.trail.length > 12) G.trail.shift(); }
   }
-  G.camX = lerp(G.camX, b ? clamp(G.flip ? -b.x : b.x, -4, 4) : 0, Math.min(1, dt * 2.2));
+  G.camX = lerp(G.camX, b ? clamp(b.x * CAM.rx + (b.y - NET) * CAM.ry, -6.5, 6.5) : 0, Math.min(1, dt * 2.2));
   for (const f of G.fx){ f.life -= dt; f.vz -= GRAV * .5 * dt; f.x += f.vx * dt; f.y += f.vy * dt; f.z = Math.max(0, f.z + f.vz * dt); }
   G.fx = G.fx.filter(f => f.life > 0);
   for (const r of G.rings) r.life -= dt; G.rings = G.rings.filter(r => r.life > 0);
@@ -2152,7 +2241,7 @@ function drawCharacter(c, x, y, s, look, facing, swing, run, moving, t, tag, fx)
   if (F.crouch) c.scale(1 + F.crouch * .035, 1 - F.crouch * .075);
   // legs: thigh, knee, calf, sock, shoe
   for (const side of [-1, 1]){
-    const lift = Math.max(0, side * sw) * .09;
+    const lift = Math.max(0, side * sw) * (F.sprint ? .16 : .09);
     const hx = side * B.legX, hy = -.92, kx = side * (B.legX + .012), ky = -.5 - lift * .7, ax = side * (B.legX - .004), ay = -.1 - lift;
     c.strokeStyle = skin; c.lineWidth = B.thigh; seg(c, hx, hy, kx, ky);
     c.lineWidth = B.calf; seg(c, kx, ky, ax, ay - .02);
@@ -2174,7 +2263,7 @@ function drawCharacter(c, x, y, s, look, facing, swing, run, moving, t, tag, fx)
     else { c.lineWidth = .018; for (const sx of [-1, 1]) seg(c, sx * (w + .015), -.96, sx * (w + .035), hem + .02); }
   }
   // back arm
-  const fa = F.cheer ? 2.75 + Math.sin(t * 9 + 1) * .15 : F.sad ? .06 : .18 + (moving ? -sw * .4 : Math.sin(t * 2) * .03), shX = B.sh - .03;
+  const fa = F.cheer ? 2.75 + Math.sin(t * 9 + 1) * .15 : F.sad ? .06 : .18 + (moving ? -sw * (F.sprint ? .85 : .4) : Math.sin(t * 2) * .03), shX = B.sh - .03;
   limb(c, -ps * shX, -1.37, -ps * fa, -ps * .35, .27, .25, skin, t1, SLEEVE, tst === 'hoodie' ? t1 : null, B.arm, B.fore);
   if (tst === 'hoodie'){ c.fillStyle = shade(t1, -.12); ell(c, 0, front ? -1.44 : -1.47, B.sh * .65, .08); }
   // long hair falls behind the shoulders
@@ -2270,7 +2359,7 @@ function drawCharacter(c, x, y, s, look, facing, swing, run, moving, t, tag, fx)
   if (hst === 'crown'){ c.fillStyle = h1; c.beginPath(); c.moveTo(-.12, -1.71); c.lineTo(-.13, -1.86); c.lineTo(-.065, -1.78); c.lineTo(0, -1.89); c.lineTo(.065, -1.78); c.lineTo(.13, -1.86); c.lineTo(.12, -1.71); c.closePath(); c.fill(); c.fillStyle = h2; ell(c, 0, -1.75, .02, .02); ell(c, -.075, -1.74, .014, .014); ell(c, .075, -1.74, .014, .014); }
   // paddle arm
   const pr = 1 - swing;
-  const a = F.cheer ? 2.85 + Math.sin(t * 9) * .15 : F.sad ? .35 : .85 + (swing > 0 ? Math.sin(pr * Math.PI) * 1.5 : 0) + (moving ? 0 : Math.sin(t * 2) * .05) + (F.crouch || 0) * .25;
+  const a = F.cheer ? 2.85 + Math.sin(t * 9) * .15 : F.sad ? .35 : .85 + (swing > 0 ? Math.sin(pr * Math.PI) * 1.5 : 0) + (moving ? (F.sprint ? sw * .55 : 0) : Math.sin(t * 2) * .05) + (F.crouch || 0) * .25;
   const [hx, hy, ex, ey] = limb(c, ps * shX, -1.37, ps * a, ps * .3, .27, .25, skin, t1, SLEEVE, tst === 'hoodie' ? t1 : null, B.arm, B.fore);
   drawPaddle(c, pad, hx, hy, Math.atan2(hy - ey, hx - ex));
   c.restore();
@@ -2278,9 +2367,18 @@ function drawCharacter(c, x, y, s, look, facing, swing, run, moving, t, tag, fx)
 /* ---------- render ---------- */
 function render(){
   const c = ctx, b = G.ball;
-  CAM.cx = CAM.baseCx - G.camX * CAM.F * .012;
+  CAM.cx = CAM.baseCx - clamp(G.camX * CAM.F * (CAM.follow || .012), -PAD + 12, PAD - 12);
   c.setTransform(DPR, 0, 0, DPR, 0, 0);
   if (G.shake > 0){ const k = G.shake * 26; c.translate(rand(-k, k), rand(-k, k)); }
+  G.view = null;
+  if (CAM.zoom > 1 && G.mode !== 'demo' && b){
+    const me = meP() || G.players[0], qa = me ? proj(me.x, me.y, 1) : [VW / 2, VH * .6], qb = proj(b.x, b.y, b.z);
+    const tx = qa[0] * .6 + qb[0] * .4, ty = qa[1] * .6 + qb[1] * .4;
+    G.fxX = lerp(G.fxX ?? tx, tx, .08); G.fxY = lerp(G.fxY ?? ty, ty, .08);
+    const k = CAM.zoom, ox = clamp((VW / 2 - G.fxX) * .5, -PAD * .5, PAD * .5), oy = clamp((VH * .58 - G.fxY) * .4, -40, 40);
+    G.view = { k, fx:G.fxX, fy:G.fxY, ox, oy };
+    c.translate(G.fxX + ox, G.fxY + oy); c.scale(k, k); c.translate(-G.fxX, -G.fxY);
+  }
   if (G.punch > 0 && b){ const q = proj(b.x, b.y, b.z), k = 1 + Math.sin(G.punch / .3 * Math.PI) * .045; c.translate(q[0], q[1]); c.scale(k, k); c.translate(-q[0], -q[1]); }
   buildWorld();
   const dx = Math.round((CAM.cx - CAM.baseCx) * DPR) / DPR, ww = VW + PAD * 2, wh = VH + PADY * 2;
@@ -2330,10 +2428,13 @@ function render(){
     c.fillStyle = `rgba(0,0,0,${.35 / (1 + b.z * .8)})`; c.beginPath(); c.ellipse(q[0], q[1], .07 * q[2], .028 * q[2], 0, 0, TAU); c.fill();
   }
   const ents = [];
-  const nearTeam = G.flip ? 2 : 1, vy = y => G.flip ? L - y : y;
-  for (const p of G.players) ents.push({ y:vy(p.y), f:() => { const q = proj(p.x, p.y, 0); drawCharacter(c, q[0], q[1], q[2], p.look, p.team === nearTeam ? 'back' : 'front', p.swing, p.run, p.moving, G.time, (p.name || '?').slice(0, 1).toUpperCase(), playerFx(p, q)); } });
-  ents.push({ y:NET, f:drawNet });
-  if (ballVisible) ents.push({ y:vy(b.y), f:drawBall });
+  for (const p of G.players) ents.push({ y:depthOf(p.x, p.y), f:() => {
+    const q = proj(p.x, p.y, 0), fx = playerFx(p, q);
+    if (fx.sprint) drawStreaks(c, p, q);
+    drawCharacter(c, q[0], q[1], q[2], p.look, facingOf(p), p.swing, p.run, p.moving, G.time, (p.name || '?').slice(0, 1).toUpperCase(), fx);
+  } });
+  ents.push({ y:depthOf(0, NET), f:drawNet });
+  if (ballVisible) ents.push({ y:depthOf(b.x, b.y), f:drawBall });
   ents.sort((a, z) => z.y - a.y).forEach(e => e.f());
   // name tags, serve arrow, power meters
   if (G.mode !== 'demo'){
@@ -2349,6 +2450,11 @@ function render(){
         if (!hidden){ c.lineWidth = 3; c.strokeStyle = 'rgba(5,10,25,.75)'; c.strokeText(p.name, q[0], q[1] - 24); c.fillStyle = p.human ? p.human.color : '#dbe4f3'; c.fillText(p.name, q[0], q[1] - 24); }
       }
       if (p.human) drawMeter(p);
+      if (p.human && (p.stamina ?? 100) < 99.5){
+        const qh = proj(p.x, p.y, 2.12), w = clamp(.6 * qh[2], 26, 54), st = (p.stamina ?? 100) / 100;
+        c.fillStyle = 'rgba(5,10,25,.7)'; rr(c, qh[0] - w / 2 - 2, qh[1] - 4, w + 4, 7, 3.5); c.fill();
+        c.fillStyle = p.tired ? '#f87171' : st > .5 ? '#a6f23d' : st > .25 ? '#fde047' : '#ff7a3d'; rr(c, qh[0] - w / 2, qh[1] - 2, w * st, 3, 1.5); c.fill();
+      }
     }
   }
   for (const f of G.bfx){
@@ -2378,14 +2484,27 @@ function render(){
 function playerFx(p, q){
   const now = performance.now() / 1000, dtp = now - (p._st || now);
   const vxs = dtp > 0 && dtp < .25 && p._sx !== undefined ? (q[0] - p._sx) / dtp / Math.max(30, q[2]) : 0;
-  p._sx = q[0]; p._st = now;
-  p._lean = lerp(p._lean || 0, clamp(vxs * .03, -.15, .15), .2);
+  if (dtp > 0 && dtp < .25 && p._sy !== undefined){ p._svx = lerp(p._svx || 0, (q[0] - p._sx) / dtp, .3); p._svy = lerp(p._svy || 0, (q[1] - p._sy) / dtp, .3); }
+  p._sx = q[0]; p._sy = q[1]; p._st = now;
+  p._lean = lerp(p._lean || 0, clamp(vxs * (p.sprinting ? .045 : .03), -.2, .2), .2);
   const b = G.ball, incoming = G.state === 'play' && b.live && b.lastHitter !== p.team;
   p._crouch = lerp(p._crouch || 0, incoming && !p.moving ? 1 : 0, .12);
   const after = (G.state === 'point' || G.state === 'over') && G.lastWin;
   const cheer = after && G.lastWin === p.team, sad = after && G.lastWin !== p.team;
   const jump = (p.jumpT > 0 ? Math.sin(Math.PI * (1 - p.jumpT / .5)) * .34 : 0) + (cheer ? Math.abs(Math.sin(G.time * 7 + p.x * 3)) * .2 : 0);
-  return { lean:p._lean, crouch:p._crouch, jump, cheer, sad };
+  return { lean:p._lean, crouch:p._crouch, jump, cheer, sad, sprint:!!(p.sprinting && p.moving) };
+}
+/* speed streaks trailing behind a sprinting player */
+function drawStreaks(c, p, q){
+  const vx = p._svx || 0, vy = p._svy || 0, v = Math.hypot(vx, vy); if (v < 40) return;
+  const ux = -vx / v, uy = -vy / v, s = q[2], len = clamp(v * .12, s * .35, s * .9);
+  c.save(); c.lineCap = 'round';
+  for (let i = 0; i < 4; i++){
+    const h = (.35 + i * .32) * s, ph = (G.time * 9 + i * 1.7) % 1, x0 = q[0] + ux * s * .15, y0 = q[1] - h;
+    c.globalAlpha = .45 * (1 - ph * .5); c.strokeStyle = i % 2 ? '#ffffff' : (p.human ? p.human.color : '#cfe3ff'); c.lineWidth = Math.max(1, s * .022);
+    c.beginPath(); c.moveTo(x0 + ux * len * ph * .3, y0 + uy * len * ph * .3); c.lineTo(x0 + ux * len * (.6 + ph * .4), y0 + uy * len * (.6 + ph * .4)); c.stroke();
+  }
+  c.restore();
 }
 function drawFlashes(c){
   if (!G.flashes.length) return;
@@ -2404,7 +2523,7 @@ function drawMeter(p){
   const c = ctx, q = proj(p.x, p.y, 0), s = q[2];
   const val = p.charging ? p.charge : p.meterQ, a = p.charging ? 1 : Math.min(1, p.meterT / .35);
   const h = clamp(1.2 * s, 70, 150), w = clamp(.13 * s, 9, 16);
-  const x = q[0] + (p.team === (G.flip ? 2 : 1) ? .62 : .5) * s, top = q[1] - clamp(1.5 * s, 90, 190);
+  const x = q[0] + (facingOf(p) === 'back' ? .62 : .5) * s, top = q[1] - clamp(1.5 * s, 90, 190);
   const Y = v => top + h * (1 - Math.min(v, PMAX) / PMAX);
   c.save(); c.globalAlpha = a;
   c.fillStyle = 'rgba(6,12,26,.82)'; rr(c, x - 3, top - 3, w + 6, h + 6, w / 2 + 3); c.fill();
@@ -2684,6 +2803,8 @@ function refreshMenu(){
   $('#mLevel').textContent = lv.level;
   $('#mRing').style.strokeDashoffset = String(263.9 * (1 - lv.into / lv.need));
   const n = a.wins + a.losses;
+  const dp = CAT.dupr(a.mmr);
+  setTxt('#mDupr', dp.toFixed(3)); setTxt('#mDuprTier', CAT.duprTier(dp)); $('#mDuprBar').style.width = ((dp - 2) / 6 * 100).toFixed(1) + '%';
   setTxt('#mWins', String(a.wins)); setTxt('#mRate', n ? Math.round(a.wins / n * 100) + '%' : '—'); setTxt('#mPeak', String(a.peak || a.mmr));
   const hist = (a.history || []).slice(0, 3);
   $('#mRecent').innerHTML = hist.length ? hist.map(h => `<div class="mini"><span class="wl" style="background:${h.win ? 'rgba(74,222,128,.15)' : 'rgba(248,113,113,.15)'}; color:${h.win ? 'var(--good)' : 'var(--bad)'}">${h.win ? 'W' : 'L'}</span><span class="flex-1 min-w-0 truncate">${esc(h.opp)}</span><span class="tabular-nums text-[var(--muted)]">${esc(h.score)}</span><b class="tabular-nums" style="color:${h.delta > 0 ? 'var(--good)' : 'var(--bad)'}">${h.delta > 0 ? '+' : '−'}${Math.abs(h.delta)}</b></div>`).join('')
@@ -2734,7 +2855,7 @@ function renderDiff(){
     btn.innerHTML = `<span class="font-display text-lg w-7 text-center text-[var(--muted)] tabular-nums">${locked ? '🔒' : beaten ? '✓' : i + 1}</span>
       <div class="flex-1 min-w-0"><div class="font-display text-lg leading-none">${esc(m === '1p' ? ai.name : ai.name + ' & ' + ai.name2.split(' ')[1])}</div>
       <div class="text-sm text-[var(--muted)] mt-1">${locked ? `Beat ${esc(AIS[LADDER[i - 1]].name)} to unlock` : ai.blurb}</div></div>
-      <div class="text-right shrink-0"><div class="font-display text-xl leading-none tabular-nums">${ai.mmr}</div>
+      <div class="text-right shrink-0"><div class="font-display text-xl leading-none tabular-nums">${ai.mmr}</div><div class="text-[11px] font-bold hot tabular-nums">${CAT.dupr(ai.mmr).toFixed(2)} DUPR</div>
       ${ranked && !locked ? `<div class="text-[13px] font-semibold mt-1 tabular-nums"><span style="color:var(--good)">+${win}</span> <span class="text-[var(--muted)]">/</span> <span style="color:var(--bad)">−${loss}</span></div><div class="text-[11px] text-[var(--muted)]">win: ${rw.coins} coins</div>` : ''}</div>`;
     list.appendChild(btn);
   });
@@ -2777,7 +2898,7 @@ function renderRank(){
   if (a){
     const n = a.wins + a.losses;
     $('#rMe').innerHTML = `<div class="flex items-end justify-between gap-4 flex-wrap">
-      <div><div class="font-display text-[60px] leading-none tabular-nums">${a.mmr}</div><div class="text-sm font-semibold text-[var(--muted)] mt-1">${esc(a.username || a.name)}’s MMR</div></div>
+      <div><div class="font-display text-[60px] leading-none tabular-nums">${a.mmr}</div><div class="text-sm font-semibold text-[var(--muted)] mt-1">${esc(a.username || a.name)}’s MMR · <span class="hot">${CAT.dupr(a.mmr).toFixed(3)} DUPR (est.)</span> · ${CAT.duprTier(CAT.dupr(a.mmr))}</div></div>
       <div class="grid grid-cols-3 gap-4 text-right">
         <div><div class="font-display text-xl tabular-nums">${a.peak || a.mmr}</div><div class="text-xs text-[var(--muted)] font-semibold">Peak</div></div>
         <div><div class="font-display text-xl tabular-nums">${a.wins}–${a.losses}</div><div class="text-xs text-[var(--muted)] font-semibold">W–L</div></div>
@@ -2795,7 +2916,7 @@ function renderRank(){
     return `<div class="flex items-center gap-3 rounded-xl px-3 py-2 ${you ? 'bg-[var(--accent)] text-[var(--accent-ink)]' : 'tile'}">
       <span class="font-display w-7 text-center tabular-nums rounded-md" ${medal && !you ? `style="background:${medal};color:#1b1b1b"` : ''}>${i + 1}</span>
       <span class="flex-1 font-semibold truncate">${esc(r.username)}${you ? ' (you)' : ''}</span>
-      <span class="text-xs font-bold opacity-80">Lv ${r.level || 1}</span><span class="text-sm tabular-nums opacity-80">${r.wins}–${r.losses}</span><span class="font-display tabular-nums w-14 text-right">${r.mmr}</span></div>`;
+      <span class="text-xs font-bold opacity-80">Lv ${r.level || 1}</span><span class="text-xs font-bold hot tabular-nums">${(r.dupr ?? CAT.dupr(r.mmr)).toFixed(2)}</span><span class="text-sm tabular-nums opacity-80">${r.wins}–${r.losses}</span><span class="font-display tabular-nums w-14 text-right">${r.mmr}</span></div>`;
   }).join('') : `<div class="text-[var(--muted)]">${ACC.server ? 'No players yet. Sign up and win a ranked match to be first.' : 'Nothing here yet.'}</div>`;
   const hist = (a && a.history) || [];
   $('#rHist').innerHTML = hist.length ? hist.map(h => `<div class="tile rounded-xl px-3 py-2 flex items-center gap-3">
@@ -2898,6 +3019,7 @@ function renderCtrl(){
   $$('#optMeter button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === data.opts.meter));
   $$('#optSwing button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === data.opts.swing));
   $$('#optTouch button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === data.opts.touch));
+  $$('#optCam button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === (data.opts.camera || 'classic')));
   $$('#optGfx button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === (data.opts.gfx || 'auto')));
   $('#optFps').classList.toggle('chip-on', !!data.opts.fps);
   $('#optFull').classList.toggle('chip-on', data.opts.fullscreen !== false);
@@ -2995,7 +3117,12 @@ function act(name, el){
     case 'ctrlBack': REB = null; show(ctrlFrom === 'pause' ? 's-pause' : 's-menu'); break;
     case 'ctrlTab': REB = null; ctrlSet = el.dataset.v; renderCtrl(); break;
     case 'bind': REB = { set:ctrlSet, act:el.dataset.a }; renderCtrl(); break;
-    case 'opt': data.opts[el.dataset.k] = el.dataset.v; save(); if (el.dataset.k === 'gfx') applyGfx(); renderCtrl(); updateHUD(); break;
+    case 'camCycle': {
+      const i = CAM_ORDER.indexOf(data.opts.camera || 'classic'), k = CAM_ORDER[(i + 1) % CAM_ORDER.length];
+      data.opts.camera = k; save(); fitCamera(); showToast(`Camera: ${CAMS[k].name}`, CAMS[k].hint);
+      break;
+    }
+    case 'opt': data.opts[el.dataset.k] = el.dataset.v; save(); if (el.dataset.k === 'gfx') applyGfx(); if (el.dataset.k === 'camera') fitCamera(); renderCtrl(); updateHUD(); break;
     case 'optToggle': data.opts[el.dataset.k] = !data.opts[el.dataset.k]; save(); renderCtrl(); break;
     case 'resetBinds': data.binds[ctrlSet] = clone(DEF_BINDS[ctrlSet]); save(); renderCtrl(); break;
     case 'rank': show('s-rank'); break;
@@ -3035,6 +3162,7 @@ addEventListener('keydown', e => {
   ensureAudio();
   if (c === 'Escape'){ if (screenNow === 'game') togglePause(true); else if (screenNow === 'pause') togglePause(false); else if (screenNow === 'ctrl') act('ctrlBack'); return; }
   if (screenNow !== 'game' || G.paused || G.state === 'over' || G.mode === 'demo') return;
+  if (c === 'KeyC' && !localHumans().some(p => Object.values(bindSets(p)).some(set => Object.values(set).includes('KeyC')))){ act('camCycle'); return; }
   for (const p of localHumans()) for (const a of SHOT_ACTS) if (isBind(p, a, c)) control(p, a, true);
 });
 addEventListener('keyup', e => {
@@ -3208,7 +3336,7 @@ function renderRoom(){
     const sl = r.slots[i], team = i % 2 === 0 ? 't1' : 't2', num = `${i + 1}P`;
     if (!sl) return `<button data-act="onSlot" data-i="${i}" class="pcard empty" style="animation-delay:${i * .07}s"><div class="pcNum" style="color:var(--muted)">${num}</div><div class="pcPlus">+</div><div class="pcName">Open slot</div><div class="pcMeta">Tap to move here.<br>The AI plays if nobody joins.</div></button>`;
     const you = i === NW.you, isHost = i === r.host;
-    const meta = [sl.level ? `Lv ${sl.level}` : (sl.account ? '' : 'Guest'), sl.account ? `${sl.mmr} MMR` : ''].filter(Boolean).join(' · ');
+    const meta = [sl.level ? `Lv ${sl.level}` : (sl.account ? '' : 'Guest'), sl.account ? `${CAT.dupr(sl.mmr).toFixed(2)} DUPR` : ''].filter(Boolean).join(' · ');
     const state = sl.away ? `<span class="pulse">RECONNECTING ${sl.awayLeft}s</span>` : sl.ready ? `${CHECK_SVG}<span>READY</span>` : `<span style="opacity:.7">NOT READY</span>`;
     return `<div class="pcard ${team} ${sl.ready ? 'ready' : ''} ${you ? 'me' : ''} ${sl.away ? 'away' : ''}" style="animation-delay:${i * .07}s">
       ${you || isHost ? `<span class="pcBadge">${[you ? 'YOU' : '', isHost ? 'HOST' : ''].filter(Boolean).join(' · ')}</span>` : ''}
@@ -3248,7 +3376,7 @@ function beginOnline(){
     return makePlayer(Object.assign(base, { look:s.look, name:s.name, human:{ remote:true, slot:i, set:'p2', tag:'P' + (i + 1), color:SLOT_COL[i] } }));
   });
   G.netRole = isHost ? 'host' : 'guest'; G.netEv = []; NW.snaps = []; NW.hit = false; NW.arms = [];
-  G.flip = slotTeam(NW.you) === 2; NW.warned = false; NW.auth = null;
+  G.flip = slotTeam(NW.you) === 2; NW.warned = false; NW.auth = null; fitCamera();
   startMatch('online', null, ps);
   show(null);
   showToast(isHost ? 'You’re hosting' : 'Match started', `${teamName(1)} vs ${teamName(2)}`);
@@ -3283,7 +3411,7 @@ function netWaiting(){
   return '';
 }
 function leaveOnline(reason){
-  NW.room = null; NW.snaps = []; G.netRole = null; G.flip = false; NW.reconnecting = null; setNetBanner('');
+  NW.room = null; NW.snaps = []; G.netRole = null; G.flip = false; NW.reconnecting = null; setNetBanner(''); fitCamera();
   if (reason) showToast('Left the room', reason);
   show(ACC.server ? 's-online' : 's-menu');
 }
@@ -3293,6 +3421,7 @@ function hostInput(m){
   if (!p || !p.human || !p.human.remote) return;
   if (typeof m.x === 'number') p.netIn.x = clamp(m.x, -1, 1);
   if (typeof m.y === 'number') p.netIn.y = clamp(m.y, -1, 1);
+  if (m.s !== undefined) p.netIn.s = !!m.s;
   const h = !!m.h;
   if (h !== !!p.netIn.h){ p.netIn.h = h; h ? startCharge(p) : release(p); }
   if (Array.isArray(m.a)) m.a.slice(0, 4).forEach(a => { if (['slice', 'curve', 'dink', 'spike'].includes(a)) arm(p, a); });
@@ -3301,7 +3430,7 @@ function hostSnapshot(){
   const b = G.ball;
   return { t:'st', s:G.state, sc:G.score, sv:G.server, sp:G.players.indexOf(G.serverP), rp:G.players.indexOf(G.recvP), sn:G.serveNum, lw:G.lastWin, wait:netWaiting(), sty:SERVES.indexOf(G.serverP ? G.serverP.serveType || 'volley' : 'volley'), mt:Math.round(G.matchT), r:G.rally,
     b:[r3(b.x), r3(b.y), r3(b.z), TYPES.indexOf(b.type), b.live ? 1 : 0, b.hitCount, b.lastHitter, b.serveSign, BALL_IDS.indexOf(b.skin || 'ball_classic')], ct:COURT_IDS.indexOf(G.court),
-    p:G.players.map(p => [r3(p.x), r3(p.y), r3(p.swing), r3(p.run), p.moving ? 1 : 0, Math.round(p.energy), ARMS.indexOf(p.armed), p.charging ? 1 : 0, r3(p.charge), r3(p.meterT), r3(p.meterQ), r3(p.jumpT || 0)]),
+    p:G.players.map(p => [r3(p.x), r3(p.y), r3(p.swing), r3(p.run), p.moving ? 1 : 0, Math.round(p.energy), ARMS.indexOf(p.armed), p.charging ? 1 : 0, r3(p.charge), r3(p.meterT), r3(p.meterQ), r3(p.jumpT || 0), Math.round(p.stamina ?? 100), p.sprinting ? 1 : 0]),
     ev:G.netEv.splice(0) };
 }
 function guestSnap(m){
@@ -3341,6 +3470,7 @@ function guestInterp(){
     const kk = Math.hypot(B[0] - A[0], B[1] - A[1]) > 2.5 ? 1 : k;
     p.x = lerp(A[0], B[0], kk); p.y = lerp(A[1], B[1], kk); p.swing = B[2]; p.run = lerp(A[3], B[3], kk); p.moving = !!B[4];
     p.energy = B[5]; p.armed = ARMS[B[6]] || 'drive'; p.charging = !!B[7]; p.charge = B[8]; p.meterT = B[9]; p.meterQ = B[10]; p.jumpT = B[11] || 0;
+    p.stamina = B[12] ?? 100; p.sprinting = !!B[13];
   });
   const A = a.b, B = b.b, bb = G.ball;
   const kk = (A[4] !== B[4] || A[5] !== B[5] || Math.hypot(B[0] - A[0], B[1] - A[1]) > 3) ? 1 : k;
@@ -3360,11 +3490,11 @@ function guestInterp(){
 function netInput(force){
   const me = G.players[NW.you]; if (!me) return;
   const now = performance.now() / 1000;
-  const x = r3(me.inX), y = r3(me.inY), h = NW.hit ? 1 : 0;
-  const changed = x !== NW.sx || y !== NW.sy || h !== NW.sh || NW.arms.length > 0;
+  const x = r3(me.inX), y = r3(me.inY), h = NW.hit ? 1 : 0, sp = me.human && wantsSprint(me) ? 1 : 0;
+  const changed = x !== NW.sx || y !== NW.sy || h !== NW.sh || sp !== NW.ss || NW.arms.length > 0;
   if (!force && now - NW.lastIn < (changed ? 1 / 60 : .25)) return;
-  NW.lastIn = now; NW.sx = x; NW.sy = y; NW.sh = h;
-  netSend({ t:'in', x, y, h, a:NW.arms.splice(0) });
+  NW.lastIn = now; NW.sx = x; NW.sy = y; NW.sh = h; NW.ss = sp;
+  netSend({ t:'in', x, y, h, s:sp, a:NW.arms.splice(0) });
 }
 function guestTick(dt){
   G.time += dt;
@@ -3375,7 +3505,8 @@ function guestTick(dt){
     const frozen = G.state === 'serve' && G.serverP === me;
     if (frozen){ me.vx = me.vy = 0; me.moving = false; if (NW.auth){ me.x = NW.auth[0]; me.y = NW.auth[1]; } }
     else {
-      movePlayer(me, me.inX, me.inY, dt, 5.2);
+      updateStamina(me, wantsSprint(me) && Math.hypot(me.inX, me.inY) > .25, dt);
+      movePlayer(me, me.inX, me.inY, dt, 5.2 * (me.sprinting ? SPRINT.mult : 1));
       if (NW.auth){
         const ex = NW.auth[0] - me.x, ey = NW.auth[1] - me.y;
         if (Math.hypot(ex, ey) > 1.6){ me.x = NW.auth[0]; me.y = NW.auth[1]; }
@@ -3395,17 +3526,18 @@ const DT = 1 / 120;
 let lastRender = 0, lastShop = 0;
 let HUD_RECT = null, CB_RECT = null;
 addEventListener('resize', () => { HUD_RECT = CB_RECT = null; });
+const toScreen = q => { const v = G.view; return v ? [(q[0] - v.fx) * v.k + v.fx + v.ox, (q[1] - v.fy) * v.k + v.fy + v.oy, q[2]] : q; };
 function hudAutoHide(dt){
   const hud = $('#hud'), cb = $('#callBanner');
   if (hud.classList.contains('hidden') || G.mode === 'demo'){ if (hud.classList.contains('sb-dim')) hud.classList.remove('sb-dim'); return; }
   if (!HUD_RECT || !HUD_RECT.w){ const r = $('.sb').getBoundingClientRect(); HUD_RECT = { l:r.left - 6, t:r.top - 6, r:r.right + 6, b:r.bottom + 4, w:r.width }; }
   const inside = (R, x, y) => R && x > R.l && x < R.r && y > R.t && y < R.b;
-  const b = G.ball, nearTeam = G.flip ? 2 : 1, pts = [];
-  if (b && (b.live || G.state === 'serve')){ const q = proj(b.x, b.y, b.z); pts.push(q); }
-  for (const p of G.players) if (p.team !== nearTeam){ pts.push(proj(p.x, p.y, 1.9)); pts.push(proj(p.x, p.y, 1.0)); }
+  const b = G.ball, nT = nearTeam(), pts = [];
+  if (b && (b.live || G.state === 'serve')){ const q = toScreen(proj(b.x, b.y, b.z)); pts.push(q); }
+  for (const p of G.players) if (p.team !== nT){ pts.push(toScreen(proj(p.x, p.y, 1.9))); pts.push(toScreen(proj(p.x, p.y, 1.0))); }
   let block = pts.some(q => inside(HUD_RECT, q[0], q[1]));
   // the opponent's serve: clear the view until the ball is on its way
-  if (G.state === 'serve' && G.serverP && G.serverP.team !== nearTeam) block = true;
+  if (G.state === 'serve' && G.serverP && G.serverP.team !== nT) block = true;
   G.hudDimT = block ? .45 : Math.max(0, (G.hudDimT || 0) - dt);
   const dim = G.hudDimT > 0;
   if (dim !== hud.classList.contains('sb-dim')) hud.classList.toggle('sb-dim', dim);

@@ -177,7 +177,7 @@ async function handleApi(req, res, url) {
     const rows = Object.values(db.users)
       .sort((a, b) => b.mmr - a.mmr || b.wins - a.wins)
       .slice(0, 100)
-      .map((u) => ({ username: u.username, mmr: u.mmr, wins: u.wins, losses: u.losses, peak: u.peak, level: CAT.levelInfo(u.xp).level }));
+      .map((u) => ({ username: u.username, mmr: u.mmr, wins: u.wins, losses: u.losses, peak: u.peak, level: CAT.levelInfo(u.xp).level, dupr: +CAT.dupr(u.mmr).toFixed(3) }));
     return json(res, 200, { rows });
   }
 
@@ -581,11 +581,34 @@ setInterval(() => {
   }
 }, 10000);
 
+/* Owner account: set OWNER_USERNAME and OWNER_PASSWORD (Render → Environment) and this account
+   is created or updated on every start with everything unlocked. The password never lives in the code. */
+function ensureOwner() {
+  const name = String(process.env.OWNER_USERNAME || '').trim(), pw = String(process.env.OWNER_PASSWORD || '');
+  if (!name || !pw) return;
+  if (!USER_RE.test(name)) { console.warn('  OWNER_USERNAME must be 3-14 letters, numbers or _'); return; }
+  const key = name.toLowerCase();
+  let u = db.users[key], fresh = false;
+  if (!u) {
+    u = Object.assign({ username: name, look: baseLook({ gender: 'boy', hairStyle: 'spiky' }), created: Date.now() }, CAT.newProgress());
+    db.users[key] = u; fresh = true;
+  }
+  const ok = u.salt && u.pass && hashPassword(pw, u.salt) === u.pass;
+  if (!ok) { u.salt = crypto.randomBytes(16).toString('hex'); u.pass = hashPassword(pw, u.salt); }
+  u.owned = CAT.ITEMS.map((i) => i.id);
+  u.beaten = CAT.LADDER.map((a) => a.key);
+  u.coins = Math.max(u.coins || 0, 99999);
+  u.xp = Math.max(u.xp || 0, CAT.xpForLevel(30));
+  if (fresh) Object.assign(u.equip, { head: 'crown_gold', top: 'kit_gold', bottom: 'track_white', shoes: 'kicks_gold', paddle: 'pad_phoenix', ball: 'ball_gold', court: 'court_royal', partner: 'mate_zen' });
+  touchUser(u);
+  console.log(`  Owner account ready: ${u.username} (everything unlocked)`);
+}
 async function start() {
   for (let attempt = 1; ; attempt++) {
     try { await loadDb(); break; }
     catch (e) { console.error(`Could not load the database (attempt ${attempt}): ${e.message}. Retrying in 5 s…`); await new Promise((r) => setTimeout(r, 5000)); }
   }
+  ensureOwner();
   console.log(`  Storage: ${STORAGE === 'upstash' ? 'Upstash Redis (permanent)' : 'file ' + DB_FILE}  ·  ${Object.keys(db.users).length} accounts`);
   if (STORAGE === 'file' && process.env.RENDER) console.warn('  WARNING: on Render the file is wiped when the server sleeps. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN to keep accounts.');
   server.listen(PORT, '0.0.0.0', onListen);
