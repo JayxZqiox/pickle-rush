@@ -118,6 +118,7 @@ On your own PC you don't need Upstash: accounts are saved in `data/db.json`.
 - Works from any internet connection once the server is on Render: create a room, then share the 4-letter code or the **Copy invite link** button.
 - 1v1 and 2v2 rooms. Empty slots are played by the AI.
 - The host's device runs the match. The ball, players, score, serve and game state are sent to everyone about 60 times a second, and your own player moves instantly on your screen.
+- **Lobby:** player cards for 1P–4P in team colors with live character previews. Guests tap **Ready up**; the host's **Start match** unlocks when everyone is ready (or use *Start anyway*). **Quick match** puts you in an open 1v1 or 2v2 game, or opens one for others to join.
 - **Reconnection:** if someone's connection drops, the match pauses with "Waiting for … to reconnect" and they get 30 seconds to come back to the same slot. Reloading the page during a match also rejoins automatically. After 30 seconds the AI takes their place. If the host drops, everyone waits for the host the same way.
 
 ## Phones

@@ -357,6 +357,7 @@ function roomInfo(room) {
   return {
     code: room.code, name: room.name, mode: room.mode, state: room.state, host: slotOf(room, room.host),
     slots: room.slots.map((c) => c ? { name: c.meta.name, look: c.meta.look, account: !!c.meta.user, mmr: c.meta.user && db.users[c.meta.user] ? db.users[c.meta.user].mmr : null,
+      ready: c === room.host || !!c.meta.ready, level: c.meta.user && db.users[c.meta.user] ? CAT.levelInfo(db.users[c.meta.user].xp).level : null,
       away: !!c.away, awayLeft: c.away ? Math.max(0, Math.ceil((c.until - Date.now()) / 1000)) : 0 } : null),
   };
 }
@@ -386,7 +387,8 @@ function expireAway(room, ph) {
   broadcastRooms();
 }
 function roomList() {
-  return [...rooms.values()].map((r) => ({ code: r.code, name: r.name, mode: r.mode, state: r.state, count: r.slots.filter(Boolean).length, max: r.slots.length }));
+  return [...rooms.values()].map((r) => ({ code: r.code, name: r.name, mode: r.mode, state: r.state, quick: !!r.quick, count: r.slots.filter(Boolean).length, max: r.slots.length,
+    host: r.host && r.host.meta ? r.host.meta.name : '' }));
 }
 function broadcastRooms() {
   const msg = JSON.stringify({ t: 'rooms', rooms: roomList() });
@@ -475,7 +477,7 @@ function onConnection(ws) {
         const free = r.slots.indexOf(null);
         if (free < 0) return send(ws, { t: 'error', msg: 'That room is full.' });
         leaveRoom(ws);
-        r.slots[free] = ws; ws.meta.room = r; ws.meta.rid = newRid();
+        r.slots[free] = ws; ws.meta.room = r; ws.meta.rid = newRid(); ws.meta.ready = false;
         broadcastRoom(r); broadcastRooms();
         break;
       }
@@ -504,8 +506,33 @@ function onConnection(ws) {
         break;
       }
       case 'leave': leaveRoom(ws); send(ws, { t: 'rooms', rooms: roomList() }); break;
+      case 'ready': {
+        if (!room || room.state !== 'lobby') return;
+        ws.meta.ready = !!m.v; broadcastRoom(room);
+        break;
+      }
+      case 'quick': {
+        // matchmaking: join an open room of that mode, or open a new one and wait
+        const mode = m.mode === '2v2' ? '2v2' : '1v1';
+        const open = [...rooms.values()].filter((r) => r.state === 'lobby' && r.mode === mode && r.quick && r.slots.includes(null) && r !== ws.meta.room)
+          .sort((a, b) => b.slots.filter(Boolean).length - a.slots.filter(Boolean).length)[0];
+        leaveRoom(ws);
+        if (open) {
+          const free = open.slots.indexOf(null);
+          open.slots[free] = ws; ws.meta.room = open; ws.meta.rid = newRid(); ws.meta.ready = true;
+          broadcastRoom(open);
+        } else {
+          const r = { code: makeCode(), name: 'Quick match', mode, state: 'lobby', host: ws, quick: true, slots: new Array(mode === '2v2' ? 4 : 2).fill(null) };
+          r.slots[0] = ws; ws.meta.room = r; ws.meta.rid = newRid(); ws.meta.ready = true; rooms.set(r.code, r);
+          broadcastRoom(r);
+        }
+        broadcastRooms();
+        break;
+      }
       case 'start': {
         if (!room || room.host !== ws) return;
+        const waiting = room.slots.filter((c) => c && c !== room.host && !c.away && !c.meta.ready).length;
+        if (waiting && !m.force) return send(ws, { t: 'error', msg: `Waiting for ${waiting} player${waiting > 1 ? 's' : ''} to ready up.` });
         room.state = 'playing';
         room.matchId = (room.matchId || 0) + 1;
         const info = roomInfo(room);
@@ -515,7 +542,9 @@ function onConnection(ws) {
       }
       case 'lobby': {
         if (!room || room.host !== ws) return;
-        room.state = 'lobby'; broadcastRoom(room); broadcastRooms();
+        room.state = 'lobby';
+        room.slots.forEach((c) => { if (c && c.meta) c.meta.ready = false; });
+        broadcastRoom(room); broadcastRooms();
         break;
       }
       case 'in': {
