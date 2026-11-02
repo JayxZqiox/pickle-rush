@@ -62,7 +62,20 @@ async function loadDb() {
       db.users = d.users || {}; db.sessions = d.sessions || {};
     } catch (e) { /* first run */ }
   }
-  for (const u of Object.values(db.users)) { CAT.normalize(u); u.look = baseLook(u.look); if (!Array.isArray(u.friends)) u.friends = []; }
+  for (const u of Object.values(db.users)) {
+    CAT.normalize(u); u.look = baseLook(u.look);
+    for (const k of ['friends', 'reqIn', 'reqOut']) if (!Array.isArray(u[k])) u[k] = [];
+  }
+  // older versions added friends one-way: keep mutual pairs, turn the rest into pending requests
+  for (const [key, u] of Object.entries(db.users)) {
+    u.friends = u.friends.filter((k) => {
+      const f = db.users[k]; if (!f) return false;
+      if (f.friends.includes(key)) return true;
+      if (!u.reqOut.includes(k)) u.reqOut.push(k);
+      if (!f.reqIn.includes(key)) f.reqIn.push(key);
+      return false;
+    });
+  }
   const cutoff = Date.now() - SESSION_DAYS * 864e5;
   for (const [t, s] of Object.entries(db.sessions)) if (!s || s.created < cutoff || !db.users[s.user]) delete db.sessions[t];
 }
@@ -113,17 +126,18 @@ function hashPassword(pw, salt) {
   return crypto.scryptSync(String(pw), salt, 64).toString('hex');
 }
 // account appearance stores only the body; worn items live in equip
-function baseLook(l) { const c = CAT.cleanLook(l); return { gender: c.gender, skin: c.skin, hair: c.hair, hairStyle: c.hairStyle }; }
+function baseLook(l) { const c = CAT.cleanLook(l); return { gender: c.gender, skin: c.skin, hair: c.hair, hairStyle: c.hairStyle, body: c.body, height: c.height, nation: c.nation }; }
 function wornLook(u) { return CAT.cleanLook(Object.assign({}, u.look, u.equip)); }
 function publicUser(u) {
   const lv = CAT.levelInfo(u.xp);
   return {
     username: u.username, mmr: u.mmr, peak: u.peak, wins: u.wins, losses: u.losses,
     bestRally: u.bestRally || 0, history: (u.history || []).slice(0, 20), look: u.look, created: u.created,
-    coins: u.coins, xp: u.xp, level: lv.level, owned: u.owned, equip: u.equip, beaten: u.beaten,
+    coins: u.coins, xp: u.xp, level: lv.level, owned: u.owned, equip: u.equip, beaten: u.beaten, keys: u.keys | 0,
   };
 }
 /* ---------- profiles + friends ---------- */
+function notifyUser(key, msg) { for (const c of clients) if (c.meta && c.meta.user === key) send(c, msg); }
 function onlineSet() { const s = new Set(); for (const c of clients) if (c.meta && c.meta.user) s.add(c.meta.user); return s; }
 function profileOf(u, online) {
   const lv = CAT.levelInfo(u.xp), d = CAT.dupr(u.mmr);
@@ -184,7 +198,7 @@ async function handleApi(req, res, url) {
     const rows = Object.values(db.users)
       .sort((a, b) => b.mmr - a.mmr || b.wins - a.wins)
       .slice(0, 100)
-      .map((u) => ({ username: u.username, mmr: u.mmr, wins: u.wins, losses: u.losses, peak: u.peak, level: CAT.levelInfo(u.xp).level, dupr: +CAT.dupr(u.mmr).toFixed(3) }));
+      .map((u) => ({ username: u.username, mmr: u.mmr, wins: u.wins, losses: u.losses, peak: u.peak, level: CAT.levelInfo(u.xp).level, dupr: +CAT.dupr(u.mmr).toFixed(3), nation: (u.look && u.look.nation) || '' }));
     return json(res, 200, { rows });
   }
 
@@ -197,8 +211,11 @@ async function handleApi(req, res, url) {
     const u = authUser(req);
     if (!u) return json(res, 401, { error: 'Sign in first' });
     const on = onlineSet();
+    for (const k of ['friends', 'reqIn', 'reqOut']) if (!Array.isArray(u[k])) u[k] = [];
     const list = (u.friends || []).map((k) => db.users[k]).filter(Boolean).map((f) => profileOf(f, on)).sort((a, b) => (b.online - a.online) || b.mmr - a.mmr);
-    return json(res, 200, { friends: list });
+    const incoming = (u.reqIn || []).map((k) => db.users[k]).filter(Boolean).map((f) => profileOf(f, on));
+    const outgoing = (u.reqOut || []).map((k) => db.users[k]).filter(Boolean).map((f) => f.username);
+    return json(res, 200, { friends: list, incoming, outgoing });
   }
   if (route === '/api/me' && req.method === 'GET') {
     const u = authUser(req);
@@ -261,16 +278,41 @@ async function handleApi(req, res, url) {
     touchUser(u);
     return json(res, 200, { user: publicUser(u), result: rew });
   }
-  if (route === '/api/friends/add' || route === '/api/friends/remove') {
-    const key = String(body.username || '').trim().toLowerCase();
+  const fm = route.match(/^\/api\/friends\/(add|accept|decline|cancel|remove)$/);
+  if (fm) {
+    const key = String(body.username || '').trim().toLowerCase(), me = u.username.toLowerCase();
     const f = db.users[key];
     if (!f) return json(res, 404, { error: 'No player with that name' });
-    if (key === u.username.toLowerCase()) return json(res, 400, { error: 'That’s you!' });
-    u.friends = u.friends || [];
-    if (route.endsWith('add')) { if (!u.friends.includes(key)) { if (u.friends.length >= 100) return json(res, 400, { error: 'Friend list is full' }); u.friends.push(key); } }
-    else u.friends = u.friends.filter((k) => k !== key);
+    if (key === me) return json(res, 400, { error: 'That’s you!' });
+    for (const x of [u, f]) for (const k of ['friends', 'reqIn', 'reqOut']) if (!Array.isArray(x[k])) x[k] = [];
+    const drop = (arr, k) => { const i = arr.indexOf(k); if (i >= 0) arr.splice(i, 1); };
+    const befriend = () => { if (!u.friends.includes(key)) u.friends.push(key); if (!f.friends.includes(me)) f.friends.push(me); drop(u.reqIn, key); drop(u.reqOut, key); drop(f.reqIn, me); drop(f.reqOut, me); };
+    let status;
+    switch (fm[1]) {
+      case 'add':
+        if (u.friends.includes(key)) { status = 'friends'; break; }
+        if (u.reqIn.includes(key)) { befriend(); status = 'friends'; notifyUser(key, { t: 'notify', kind: 'accepted', from: u.username }); break; }   // they already asked you
+        if (u.friends.length >= 100) return json(res, 400, { error: 'Friend list is full' });
+        if (!u.reqOut.includes(key)) u.reqOut.push(key);
+        if (!f.reqIn.includes(me)) f.reqIn.push(me);
+        status = 'pending'; notifyUser(key, { t: 'notify', kind: 'request', from: u.username });
+        break;
+      case 'accept':
+        if (!u.reqIn.includes(key)) return json(res, 400, { error: 'No request from that player' });
+        befriend(); status = 'friends'; notifyUser(key, { t: 'notify', kind: 'accepted', from: u.username });
+        break;
+      case 'decline': drop(u.reqIn, key); drop(f.reqOut, me); status = 'none'; break;
+      case 'cancel': drop(u.reqOut, key); drop(f.reqIn, me); status = 'none'; notifyUser(key, { t: 'notify', kind: 'update' }); break;
+      case 'remove': drop(u.friends, key); drop(f.friends, me); status = 'none'; notifyUser(key, { t: 'notify', kind: 'update' }); break;
+    }
+    touchUser(u); touchUser(f);
+    return json(res, 200, { ok: true, status });
+  }
+  if (route === '/api/chest') {
+    const r = CAT.openChest(u, String(body.id || ''), !!body.key);
+    if (typeof r === 'string') return json(res, 400, { error: r });
     touchUser(u);
-    return json(res, 200, { ok: true, friends: u.friends.length });
+    return json(res, 200, { user: publicUser(u), result: r });
   }
   if (route === '/api/daily') {
     const got = CAT.claimDaily(u);
@@ -648,6 +690,7 @@ function ensureOwner() {
   u.owned = CAT.ITEMS.map((i) => i.id);
   u.beaten = CAT.LADDER.map((a) => a.key);
   u.coins = Math.max(u.coins || 0, 99999);
+  u.keys = Math.max(u.keys | 0, 10);
   u.xp = Math.max(u.xp || 0, CAT.xpForLevel(30));
   if (fresh) Object.assign(u.equip, { head: 'crown_gold', top: 'kit_gold', bottom: 'track_white', shoes: 'kicks_gold', paddle: 'pad_phoenix', ball: 'ball_gold', court: 'court_royal', partner: 'mate_zen' });
   touchUser(u);

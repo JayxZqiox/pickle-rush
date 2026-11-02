@@ -88,6 +88,40 @@
     { id:'pad_stealth',    slot:'paddle', name:'Stealth',       price:700,  lvl:5, c1:'#1c1f26', c2:'#ff3b3b', power:2, control:0, spin:0, deco:'stripe' },
     { id:'pad_lava',       slot:'paddle', name:'Lava Core',     price:900,  lvl:6, c1:'#ff4d1a', c2:'#ffd23f', power:2, control:0, spin:1, deco:'wave' },
     { id:'pad_galaxy',     slot:'paddle', name:'Galaxy Pro',    price:1400, lvl:7, c1:'#3b0764', c2:'#c4b5fd', power:1, control:2, spin:1, deco:'dots' },
+    // chest-only balls in plain colors (common pulls)
+    { id:'ball_orange',    slot:'ball', name:'Orange pop',      price:100,  lvl:1, chest:true, rarity:'common', fx:'none', c1:'#ff9f45' },
+    { id:'ball_pink',      slot:'ball', name:'Bubblegum',       price:100,  lvl:1, chest:true, rarity:'common', fx:'none', c1:'#ff8fc6' },
+    { id:'ball_white',     slot:'ball', name:'Tournament white',price:100,  lvl:1, chest:true, rarity:'common', fx:'none', c1:'#f5f7fb' },
+    { id:'ball_mint',      slot:'ball', name:'Mint',            price:100,  lvl:1, chest:true, rarity:'common', fx:'none', c1:'#7df2c6' },
+    // anime-style paddles (original designs)
+    { id:'pad_kawaii',     slot:'paddle', name:'Kawaii Pop',     price:350,  lvl:2, c1:'#fde68a', c2:'#f472b6', power:0, control:1, spin:0, deco:'kawaii' },
+    { id:'pad_neko',       slot:'paddle', name:'Neko Paw',       price:400,  lvl:2, c1:'#fbcfe8', c2:'#1f2937', power:0, control:1, spin:1, deco:'neko' },
+    { id:'pad_shuriken',   slot:'paddle', name:'Shadow Shuriken',price:500,  lvl:3, c1:'#1e1b4b', c2:'#a5b4fc', power:0, control:0, spin:2, deco:'shuriken' },
+    { id:'pad_kitsune',    slot:'paddle', name:'Kitsune Spirit', price:650,  lvl:4, c1:'#ff8a3d', c2:'#ffffff', power:1, control:1, spin:1, deco:'kitsune' },
+    { id:'pad_petals',     slot:'paddle', name:'Sakura Petals',  price:700,  lvl:4, c1:'#ffe4ef', c2:'#ff5c9a', power:0, control:1, spin:2, deco:'petals' },
+    { id:'pad_oni',        slot:'paddle', name:'Oni Fury',       price:750,  lvl:5, c1:'#b91c1c', c2:'#fde047', power:2, control:0, spin:0, deco:'oni' },
+    { id:'pad_katana',     slot:'paddle', name:'Katana Edge',    price:800,  lvl:5, c1:'#111827', c2:'#e5e7eb', power:1, control:2, spin:0, deco:'katana' },
+    { id:'pad_mecha',      slot:'paddle', name:'Mecha Core X',   price:1600, lvl:8, c1:'#334155', c2:'#38bdf8', power:2, control:1, spin:1, deco:'mecha' },
+    { id:'pad_dragon',     slot:'paddle', name:'Sky Dragon',     price:1800, lvl:9, c1:'#065f46', c2:'#fbbf24', power:2, control:1, spin:2, deco:'dragon' },
+    // chest-only outfits
+    { id:'top_inferno',    slot:'top',    name:'Inferno jersey', price:200, lvl:1, chest:true, rarity:'common',    style:'jersey', c1:'#ff4d1a', c2:'#ffd23f' },
+    { id:'top_cyber',      slot:'top',    name:'Cyber tank',     price:200, lvl:1, chest:true, rarity:'common',    style:'tank',   c1:'#0f172a', c2:'#5ff4ff' },
+    { id:'top_sakura',     slot:'top',    name:'Sakura kit',     price:400, lvl:1, chest:true, rarity:'rare',      style:'kit',    c1:'#ffb3cf', c2:'#ff5c9a' },
+    { id:'top_galaxy',     slot:'top',    name:'Galaxy hoodie',  price:700, lvl:1, chest:true, rarity:'epic',      style:'hoodie', c1:'#3b0764', c2:'#c4b5fd' },
+    { id:'top_royal',      slot:'top',    name:'Royal polo',     price:1500,lvl:1, chest:true, rarity:'legendary', style:'polo',   c1:'#4c1d95', c2:'#f5c542' },
+    { id:'bot_inferno',    slot:'bottom', name:'Inferno shorts', price:200, lvl:1, chest:true, rarity:'common',    style:'shorts', c1:'#ff4d1a', c2:'#ffd23f' },
+    { id:'bot_camo',       slot:'bottom', name:'Camo long shorts',price:200,lvl:1, chest:true, rarity:'common',    style:'long',   c1:'#4d5b3a', c2:'#a3b18a' },
+    { id:'bot_cyber',      slot:'bottom', name:'Cyber track',    price:400, lvl:1, chest:true, rarity:'rare',      style:'track',  c1:'#0f172a', c2:'#5ff4ff' },
+    { id:'bot_galaxy',     slot:'bottom', name:'Galaxy track',   price:700, lvl:1, chest:true, rarity:'epic',      style:'track',  c1:'#3b0764', c2:'#c4b5fd' },
+    { id:'bot_royal',      slot:'bottom', name:'Royal skirt',    price:1500,lvl:1, chest:true, rarity:'legendary', style:'skirt',  c1:'#4c1d95', c2:'#f5c542' },
+    // chest-only hair (overrides your own hairstyle when worn)
+    { id:'hair_own',       slot:'hairx', name:'My own hair',      price:0,   lvl:1 },
+    { id:'hair_neonhawk',  slot:'hairx', name:'Neon mohawk',      price:200, lvl:1, chest:true, rarity:'common',    style:'mohawk',     c1:'#ff4fd8', glow:true },
+    { id:'hair_twinpink',  slot:'hairx', name:'Pink twin tails',  price:200, lvl:1, chest:true, rarity:'common',    style:'twintails',  c1:'#ff8fc6' },
+    { id:'hair_frost',     slot:'hairx', name:'Frost spikes',     price:400, lvl:1, chest:true, rarity:'rare',      style:'superspike', c1:'#9be7ff', tip:'#ffffff' },
+    { id:'hair_flame',     slot:'hairx', name:'Flame hair',       price:700, lvl:1, chest:true, rarity:'epic',      style:'flame',      c1:'#ff4d1a', tip:'#ffd23f', glow:true },
+    { id:'hair_galaxy',    slot:'hairx', name:'Galaxy waves',     price:700, lvl:1, chest:true, rarity:'epic',      style:'long',       c1:'#6d28d9', tip:'#f0abfc', glow:true },
+    { id:'hair_super',     slot:'hairx', name:'Super spikes',     price:1500,lvl:1, chest:true, rarity:'legendary', style:'superspike', c1:'#ffd23f', tip:'#fff6c2', glow:true },
     // wristbands
     { id:'wrist_none',     slot:'wrist', name:'No wristband',   price:0,    lvl:1, c1:'' },
     { id:'wrist_rainbow',  slot:'wrist', name:'Rainbow band',   price:900,  lvl:5, c1:'#ff5c5c', c2:'#4dd2ff', fx:'rainbow' },
@@ -102,19 +136,19 @@
     { id:'dance_weng',     slot:'dance', name:'Weng Weng Shuffle', price:800, lvl:3, style:'weng', bpm:118 },
     // balls (visual effects)
     { id:'ball_classic',   slot:'ball', name:'Classic',         price:0,    lvl:1, fx:'none',      c1:'#e8ff3d' },
-    { id:'ball_fire',      slot:'ball', name:'Fireball',        price:300,  lvl:2, fx:'fire',      c1:'#ffb020' },
-    { id:'ball_ice',       slot:'ball', name:'Ice comet',       price:300,  lvl:2, fx:'ice',       c1:'#bfefff' },
-    { id:'ball_bolt',      slot:'ball', name:'Lightning',       price:500,  lvl:4, fx:'lightning', c1:'#fff27a' },
-    { id:'ball_rainbow',   slot:'ball', name:'Rainbow',         price:700,  lvl:5, fx:'rainbow',   c1:'#ff7eb6' },
-    { id:'ball_galaxy',    slot:'ball', name:'Galaxy',          price:1200, lvl:7, fx:'galaxy',    c1:'#8b5cf6' },
-    { id:'ball_gold',      slot:'ball', name:'Golden',          price:1800, lvl:9, fx:'gold',      c1:'#f5c542' },
+    { id:'ball_fire',      slot:'ball', name:'Fireball',        price:300,  lvl:1, chest:true, rarity:'rare', fx:'fire',      c1:'#ffb020' },
+    { id:'ball_ice',       slot:'ball', name:'Ice comet',       price:300,  lvl:1, chest:true, rarity:'rare', fx:'ice',       c1:'#bfefff' },
+    { id:'ball_bolt',      slot:'ball', name:'Lightning',       price:500,  lvl:1, chest:true, rarity:'epic', fx:'lightning', c1:'#fff27a' },
+    { id:'ball_rainbow',   slot:'ball', name:'Rainbow',         price:700,  lvl:1, chest:true, rarity:'epic', fx:'rainbow',   c1:'#ff7eb6' },
+    { id:'ball_galaxy',    slot:'ball', name:'Galaxy',          price:1200, lvl:1, chest:true, rarity:'legendary', fx:'galaxy',    c1:'#8b5cf6' },
+    { id:'ball_gold',      slot:'ball', name:'Golden',          price:1800, lvl:1, chest:true, rarity:'legendary', fx:'gold',      c1:'#f5c542' },
     // courts
     { id:'court_stadium',  slot:'court', name:'Night Stadium',  price:0,    lvl:1 },
-    { id:'court_beach',    slot:'court', name:'Sunset Beach',   price:400,  lvl:2 },
-    { id:'court_clay',     slot:'court', name:'Clay Classic',   price:500,  lvl:3 },
-    { id:'court_neon',     slot:'court', name:'Neon City',      price:700,  lvl:4 },
-    { id:'court_park',     slot:'court', name:'Park Grass',     price:600,  lvl:5 },
-    { id:'court_royal',    slot:'court', name:'Royal Arena',    price:1500, lvl:8 },
+    { id:'court_beach',    slot:'court', name:'Sunset Beach',   price:400,  lvl:1, chest:true, rarity:'rare' },
+    { id:'court_clay',     slot:'court', name:'Clay Classic',   price:500,  lvl:1, chest:true, rarity:'rare' },
+    { id:'court_neon',     slot:'court', name:'Neon City',      price:700,  lvl:1, chest:true, rarity:'epic' },
+    { id:'court_park',     slot:'court', name:'Park Grass',     price:600,  lvl:1, chest:true, rarity:'epic' },
+    { id:'court_royal',    slot:'court', name:'Royal Arena',    price:1500, lvl:1, chest:true, rarity:'legendary' },
     // AI teammates for 2v2
     { id:'mate_ace',       slot:'partner', name:'Ace',          price:0,    lvl:1, speed:4.5, react:.18, aimSd:.42, mistake:.055, skill:.2,  smash:.75, tScale:1.0, judge:.7, acc:.8 },
     { id:'mate_blaze',     slot:'partner', name:'Blaze',        price:300,  lvl:3, speed:4.9, react:.14, aimSd:.34, mistake:.04,  skill:.28, smash:.82, tScale:.95, judge:.8, acc:.88 },
@@ -137,10 +171,40 @@
     ITEMS.push({ id:'wrist_' + k,    slot:'wrist',  name:nm + ' wristband',  price:80,  lvl:1, c1:col, c2:ink(col) });
   }
   const BY_ID = {}; ITEMS.forEach(i => { BY_ID[i.id] = i; });
-  const SLOTS = ['head', 'top', 'bottom', 'shoes', 'wrist', 'paddle', 'ball', 'court', 'partner', 'dance'];
+  function rarityOf(it) { return it.rarity || (!it.price ? 'common' : it.price <= 300 ? 'rare' : it.price <= 800 ? 'epic' : 'legendary'); }
+  /* ---------- chests ---------- */
+  const CHESTS = [
+    { id:'chest_rally', name:'Rally Chest',  price:500,  keys:1, odds:{ common:.58, rare:.29, epic:.1,  legendary:.03 } },
+    { id:'chest_gold',  name:'Golden Chest', price:1500, keys:0, odds:{ common:.2,  rare:.42, epic:.28, legendary:.1 } },
+  ];
+  const DUP_REFUND = { common:80, rare:200, epic:450, legendary:1000 };
+  const CHEST_POOL = ITEMS.filter(i => i.chest);
+  function openChest(p, chestId, useKey, rnd) {
+    rnd = rnd || Math.random;
+    const ch = CHESTS.find(c => c.id === chestId);
+    if (!ch) return 'Unknown chest';
+    if (useKey) { if (!ch.keys) return 'Keys only open Rally Chests'; if ((p.keys | 0) < 1) return 'No chest keys left'; p.keys -= 1; }
+    else { if ((p.coins | 0) < ch.price) return 'Not enough coins'; p.coins -= ch.price; }
+    let r = rnd(), rarity = 'common';
+    for (const k of ['legendary', 'epic', 'rare', 'common']) { if (r < ch.odds[k]) { rarity = k; break; } r -= ch.odds[k]; }
+    const pool = CHEST_POOL.filter(i => rarityOf(i) === rarity);
+    const item = pool[Math.floor(rnd() * pool.length)];
+    const dup = p.owned.includes(item.id);
+    let refund = 0;
+    if (dup) { refund = DUP_REFUND[rarity]; p.coins += refund; } else p.owned.push(item.id);
+    return { id: item.id, rarity, dup, refund };
+  }
+  const SLOTS = ['head', 'hairx', 'top', 'bottom', 'shoes', 'wrist', 'paddle', 'ball', 'court', 'partner', 'dance'];
   const STARTER = ITEMS.filter(i => i.price === 0).map(i => i.id);
-  const DEFAULT_EQUIP = { head:'band_red', top:'tee_white', bottom:'shorts_navy', shoes:'sneak_white', wrist:'wrist_none', paddle:'pad_wood', ball:'ball_classic', court:'court_stadium', partner:'mate_ace', dance:'dance_pump' };
-  const HAIR_STYLES = { boy:['short', 'spiky', 'buzz', 'curly'], girl:['ponytail', 'bob', 'long', 'buns'] };
+  const DEFAULT_EQUIP = { hairx:'hair_own', head:'band_red', top:'tee_white', bottom:'shorts_navy', shoes:'sneak_white', wrist:'wrist_none', paddle:'pad_wood', ball:'ball_classic', court:'court_stadium', partner:'mate_ace', dance:'dance_pump' };
+  // every style is open to everyone; the order just puts each body's classic looks first
+  const ALL_HAIR = ['short', 'spiky', 'buzz', 'curly', 'mohawk', 'afro', 'undercut', 'manbun', 'ponytail', 'bob', 'long', 'buns', 'pigtails', 'braid', 'pixie', 'twintails'];
+  const HAIR_STYLES = { boy:ALL_HAIR.slice(), girl:['ponytail', 'bob', 'long', 'buns', 'pigtails', 'braid', 'pixie', 'twintails', 'short', 'spiky', 'buzz', 'curly', 'mohawk', 'afro', 'undercut', 'manbun'] };
+  const HAIR_COLORS = 12;
+  const BODY_TYPES = ['slim', 'regular', 'athletic', 'stocky'];
+  const NATIONS = { PH:'Philippines', US:'United States', JP:'Japan', KR:'South Korea', CN:'China', TH:'Thailand', ID:'Indonesia', VN:'Vietnam', MY:'Malaysia', SG:'Singapore',
+    IN:'India', AE:'United Arab Emirates', SA:'Saudi Arabia', TR:'Türkiye', GB:'United Kingdom', IE:'Ireland', FR:'France', DE:'Germany', IT:'Italy', ES:'Spain', NL:'Netherlands',
+    SE:'Sweden', NO:'Norway', PL:'Poland', UA:'Ukraine', CA:'Canada', MX:'Mexico', BR:'Brazil', AR:'Argentina', CO:'Colombia', PE:'Peru', NG:'Nigeria' };
 
   /* ---------- levels ---------- */
   // XP needed to go from level n to n+1 = 100 + 60 * (n - 1)
@@ -192,7 +256,7 @@
 
   /* ---------- profiles ---------- */
   function newProgress() {
-    return { mmr: 0, peak: 0, wins: 0, losses: 0, history: [], bestRally: 0, coins: 300, xp: 0,
+    return { mmr: 0, peak: 0, wins: 0, losses: 0, history: [], bestRally: 0, coins: 300, xp: 0, keys: 1,
       owned: STARTER.slice(), equip: Object.assign({}, DEFAULT_EQUIP), beaten: [] };
   }
   // fill in anything missing (old saves); old profiles from before progression restart at 0 MMR
@@ -216,9 +280,10 @@
     p.coins = Math.max(0, (p.coins | 0) + (r.coins | 0));
     p.xp = Math.max(0, (p.xp | 0) + (r.xp | 0));
     const after = levelInfo(p.xp).level;
+    if (after > before) p.keys = (p.keys | 0) + (after - before);       // a free chest key for every level up
     const skills = Object.keys(SKILL_LEVELS).filter(s => SKILL_LEVELS[s] > before && SKILL_LEVELS[s] <= after);
-    const items = ITEMS.filter(i => i.price > 0 && i.lvl > before && i.lvl <= after).length;
-    return { coins: r.coins | 0, xp: r.xp | 0, levelBefore: before, level: after, skills, newItems: items };
+    const items = ITEMS.filter(i => i.price > 0 && !i.chest && i.lvl > before && i.lvl <= after).length;
+    return { coins: r.coins | 0, xp: r.xp | 0, levelBefore: before, level: after, skills, newItems: items, keys: Math.max(0, after - before) };
   }
   // ranked match against the AI ladder. Returns an error string or the result summary.
   function applyMatch(p, key, won, score, doubles) {
@@ -244,6 +309,7 @@
     const it = BY_ID[id];
     if (!it) return 'That item doesn’t exist';
     if (p.owned.includes(id)) return 'You already own this';
+    if (it.chest) return 'This one only comes from chests';
     if (levelInfo(p.xp).level < it.lvl) return `Reach level ${it.lvl} first`;
     if ((p.coins | 0) < it.price) return 'Not enough coins';
     p.coins -= it.price; p.owned.push(id);
@@ -261,13 +327,17 @@
     l = l && typeof l === 'object' ? l : {};
     const gender = l.gender === 'girl' ? 'girl' : 'boy';
     const styles = HAIR_STYLES[gender];
-    const out = { gender, skin: Math.max(0, Math.min(3, l.skin | 0)), hair: Math.max(0, Math.min(4, l.hair | 0)),
-      hairStyle: styles.includes(l.hairStyle) ? l.hairStyle : styles[0] };
-    for (const s of ['head', 'top', 'bottom', 'shoes', 'wrist', 'paddle', 'ball', 'dance']) { const it = BY_ID[l[s]]; out[s] = it && it.slot === s ? it.id : DEFAULT_EQUIP[s]; }
+    const out = { gender, skin: Math.max(0, Math.min(3, l.skin | 0)), hair: Math.max(0, Math.min(HAIR_COLORS - 1, l.hair | 0)),
+      hairStyle: styles.includes(l.hairStyle) ? l.hairStyle : styles[0],
+      body: BODY_TYPES.includes(l.body) ? l.body : 'regular',
+      height: Math.max(150, Math.min(200, Math.round(+l.height || (gender === 'girl' ? 165 : 175)))),
+      nation: NATIONS[l.nation] ? l.nation : '' };
+    for (const s of ['hairx', 'head', 'top', 'bottom', 'shoes', 'wrist', 'paddle', 'ball', 'dance']) { const it = BY_ID[l[s]]; out[s] = it && it.slot === s ? it.id : DEFAULT_EQUIP[s]; }
     return out;
   }
 
-  const API = { LADDER, SKILL_LEVELS, ITEMS, BY_ID, SLOTS, STARTER, DEFAULT_EQUIP, HAIR_STYLES,
+  const API = { LADDER, SKILL_LEVELS, ITEMS, BY_ID, SLOTS, STARTER, DEFAULT_EQUIP, HAIR_STYLES, ALL_HAIR, HAIR_COLORS, BODY_TYPES, NATIONS,
+    rarityOf, CHESTS, CHEST_POOL, DUP_REFUND, openChest,
     levelInfo, aiIndex, dupr, duprTier, xpForLevel, claimDaily, DAILY_COINS, PALETTE, matchRewards, rallyRewards, onlineRewards, elo, aiUnlocked,
     newProgress, normalize, addRewards, applyMatch, buy, equip, cleanLook };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;

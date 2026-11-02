@@ -30,6 +30,18 @@ Then log in with that username and password. MMR and DUPR still start at 0 / 2.0
 
 Tap a player's name (leaderboard, Top players, lobby cards, friends list) to open their profile: character, level, DUPR, MMR, record and recent matches. Signed-in players can **Add friend**, see which friends are online (green dot), and **invite** online friends to the room they are in. Invites pop up anywhere in the menus.
 
+## Chests
+
+Balls, courts, special hairstyles and some outfits only come from **chests** (Shop → 🎁 Chests). A spinning reel picks your prize; the odds are shown on each chest (Rally Chest 500 coins: 58% Common, 29% Rare, 10% Epic, 3% Legendary; Golden Chest 1500 coins: better odds). Duplicates turn into coins. Every level up gives a free **chest key** 🔑 (new players start with one). For accounts the server rolls the prize, so it can't be faked.
+
+## Notifications and friend requests
+
+The bell in the top-right of the menus shows friend requests (Accept / Decline), room invites (Join) and rewards. Adding a friend sends a request that stays *pending* until the other player accepts.
+
+## Looks
+
+16 hairstyles and 12 hair colors for everyone, body type (slim, regular, athletic, stocky), height (150–200 cm) and nationality with a flag, shown in the scoreboard, lobby, leaderboard and profiles. Looks don't change gameplay. Paddles include original anime-style designs (Kitsune, Oni, Neko, Mecha, Katana, Sky Dragon…).
+
 ## Coins
 
 Ranked wins pay 90 coins (Rookie) up to 390 (The Pickle King), losses still pay something, and there is a **300-coin daily bonus** the first time you open the menu each day.
@@ -39,7 +51,7 @@ Ranked wins pay 90 coins (Rookie) up to 390 (The Pickle King), losses still pay 
 - **Wristbands** in 11 colors plus Rainbow and Gold.
 - **7 more paddles** with stripes, dots, waves and split designs.
 - **Every outfit piece in 11 colors** (tees, polos, shorts, skirts, sneakers, caps, headbands).
-- **Victory dances**: Fist Pump, The Dab, Robot, Tinikling Hop, Brazilian Funk, Budots and Weng Weng Shuffle. The winners dance on court after the match. Each dance has an original beat made in the game (tap a dance in the shop to hear it).
+- **Victory dances** (your side also dances after every point it scores; turn *Point dances* off in Settings): Fist Pump, The Dab, Robot, Tinikling Hop, Brazilian Funk, Budots and Weng Weng Shuffle. The winners dance on court after the match. Each dance has an original beat made in the game (tap a dance in the shop to hear it).
 - AI opponents use Rare, Epic and Legendary balls as they get stronger.
 
 ## Courts in custom and online games

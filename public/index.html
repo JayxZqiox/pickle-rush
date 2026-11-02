@@ -37,6 +37,11 @@ body{height:100%; margin:0; background:radial-gradient(120% 90% at 50% -10%, #13
   padding:calc(env(safe-area-inset-top,0px) + 16px) 16px calc(env(safe-area-inset-bottom,0px) + 16px);
   background:radial-gradient(120% 80% at 50% 0%, rgba(8,17,31,.0), rgba(8,17,31,.35));}
 .screen.off{display:none !important;}
+/* safe centering: when a panel is taller than the window it starts at the top and scrolls */
+.screen{align-items:flex-start;} .screen > *{margin-top:auto; margin-bottom:auto;}
+.stickyHead{position:sticky; top:calc(-1 * (env(safe-area-inset-top,0px) + 16px)); z-index:6; margin:-20px -20px 0; padding:16px 20px 12px; border-radius:30px 30px 0 0;
+  background:linear-gradient(180deg, #14254a 70%, rgba(20,37,74,0));}
+@media (min-width:640px){ .stickyHead{margin:-24px -24px 0; padding:20px 24px 12px;} }
 .hidden{display:none !important;}   /* works even if the Tailwind CDN can't load (offline LAN) */
 .screen:not(.off) > .glass{animation:cardIn .42s cubic-bezier(.18,1.25,.32,1) both;}
 .screen:not(.off) > .glass > *{animation:fadeUp .45s var(--ease) both;}
@@ -148,6 +153,33 @@ input{font-size:16px;} /* stops iOS zooming into inputs */
 .duprTile #mDuprTier{color:var(--text); text-transform:none; letter-spacing:0; font-size:14px;}
 .duprTile em{display:block; font-style:normal; font-size:10px; color:var(--muted); margin-top:3px;}
 .duprBar{width:110px; height:6px; border-radius:99px; background:rgba(255,255,255,.1); margin:6px 0 0 auto; overflow:hidden;} .duprBar i{display:block; height:100%; width:0; border-radius:99px; background:linear-gradient(90deg, var(--accent), var(--hot)); transition:width .9s var(--ease);}
+/* flags */
+.flag{display:inline-block; vertical-align:-2px; line-height:0; border-radius:3px; overflow:hidden; flex:none;} .flag svg{width:100%; height:100%; display:block;}
+/* chests */
+.chestCard{position:relative; display:grid; grid-template-columns:180px minmax(0,1fr); gap:16px; padding:16px; border-radius:22px; border:1px solid var(--rc-b); overflow:hidden;
+  background:radial-gradient(80% 120% at 0% 50%, var(--rc-a), transparent 70%), linear-gradient(180deg, var(--panel2), var(--panel)); animation:fadeUp .45s var(--ease) both;}
+.chestCard canvas{width:100%; height:150px;}
+.odds{display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;} .odds span{font-size:11px; font-weight:800; padding:3px 8px; border-radius:8px; background:rgba(0,0,0,.3);}
+@media (max-width:640px){ .chestCard{grid-template-columns:minmax(0,1fr);} }
+.chestOv{position:fixed; inset:0; z-index:60; display:grid; place-items:center; padding:16px; background:rgba(3,8,20,.78); animation:fadeUp .25s ease both;}
+.chestBox{width:min(820px, 100%); border-radius:28px; padding:22px;}
+.reelWin{position:relative; margin-top:18px; height:178px; overflow:hidden; border-radius:18px; background:rgba(0,0,0,.35); border:1px solid var(--line);
+  -webkit-mask-image:linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); mask-image:linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);}
+.reel{position:absolute; left:0; top:12px; display:flex; gap:8px; padding:0 8px; will-change:transform;}
+.rc{width:118px; flex:none; height:154px; border-radius:14px; padding:6px; display:flex; flex-direction:column; align-items:center; gap:4px; border:2px solid var(--rc); background:radial-gradient(90% 60% at 50% 30%, var(--rc-a), transparent 70%), var(--panel);}
+.rc canvas{width:100%; height:100px;} .rc span{font-size:11px; font-weight:800; text-align:center; line-height:1.1;}
+.rc.win{transform:scale(1.08); box-shadow:0 0 0 3px var(--rc), 0 0 40px var(--rc); transition:transform .3s var(--ease), box-shadow .3s;}
+.reelMark{position:absolute; left:50%; top:0; bottom:0; width:3px; margin-left:-1.5px; background:var(--ball); box-shadow:0 0 14px var(--ball);}
+.reelMark::before, .reelMark::after{content:""; position:absolute; left:-7px; border:8px solid transparent;} .reelMark::before{top:0; border-top-color:var(--ball);} .reelMark::after{bottom:0; border-bottom-color:var(--ball);}
+.chestRes{min-height:58px; text-align:center; margin-top:14px;}
+.chestRes b{display:block; font-family:"Russo One",Impact,sans-serif; font-size:26px; font-weight:400;}
+#bodyRow{flex-wrap:wrap;} #bodyRow > button{padding:7px 8px; font-size:13px; min-width:0;}
+/* notifications */
+.bellCount{position:absolute; top:-3px; right:-3px; min-width:20px; height:20px; padding:0 5px; border-radius:99px; background:#ef4444; color:#fff; font-size:11px; font-weight:800; display:grid; place-items:center; box-shadow:0 0 0 2px var(--bg);}
+#bellBtn.ring{animation:bellShake .7s ease 2;}
+@keyframes bellShake{0%,100%{transform:rotate(0)} 20%{transform:rotate(-14deg)} 40%{transform:rotate(12deg)} 60%{transform:rotate(-8deg)} 80%{transform:rotate(5deg)}}
+.notif{display:flex; gap:10px; align-items:center; padding:10px 12px; border-radius:14px; background:rgba(255,255,255,.04); border:1px solid var(--line);}
+.notif.unread{border-color:rgba(166,242,61,.45); background:rgba(166,242,61,.07);}
 /* profile */
 .profGrid{display:grid; grid-template-columns:300px minmax(0,1fr); gap:20px; align-items:start;}
 @media (max-width:720px){ .profGrid{grid-template-columns:minmax(0,1fr);} .profGrid .lockStage{height:250px;} }
@@ -406,6 +438,7 @@ input::placeholder{opacity:1;color:#8492a6}
 .p-5{padding:1.25rem}
 .p-6{padding:1.5rem}
 .pl-5{padding-left:1.25rem}
+.place-items-center{place-items:center}
 .pointer-events-none{pointer-events:none}
 .pr-1{padding-right:0.25rem}
 .px-1{padding-left:0.25rem;padding-right:0.25rem}
@@ -541,7 +574,7 @@ input::placeholder{opacity:1;color:#8492a6}
     <aside class="glass dashSide">
       <div class="flex items-center justify-between gap-2">
         <div class="min-w-0"><div id="mName" class="font-display text-lg truncate">Player</div><button id="mAccBtn" data-act="signup" class="text-sm font-semibold underline underline-offset-4 decoration-2 decoration-[var(--accent)]">Sign up</button></div>
-        <span class="coinPill"><svg class="inline-block align-[-3px]" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="#f5c542" stroke="#9a6b00" stroke-width="1.5"/><path d="M8 4.2v7.6M5.8 6.2h3.4a1.4 1.4 0 0 1 0 2.8H6.8a1.4 1.4 0 0 0 0 2.8h3.4" stroke="#7a5200" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg> <b id="mCoins">0</b></span>
+        <span class="flex gap-1.5 items-center"><button data-act="shop" class="coinPill" title="Chest keys: open chests in the shop" style="color:#bfefff; background:rgba(56,189,248,.12); border-color:rgba(56,189,248,.35)">🔑 <b id="mKeys">0</b></button><span class="coinPill"><svg class="inline-block align-[-3px]" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="#f5c542" stroke="#9a6b00" stroke-width="1.5"/><path d="M8 4.2v7.6M5.8 6.2h3.4a1.4 1.4 0 0 1 0 2.8H6.8a1.4 1.4 0 0 0 0 2.8h3.4" stroke="#7a5200" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg> <b id="mCoins">0</b></span></span>
       </div>
       <div class="xpBlock">
         <svg class="ring" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="42" class="ringBg"/><circle id="mRing" cx="50" cy="50" r="42" class="ringFg"/></svg>
@@ -704,6 +737,27 @@ input::placeholder{opacity:1;color:#8492a6}
   </div>
 </section>
 
+<div id="chestOv" class="hidden chestOv">
+  <div class="chestBox glass">
+    <div class="text-center"><span id="chestTag" class="lobbyTag">OPENING</span><div id="chestTitle" class="font-display text-3xl mt-1">Rally Chest</div></div>
+    <div class="reelWin"><div id="reel" class="reel"></div><div class="reelMark"></div></div>
+    <div id="chestRes" class="chestRes"></div>
+    <div class="flex gap-2 justify-center flex-wrap mt-4">
+      <button id="chestEquip" data-act="chestEquip" class="primary rounded-2xl px-5 py-3 font-display hidden">Equip it</button>
+      <button id="chestAgain" data-act="chestAgain" class="tile rounded-2xl px-5 py-3 font-bold hidden">Open another</button>
+      <button id="chestClose" data-act="chestClose" class="tile rounded-2xl px-5 py-3 font-bold hidden">Close</button>
+    </div>
+  </div>
+</div>
+<button id="bellBtn" data-act="bell" class="hidden glass rounded-full grid place-items-center" aria-label="Notifications"
+  style="position:fixed; z-index:35; width:48px; height:48px; top:calc(env(safe-area-inset-top,0px) + 12px); right:calc(env(safe-area-inset-right,0px) + 12px)">
+  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>
+  <span id="bellCount" class="bellCount hidden">0</span>
+</button>
+<div id="notifPanel" class="hidden glass rounded-2xl p-3" style="position:fixed; z-index:36; top:calc(env(safe-area-inset-top,0px) + 68px); right:calc(env(safe-area-inset-right,0px) + 12px); width:min(370px, calc(100vw - 24px)); max-height:70vh; overflow-y:auto">
+  <div class="flex justify-between items-center mb-2"><b class="font-display text-lg">Notifications</b><button data-act="bell" class="text-[var(--muted)] font-bold px-2" aria-label="Close">✕</button></div>
+  <div id="notifList" class="grid gap-2"></div>
+</div>
 <div id="inviteCard" class="hidden fixed z-40 left-1/2 -translate-x-1/2 glass rounded-2xl px-4 py-3 flex items-center gap-3" style="top:calc(env(safe-area-inset-top,0px) + 16px)">
   <span id="invTxt" class="font-semibold">Invite</span><button id="invJoin" data-act="inviteJoin" class="primary rounded-xl px-4 py-2 font-bold">Join</button><button data-act="inviteClose" class="text-[var(--muted)] font-bold px-1" aria-label="Dismiss">✕</button>
 </div>
@@ -758,6 +812,11 @@ input::placeholder{opacity:1;color:#8492a6}
           <div><div class="text-sm font-semibold text-[var(--muted)] mb-1.5">Hair color</div><div id="hairRow" class="flex gap-2 flex-wrap"></div></div>
         </div>
         <div><div class="text-sm font-semibold text-[var(--muted)] mb-1.5">Hair style</div><div id="hairStyleRow" class="flex gap-2 flex-wrap"></div></div>
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div><div class="text-sm font-semibold text-[var(--muted)] mb-1.5">Body type</div><div id="bodyRow" class="seg"></div></div>
+          <div><div class="flex justify-between text-sm font-semibold text-[var(--muted)] mb-1.5"><span>Height</span><span id="heightVal">175 cm</span></div><input id="heightIn" type="range" min="150" max="200" step="1" class="w-full"></div>
+        </div>
+        <div><div class="text-sm font-semibold text-[var(--muted)] mb-1.5">Nationality</div><div class="flex items-center gap-2"><span id="nationFlag"></span><select id="nationSel" class="courtSel flex-1"></select></div></div>
         <div id="equipList" class="grid gap-3"></div>
       </div>
     </div>
@@ -770,16 +829,16 @@ input::placeholder{opacity:1;color:#8492a6}
     <div class="flex items-center justify-between gap-3 flex-wrap">
       <h2 class="font-display text-2xl">Shop</h2>
       <div class="flex items-center gap-2">
-        <span class="tile rounded-full px-3 py-1 font-bold"><svg class="inline-block align-[-3px]" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="#f5c542" stroke="#9a6b00" stroke-width="1.5"/><path d="M8 4.2v7.6M5.8 6.2h3.4a1.4 1.4 0 0 1 0 2.8H6.8a1.4 1.4 0 0 0 0 2.8h3.4" stroke="#7a5200" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg> <span id="shopCoins">0</span></span>
+        <span class="tile rounded-full px-3 py-1 font-bold"><svg class="inline-block align-[-3px]" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="#f5c542" stroke="#9a6b00" stroke-width="1.5"/><path d="M8 4.2v7.6M5.8 6.2h3.4a1.4 1.4 0 0 1 0 2.8H6.8a1.4 1.4 0 0 0 0 2.8h3.4" stroke="#7a5200" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg> <span id="shopCoins">0</span></span><span class="tile rounded-full px-3 py-1 font-bold" title="Chest keys">🔑 <span id="shopKeys">0</span></span>
         <span id="shopLevel" class="rounded-md px-2 py-1 text-xs font-extrabold bg-[var(--ball)] text-[#243000]">Lv 1</span>
         <button data-act="shopBack" class="font-semibold text-[var(--muted)] px-2">Back</button>
       </div>
     </div>
     <div id="shopTabs" class="seg mt-4">
-      <button data-act="shopTab" data-v="outfit">Outfits</button><button data-act="shopTab" data-v="paddle">Paddles</button><button data-act="shopTab" data-v="ball">Balls</button><button data-act="shopTab" data-v="court">Courts</button><button data-act="shopTab" data-v="partner">Teammates</button><button data-act="shopTab" data-v="dance">Dances</button>
+      <button data-act="shopTab" data-v="chest">🎁 Chests</button><button data-act="shopTab" data-v="outfit">Outfits</button><button data-act="shopTab" data-v="paddle">Paddles</button><button data-act="shopTab" data-v="ball">Balls</button><button data-act="shopTab" data-v="court">Courts</button><button data-act="shopTab" data-v="partner">Teammates</button><button data-act="shopTab" data-v="dance">Dances</button>
     </div>
     <div id="shopSub" class="seg mt-2">
-      <button data-act="shopSub" data-v="head">Hats</button><button data-act="shopSub" data-v="top">Shirts</button><button data-act="shopSub" data-v="bottom">Shorts</button><button data-act="shopSub" data-v="shoes">Shoes</button><button data-act="shopSub" data-v="wrist">Wristbands</button>
+      <button data-act="shopSub" data-v="hairx">Hair</button><button data-act="shopSub" data-v="head">Hats</button><button data-act="shopSub" data-v="top">Shirts</button><button data-act="shopSub" data-v="bottom">Shorts</button><button data-act="shopSub" data-v="shoes">Shoes</button><button data-act="shopSub" data-v="wrist">Wristbands</button>
     </div>
     <div id="shopErr" class="text-sm font-semibold mt-2 min-h-[20px]" style="color:var(--bad)"></div>
     <div id="shopGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-[58vh] overflow-y-auto scroll-thin pr-1"></div>
@@ -789,9 +848,9 @@ input::placeholder{opacity:1;color:#8492a6}
 <!-- ============ SETTINGS / CONTROLS ============ -->
 <section id="s-ctrl" class="screen off">
   <div class="glass rounded-[30px] w-full max-w-[640px] p-5 sm:p-6">
-    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between stickyHead">
       <h2 class="font-display text-2xl">Settings</h2>
-      <button data-act="ctrlBack" class="font-semibold text-[var(--muted)]">Back</button>
+      <button data-act="ctrlBack" class="tile rounded-xl px-4 py-2 font-bold">Back</button>
     </div>
     <div class="seg mt-4" id="ctrlTabs">
       <button data-act="ctrlTab" data-v="p1">Player 1</button><button data-act="ctrlTab" data-v="p2">Player 2</button><button data-act="ctrlTab" data-v="p3">Player 3</button><button data-act="ctrlTab" data-v="p4">Player 4</button>
@@ -825,7 +884,7 @@ input::placeholder{opacity:1;color:#8492a6}
       </div>
       <div class="flex items-center justify-between gap-3 flex-wrap">
         <div><div class="font-bold">Shake, sound and FPS</div><div class="text-sm text-[var(--muted)]">FPS shows your frame rate (and ping online) in the corner</div></div>
-        <div class="flex gap-2"><button id="optShake" data-act="optToggle" data-k="shake" class="tile rounded-xl px-3 py-1.5 font-bold">Shake</button><button id="optSound" data-act="sound" class="tile rounded-xl px-3 py-1.5 font-bold">Sound</button><button id="optFps" data-act="optToggle" data-k="fps" class="tile rounded-xl px-3 py-1.5 font-bold">FPS</button><button id="optFull" data-act="optToggle" data-k="fullscreen" class="tile rounded-xl px-3 py-1.5 font-bold">Fullscreen</button><button data-act="music" class="musicBtn tile rounded-xl px-3 py-1.5 font-bold">Music</button></div>
+        <div class="flex gap-2"><button id="optShake" data-act="optToggle" data-k="shake" class="tile rounded-xl px-3 py-1.5 font-bold">Shake</button><button id="optSound" data-act="sound" class="tile rounded-xl px-3 py-1.5 font-bold">Sound</button><button id="optFps" data-act="optToggle" data-k="fps" class="tile rounded-xl px-3 py-1.5 font-bold">FPS</button><button id="optFull" data-act="optToggle" data-k="fullscreen" class="tile rounded-xl px-3 py-1.5 font-bold">Fullscreen</button><button data-act="music" class="musicBtn tile rounded-xl px-3 py-1.5 font-bold">Music</button><button id="optDance" data-act="optToggle" data-k="pointDance" class="tile rounded-xl px-3 py-1.5 font-bold">Point dances</button></div>
       </div>
       <div class="flex items-center justify-between gap-3">
         <div><div class="font-bold">Gamepads</div><div id="padInfo" class="text-sm text-[var(--muted)]">Press any button on a gamepad to connect it.</div></div>
@@ -855,9 +914,9 @@ input::placeholder{opacity:1;color:#8492a6}
 <!-- ============ HOW TO PLAY ============ -->
 <section id="s-how" class="screen off">
   <div class="glass rounded-[30px] w-full max-w-[640px] p-5 sm:p-6">
-    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between stickyHead">
       <h2 class="font-display text-2xl">How to play</h2>
-      <button data-act="menu" class="font-semibold text-[var(--muted)]">Back</button>
+      <button data-act="menu" class="tile rounded-xl px-4 py-2 font-bold">Back</button>
     </div>
     <div class="tile rounded-2xl p-4 mt-4 text-[15px]">
       <h3 class="font-bold">The power meter</h3>
@@ -992,13 +1051,68 @@ const r3 = v => Math.round(v * 1000) / 1000;
 
 /* ---------- looks ---------- */
 const SKINS = ['#f7d7b8', '#e3b089', '#b97a4c', '#7b4a2b'];
-const HAIRS = ['#1c130d', '#5b3a21', '#c8892f', '#e6dccb', '#d94a5a'];
+const HAIRS = ['#1c130d', '#5b3a21', '#c8892f', '#e6dccb', '#d94a5a', '#8a3b1d', '#f1ead2', '#2f6fd6', '#ff7eb6', '#7c4dff', '#22b573', '#bfc7d5'];
 const CAT = window.PR_CATALOG;
 const IT = id => CAT.BY_ID[id] || {};
 const itemsOf = slot => CAT.ITEMS.filter(i => i.slot === slot);
+/* flags drawn as tiny SVGs (flag emoji don't show on Windows). viewBox 30×20 */
+const FLAG = {
+  PH:['h:#0038a8,#ce1126', 'tri:#ffffff:17', 'circ:5.6,10,2.3,#fcd116'], US:['h:#b22234,#fff,#b22234,#fff,#b22234,#fff,#b22234,#fff,#b22234,#fff,#b22234,#fff,#b22234', 'rect:0,0,12,10.8,#3c3b6e'],
+  JP:['h:#fff', 'circ:15,10,6,#bc002d'], KR:['h:#fff', 'circ:15,10,5,#cd2e3a', 'half:15,10,5,#0047a0'], CN:['h:#de2910', 'star:6,6,3.6,#ffde00'],
+  TH:['h:#a51931,#f4f5f8,#2d2a4a,#2d2a4a,#f4f5f8,#a51931'], ID:['h:#ce1126,#fff'], VN:['h:#da251d', 'star:15,10,5.4,#ffff00'],
+  MY:['h:#cc0001,#fff,#cc0001,#fff,#cc0001,#fff,#cc0001,#fff,#cc0001,#fff,#cc0001,#fff,#cc0001,#fff', 'rect:0,0,15,11.4,#010066', 'circ:6,5.7,3.4,#ffcc00', 'circ:7.3,5.7,2.8,#010066', 'star:11.2,5.7,2,#ffcc00'],
+  SG:['h:#ef3340,#fff', 'circ:6,5,3,#fff', 'circ:7.2,5,2.7,#ef3340'], IN:['h:#ff9933,#fff,#138808', 'ring:15,10,2.5,#000080'],
+  AE:['h:#00732f,#fff,#000', 'rect:0,0,7.5,20,#ff0000'], SA:['h:#006c35', 'rect:7,11.6,16,1.4,#fff'], TR:['h:#e30a17', 'circ:11,10,5,#fff', 'circ:12.3,10,4,#e30a17', 'star:17.2,10,2.4,#fff'],
+  GB:['h:#012169', 'diag:#fff:4', 'diag:#c8102e:1.5', 'cross:15,10,6,#fff', 'cross:15,10,3.6,#c8102e'], IE:['v:#169b62,#fff,#ff883e'], FR:['v:#0055a4,#fff,#ef4135'],
+  DE:['h:#000,#dd0000,#ffce00'], IT:['v:#009246,#fff,#ce2b37'], ES:['h:#aa151b,#f1bf00,#f1bf00,#aa151b'], NL:['h:#ae1c28,#fff,#21468b'],
+  SE:['h:#006aa7', 'nordic:#fecc00:3'], NO:['h:#ba0c2f', 'nordic:#fff:4.4', 'nordic:#00205b:2.2'], PL:['h:#fff,#dc143c'], UA:['h:#0057b7,#ffd700'],
+  CA:['v:#d52b1e,#fff,#fff,#d52b1e', 'diamond:15,10,4,#d52b1e'], MX:['v:#006847,#fff,#ce1126', 'circ:15,10,2.6,#8c5a2b'],
+  BR:['h:#009c3b', 'rhomb:15,10,12,7.4,#ffdf00', 'circ:15,10,4,#002776'], AR:['h:#74acdf,#fff,#74acdf', 'circ:15,10,2.2,#f6b40e'],
+  CO:['h:#fcd116,#fcd116,#003893,#ce1126'], PE:['v:#d91023,#fff,#d91023'], NG:['v:#008751,#fff,#008751'],
+};
+const NATION_CODES = Object.keys(CAT.NATIONS);
+const FLAG_SVG = {};
+function flagSVG(code){
+  if (FLAG_SVG[code] !== undefined) return FLAG_SVG[code];
+  const spec = FLAG[code]; if (!spec) return (FLAG_SVG[code] = '');
+  let out = '';
+  for (const part of spec){
+    const [k, a, b] = part.split(':'), n = (a || '').split(',').map(Number);
+    if (k === 'h' || k === 'v'){ const cols = a.split(','), w = (k === 'h' ? 20 : 30) / cols.length; cols.forEach((col, i) => { out += k === 'h' ? `<rect x="0" y="${i * w}" width="30" height="${w + .05}" fill="${col}"/>` : `<rect x="${i * w}" y="0" width="${w + .05}" height="20" fill="${col}"/>`; }); }
+    else if (k === 'tri') out += `<path d="M0 0L${b} 10L0 20z" fill="${a}"/>`;
+    else if (k === 'circ') out += `<circle cx="${n[0]}" cy="${n[1]}" r="${n[2]}" fill="${a.split(',')[3]}"/>`;
+    else if (k === 'ring') out += `<circle cx="${n[0]}" cy="${n[1]}" r="${n[2]}" fill="none" stroke="${a.split(',')[3]}" stroke-width=".9"/>`;
+    else if (k === 'half') out += `<path d="M${n[0] - n[2]} ${n[1]}a${n[2]} ${n[2]} 0 0 0 ${n[2] * 2} 0z" fill="${a.split(',')[3]}"/>`;
+    else if (k === 'rect') out += `<rect x="${n[0]}" y="${n[1]}" width="${n[2]}" height="${n[3]}" fill="${a.split(',')[4]}"/>`;
+    else if (k === 'star'){ const [cx, cy, r] = n; let d = ''; for (let i = 0; i < 10; i++){ const ang = -Math.PI / 2 + i * Math.PI / 5, rr2 = i % 2 ? r * .4 : r; d += (i ? 'L' : 'M') + (cx + Math.cos(ang) * rr2).toFixed(2) + ' ' + (cy + Math.sin(ang) * rr2).toFixed(2); } out += `<path d="${d}z" fill="${a.split(',')[3]}"/>`; }
+    else if (k === 'diag') out += `<path d="M0 0L30 20M30 0L0 20" stroke="${a}" stroke-width="${b}"/>`;
+    else if (k === 'cross') out += `<rect x="${n[0] - n[2] / 2}" y="0" width="${n[2]}" height="20" fill="${a.split(',')[3]}"/><rect x="0" y="${n[1] - n[2] / 2}" width="30" height="${n[2]}" fill="${a.split(',')[3]}"/>`;
+    else if (k === 'nordic') out += `<rect x="${10 - b / 2}" y="0" width="${b}" height="20" fill="${a}"/><rect x="0" y="${10 - b / 2}" width="30" height="${b}" fill="${a}"/>`;
+    else if (k === 'diamond') out += `<path d="M${n[0]} ${n[1] - n[2]}L${n[0] + n[2]} ${n[1]}L${n[0]} ${n[1] + n[2]}L${n[0] - n[2]} ${n[1]}z" fill="${a.split(',')[3]}"/>`;
+    else if (k === 'rhomb') out += `<path d="M${n[0]} ${n[1] - n[3]}L${n[0] + n[2]} ${n[1]}L${n[0]} ${n[1] + n[3]}L${n[0] - n[2]} ${n[1]}z" fill="${a.split(',')[4]}"/>`;
+  }
+  return (FLAG_SVG[code] = `<svg viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg"><clipPath id="fc"><rect width="30" height="20" rx="2.5"/></clipPath><g clip-path="url(#fc)">${out}</g><rect width="30" height="20" rx="2.5" fill="none" stroke="rgba(0,0,0,.35)" stroke-width=".8"/></svg>`);
+}
+function flagHTML(code, h = 13){ const svg = code && flagSVG(code); return svg ? `<span class="flag" title="${esc(CAT.NATIONS[code])}" style="width:${h * 1.5}px; height:${h}px">${svg}</span>` : ''; }
+const FLAG_IMG = {};
+function flagImg(code){
+  if (!code || !FLAG[code]) return null;
+  if (!FLAG_IMG[code]){ const im = new Image(); im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(flagSVG(code)); FLAG_IMG[code] = im; }
+  return FLAG_IMG[code].complete ? FLAG_IMG[code] : null;
+}
 const BALL_IDS = itemsOf('ball').map(i => i.id), COURT_IDS = itemsOf('court').map(i => i.id);
-const SLOT_NAME = { head:'Hats', top:'Shirts', bottom:'Shorts & skirts', shoes:'Shoes', wrist:'Wristband', paddle:'Paddle', ball:'Ball', court:'Court', partner:'2v2 teammate', dance:'Victory dance' };
-const HAIR_NAME = { short:'Short', spiky:'Spiky', buzz:'Buzz', curly:'Curly', ponytail:'Ponytail', bob:'Bob', long:'Long', buns:'Buns' };
+const SLOT_NAME = { hairx:'Special hair', head:'Hats', top:'Shirts', bottom:'Shorts & skirts', shoes:'Shoes', wrist:'Wristband', paddle:'Paddle', ball:'Ball', court:'Court', partner:'2v2 teammate', dance:'Victory dance' };
+const HAIR_NAME = { short:'Short', spiky:'Spiky', buzz:'Buzz', curly:'Curly', ponytail:'Ponytail', bob:'Bob', long:'Long', buns:'Buns',
+  mohawk:'Mohawk', afro:'Afro', undercut:'Undercut', manbun:'Man bun', pigtails:'Pigtails', braid:'Braid', pixie:'Pixie', twintails:'Twin tails' };
+const BODY_NAME = { slim:'Slim', regular:'Regular', athletic:'Athletic', stocky:'Stocky' };
+const BODY_MOD = { slim:{ sh:-.02, waist:-.02, hip:-.012, thigh:-.02, calf:-.015, arm:-.015, fore:-.012 }, regular:{},
+  athletic:{ sh:.03, waist:.004, arm:.014, fore:.009, thigh:.014, calf:.009, neck:.01 }, stocky:{ sh:.03, waist:.055, hip:.04, thigh:.026, calf:.016, arm:.02, fore:.014, neck:.016 } };
+const BODY_CACHE = {};
+function bodyOf(girl, type){
+  const k = (girl ? 'g' : 'b') + (type || 'regular');
+  if (!BODY_CACHE[k]){ const b = Object.assign({}, girl ? BODY.girl : BODY.boy), m = BODY_MOD[type] || {}; for (const f in m) b[f] += m[f]; BODY_CACHE[k] = b; }
+  return BODY_CACHE[k];
+}
 // fixed looks for the AI teammates you can unlock
 const MATE_LOOK = {
   mate_ace:   { gender:'boy',  skin:1, hair:0, hairStyle:'short',    head:'cap_navy',     top:'polo_green',  bottom:'shorts_navy',  shoes:'sneak_white', paddle:'pad_blade' },
@@ -1041,9 +1155,16 @@ for (const a of CAT.LADDER) AIS[a.key] = Object.assign(aiFromDupr(a.dupr), { key
 for (const m of itemsOf('partner')) AIS[m.id] = { key:m.id, name:m.name, mmr:0, speed:m.speed, react:m.react, aimSd:m.aimSd, mistake:m.mistake, skill:m.skill, smash:m.smash, tScale:m.tScale, judge:m.judge, depth:5.0, netRush:false, acc:m.acc, kitchen:.85 };
 const LADDER = CAT.LADDER.map(a => a.key);
 // stronger opponents hit with fancier balls (Rare, Epic, Legendary) and celebrate with dances
+// every AI gets a steady nationality, build and height from its name
+function aiLook(name){
+  let h = 7; for (const ch of String(name)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  return { nation:NATION_CODES[h % NATION_CODES.length], body:CAT.BODY_TYPES[(h >> 5) % 4], height:158 + ((h >> 9) % 40) };
+}
 function aiGear(key){
   const d = (AIS[key] && AIS[key].dupr) || 2, pick = a => a[(Math.random() * a.length) | 0];
-  const ball = d < 3 ? 'ball_classic' : d < 4 ? pick(['ball_fire', 'ball_ice']) : d < 5 ? pick(['ball_bolt', 'ball_rainbow']) : pick(['ball_galaxy', 'ball_gold']);
+  // only some of the strongest opponents bring special balls
+  const ball = d < 5 ? 'ball_classic' : d < 6 ? (Math.random() < .25 ? pick(['ball_fire', 'ball_ice']) : 'ball_classic')
+    : d < 7 ? (Math.random() < .3 ? pick(['ball_bolt', 'ball_rainbow']) : 'ball_classic') : (Math.random() < .45 ? pick(['ball_galaxy', 'ball_gold']) : 'ball_classic');
   const dance = d < 3 ? 'dance_pump' : pick(['dance_funk', 'dance_budots', 'dance_weng', 'dance_tinikling', 'dance_robot', 'dance_dab']);
   return { ball, dance };
 }
@@ -1117,6 +1238,7 @@ async function detectServer(){
 }
 const isServerAcc = () => !!(ACC.server && ACC.user);
 function getAcc(){ return isServerAcc() ? ACC.user : data.localAcc; }
+if (data.bestRally){ if (data.localAcc && !(data.localAcc.bestRally >= data.bestRally)) data.localAcc.bestRally = data.bestRally; data.bestRally = 0; }
 function ensureLocal(){
   if (!data.localAcc){ data.localAcc = Object.assign({ name:'Guest' + (100 + Math.floor(Math.random() * 900)) }, CAT.newProgress()); save(); }
   return data.localAcc;
@@ -1627,7 +1749,12 @@ const lookP3 = () => Object.assign(myLook(), { head:'cap_red', top:'polo_orange'
 
 function buildPlayers(mode, diff){
   const H = (set, o, alt = false, pad = 0) => makePlayer(Object.assign({ human:{ set, alt, pad, tag:set.toUpperCase(), color:HCOL[set] } }, o));
-  const AI = (key, o, nm) => { const p = makePlayer(Object.assign({ name:nm || AIS[key].name }, o)); p.ai = mkAI(AIS[key]); if (LADDER.includes(key)) Object.assign(p.look = Object.assign({}, p.look), aiGear(key)); return p; };
+  const AI = (key, o, nm) => {
+    const p = makePlayer(Object.assign({ name:nm || AIS[key].name }, o)); p.ai = mkAI(AIS[key]);
+    p.look = Object.assign({}, p.look, aiLook(p.name));
+    if (LADDER.includes(key)) Object.assign(p.look, aiGear(key));
+    return p;
+  };
   const n1 = myName(), n2 = data.p2.name || 'Player 2';
   switch (mode){
     case 'demo':
@@ -1655,7 +1782,7 @@ function startMatch(mode, diff, players){
   else if (CUSTOM_MODES.includes(mode)) G.court = resolveCourt(data.opts.customCourt);       // custom games: any court, or a random one
   else if (G.netRole !== 'guest'){ const a = getAcc(); G.court = (a && a.equip.court) || 'court_stadium'; }
   G.bfx = [];   // first-serve exception: the opening team gets one server (0-0-2)
-  G.ball = newBall(); G.fx = []; G.rings = []; G.texts = []; G.trail = []; G.confetti = []; G.flashes = []; G.lastWin = 0; G.hitstop = 0; G.dance = null;
+  G.ball = newBall(); G.fx = []; G.rings = []; G.texts = []; G.trail = []; G.confetti = []; G.flashes = []; G.lastWin = 0; G.hitstop = 0; G.dance = null; G.cele = null;
   G.stats = { perfect:0, winners:0, longest:0, cur:0 };
   if (mode !== 'online') { G.netRole = null; G.flip = false; }
   if (CAM.preset !== camKey() || (mode !== 'online' && CAM.yaw !== CAMS[camKey()].yaw)) fitCamera();
@@ -1942,13 +2069,21 @@ function onBounce(){
   }
 }
 
+/* the side that scores does a short victory dance; your own side also gets a few seconds of its beat */
+function celebratePoint(T){
+  if (data.opts.pointDance === false) return;
+  G.cele = { team:T, start:G.time };
+  const mine = team(T).find(p => p.human && !p.human.remote);
+  if (mine && musicOn() && actx) startTrack(IT((mine.look && mine.look.dance) || 'dance_pump').style || 'pump', { seconds:1.6, vol:.32 });
+}
 function endPoint(winner, title, sub = ''){
   if (G.state !== 'play') return;
   G.state = 'point'; G.timer = 1.35; G.lastWin = winner;
   for (const p of G.players){ p.charging = false; p.swingT = 0; }
   if (G.mode === 'rally'){
-    const r = G.rally, best = r > data.bestRally;
-    if (best){ data.bestRally = r; save(); }
+    const acc = getAcc() || ensureLocal(), r = G.rally, best = r > (acc.bestRally || 0);
+    if (best && !isServerAcc()){ acc.bestRally = r; save(); }
+    if (best && isServerAcc() && ACC.user) ACC.user.bestRally = r;     // the server saves it too (api/rally)
     progRally(r).then(rew => { if (rew && rew.coins){ const me = meP(); if (me) addText({ txt:`+${rew.coins} coins`, x:me.x, y:me.y, z:2.4, life:1.4, max:1.4, color:'#f5c542' }); if (rew.level > rew.levelBefore) showToast(`Level ${rew.level}!`, rewardText(rew)); } }).catch(() => {});
     toast(best ? 'New best streak!' : 'Rally over', `${r} return${r === 1 ? '' : 's'} · ${title}`);
     sfx(best ? 'win' : 'lose'); G.rally = 0; G.server = 1; updateHUD(); return;
@@ -1958,6 +2093,7 @@ function endPoint(winner, title, sub = ''){
   if (servingWon){
     // only the serving side scores
     G.score[T - 1]++;
+    celebratePoint(T);
     if (G.doubles){
       // the server and partner swap courts after winning a point on serve
       const mate = team(T).find(p => p !== G.serverP);
@@ -2309,6 +2445,7 @@ function rewardText(r){
   const bits = [];
   if (r.skills && r.skills.length) bits.push('Unlocked ' + r.skills.map(k => LABEL[k]).join(', '));
   if (r.newItems) bits.push(`${r.newItems} new item${r.newItems > 1 ? 's' : ''} in the shop`);
+  if (r.keys) bits.push(`+${r.keys} chest key${r.keys > 1 ? 's' : ''} 🔑`);
   return bits.join(' · ');
 }
 function showRewards(r){
@@ -2370,6 +2507,33 @@ function drawPaddle(c, it, hx, hy, ang){
     if (it.deco === 'stripe'){ c.globalAlpha = .9; c.beginPath(); c.moveTo(.18, .12); c.lineTo(.26, .12); c.lineTo(.36, -.12); c.lineTo(.28, -.12); c.closePath(); c.fill(); }
     else if (it.deco === 'dots'){ c.globalAlpha = .85; for (let ix = 0; ix < 4; ix++) for (let iy = 0; iy < 3; iy++) ell(c, .16 + ix * .065, -.075 + iy * .075, .016, .016); }
     else if (it.deco === 'split'){ c.globalAlpha = .9; c.fillRect(.26, -.12, .16, .24); }
+    else if (it.deco === 'kitsune'){   // fox mask
+      c.globalAlpha = 1; c.fillStyle = '#ffffff'; c.beginPath(); c.moveTo(.18, -.08); c.lineTo(.21, -.02); c.lineTo(.24, -.06); c.lineTo(.26, .07); c.lineTo(.28, -.06); c.lineTo(.31, -.02); c.lineTo(.34, -.08); c.lineTo(.33, .03); c.lineTo(.26, .1); c.lineTo(.19, .03); c.closePath(); c.fill();
+      c.strokeStyle = '#e11d48'; c.lineWidth = .012; seg(c, .215, 0, .245, .015); seg(c, .305, 0, .275, .015); c.fillStyle = '#111'; ell(c, .235, .025, .012, .005); ell(c, .285, .025, .012, .005); }
+    else if (it.deco === 'oni'){       // horned mask with fangs
+      c.globalAlpha = 1; c.fillStyle = c2; c.beginPath(); c.moveTo(.2, -.02); c.lineTo(.18, -.12); c.lineTo(.23, -.04); c.closePath(); c.fill(); c.beginPath(); c.moveTo(.32, -.02); c.lineTo(.34, -.12); c.lineTo(.29, -.04); c.closePath(); c.fill();
+      ell(c, .23, .0, .02, .012); ell(c, .29, .0, .02, .012); c.fillStyle = '#fff'; c.beginPath(); c.moveTo(.23, .05); c.lineTo(.24, .085); c.lineTo(.25, .05); c.fill(); c.beginPath(); c.moveTo(.27, .05); c.lineTo(.28, .085); c.lineTo(.29, .05); c.fill(); }
+    else if (it.deco === 'neko'){      // cat face
+      c.globalAlpha = 1; c.fillStyle = c2; c.beginPath(); c.moveTo(.19, -.03); c.lineTo(.2, -.11); c.lineTo(.24, -.06); c.closePath(); c.fill(); c.beginPath(); c.moveTo(.33, -.03); c.lineTo(.32, -.11); c.lineTo(.28, -.06); c.closePath(); c.fill();
+      ell(c, .235, .0, .014, .018); ell(c, .285, .0, .014, .018); c.fillStyle = '#ff7eb6'; ell(c, .26, .03, .012, .008);
+      c.strokeStyle = c2; c.lineWidth = .006; for (const sx of [-1, 1]) { seg(c, .26 + sx * .03, .035, .26 + sx * .09, .02); seg(c, .26 + sx * .03, .045, .26 + sx * .09, .05); } }
+    else if (it.deco === 'mecha'){     // panel lines + glowing core
+      c.globalAlpha = .9; c.lineWidth = .008; seg(c, .14, -.05, .38, -.05); seg(c, .14, .05, .38, .05); seg(c, .2, -.12, .2, -.05); seg(c, .32, .05, .32, .12);
+      c.globalAlpha = 1; const cg = c.createRadialGradient(.26, 0, 0, .26, 0, .05); cg.addColorStop(0, '#ffffff'); cg.addColorStop(.4, c2); cg.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = cg; ell(c, .26, 0, .05, .05); }
+    else if (it.deco === 'katana'){    // a blade across the face
+      c.globalAlpha = 1; c.fillStyle = c2; c.beginPath(); c.moveTo(.15, .09); c.lineTo(.36, -.09); c.lineTo(.37, -.07); c.lineTo(.17, .1); c.closePath(); c.fill();
+      c.fillStyle = '#c9a227'; ell(c, .19, .065, .02, .012); c.fillStyle = '#7f1d1d'; c.save(); c.translate(.17, .085); c.rotate(-.7); c.fillRect(-.04, -.008, .04, .016); c.restore(); }
+    else if (it.deco === 'dragon'){    // scales and an eye
+      c.globalAlpha = .85; c.lineWidth = .01; for (let r2 = 0; r2 < 4; r2++) for (let k = 0; k < 5; k++){ c.beginPath(); c.arc(.15 + k * .055 + (r2 % 2) * .027, -.09 + r2 * .055, .03, 0, Math.PI); c.stroke(); }
+      c.globalAlpha = 1; c.fillStyle = '#fef3c7'; ell(c, .3, -.03, .03, .018); c.fillStyle = '#111'; ell(c, .3, -.03, .007, .016); }
+    else if (it.deco === 'shuriken'){  // ninja star
+      c.globalAlpha = 1; c.beginPath(); for (let k = 0; k < 8; k++){ const a2 = k * Math.PI / 4, r2 = k % 2 ? .025 : .08; k ? c.lineTo(.26 + Math.cos(a2) * r2, Math.sin(a2) * r2) : c.moveTo(.26 + Math.cos(a2) * r2, Math.sin(a2) * r2); } c.closePath(); c.fill();
+      c.fillStyle = it.c1; ell(c, .26, 0, .014, .014); }
+    else if (it.deco === 'kawaii'){    // happy face
+      c.globalAlpha = 1; c.lineWidth = .012; c.strokeStyle = '#3b2a2a'; c.beginPath(); c.arc(.225, .0, .016, Math.PI, TAU); c.stroke(); c.beginPath(); c.arc(.295, .0, .016, Math.PI, TAU); c.stroke();
+      c.beginPath(); c.arc(.26, .025, .025, 0, Math.PI); c.stroke(); c.fillStyle = c2; c.globalAlpha = .6; ell(c, .195, .03, .02, .012); ell(c, .325, .03, .02, .012); }
+    else if (it.deco === 'petals'){    // cherry blossoms
+      c.globalAlpha = 1; for (const [fx2, fy2, fr] of [[.2, -.05, .03], [.31, .04, .035], [.33, -.07, .022]]){ for (let k = 0; k < 5; k++){ const a2 = k * TAU / 5; ell(c, fx2 + Math.cos(a2) * fr * .6, fy2 + Math.sin(a2) * fr * .6, fr * .45, fr * .45); } c.fillStyle = '#ffd23f'; ell(c, fx2, fy2, fr * .25, fr * .25); c.fillStyle = c2; } }
     else if (it.deco === 'wave'){ c.lineWidth = .025; c.globalAlpha = .9; c.beginPath(); for (let k = 0; k <= 12; k++){ const xx = .12 + k * .024, yy = Math.sin(k * .9) * .05; k ? c.lineTo(xx, yy) : c.moveTo(xx, yy); } c.stroke(); }
     c.restore();
   }
@@ -2423,18 +2587,55 @@ function drawBand(c, it, ex, ey, hx, hy, w){
   if (it.c2){ c.strokeStyle = it.c2; c.globalAlpha = .6; c.lineWidth = w + .028; seg(c, px - ux * .15, py - uy * .15, px + ux * .15, py + uy * .15); }
   c.restore();
 }
+/* hair behind the head: afro, pigtails, twin tails */
+function backHair(c, hs, hair, tie, t, run, B){
+  c.fillStyle = hair;
+  if (hs === 'afro'){ ell(c, 0, -1.66, .215, .19); }
+  if (hs === 'pigtails' || hs === 'twintails'){
+    const hi = hs === 'twintails', sw2 = Math.sin(t * 3 + run) * .025;
+    for (const sx of [-1, 1]){
+      c.beginPath(); c.moveTo(sx * .12, hi ? -1.73 : -1.62);
+      c.quadraticCurveTo(sx * (hi ? .33 : .25) + sw2, hi ? -1.62 : -1.55, sx * (hi ? .27 : .2) + sw2, hi ? -1.22 : -1.4);
+      c.quadraticCurveTo(sx * (hi ? .2 : .16), hi ? -1.5 : -1.5, sx * .1, hi ? -1.66 : -1.58); c.closePath(); c.fill();
+      c.fillStyle = tie; ell(c, sx * .14, hi ? -1.71 : -1.6, .026, .02); c.fillStyle = hair;
+    }
+  }
+}
+/* hair on top of the head, including the special chest styles */
+function topHair(c, hs, hair, hx, t, B, front){
+  const tip = hx && hx.tip;
+  if (hx && hx.glow){ const g = c.createRadialGradient(0, -1.74, .02, 0, -1.74, .36); g.addColorStop(0, hexA(hair, .45)); g.addColorStop(1, hexA(hair, 0)); c.save(); c.globalCompositeOperation = 'lighter'; c.fillStyle = g; c.beginPath(); c.arc(0, -1.74, .36, 0, TAU); c.fill(); c.restore(); }
+  const grad = (y0, y1) => { if (!tip) return hair; const g = c.createLinearGradient(0, y0, 0, y1); g.addColorStop(0, hair); g.addColorStop(1, tip); return g; };
+  if (hs === 'mohawk'){ c.fillStyle = grad(-1.72, -1.95); c.beginPath(); c.moveTo(-.04, -1.72); for (let i = 0; i <= 4; i++){ const xx = -.04 + i * .02; c.lineTo(xx + .01, -1.86 - Math.sin(i * 1.3) * .03 - (i === 2 ? .04 : 0)); } c.lineTo(.04, -1.72); c.closePath(); c.fill(); }
+  if (hs === 'afro'){ c.fillStyle = hair; ell(c, 0, -1.76, .2, .1); for (let i = -3; i <= 3; i++) ell(c, i * .055, -1.82 + Math.abs(i) * .015, .05, .045); }
+  if (hs === 'undercut'){ c.fillStyle = hair; c.beginPath(); c.ellipse(.025, -1.755, .14, .052, -.12, 0, TAU); c.fill(); }
+  if (hs === 'manbun'){ c.fillStyle = hair; ell(c, 0, -1.79, .055, .048); c.fillStyle = shade(hair, -.25); ell(c, 0, -1.755, .04, .012); }
+  if (hs === 'pixie'){ c.fillStyle = hair; c.beginPath(); c.ellipse(-.03, -1.735, .14, .045, .15, 0, TAU); c.fill(); }
+  if (hs === 'superspike' || hs === 'flame'){
+    const n = 7, fl = hs === 'flame';
+    for (let i = 0; i < n; i++){
+      const a = Math.PI * (1.08 + i * .84 / (n - 1)), len = (fl ? .2 + Math.sin(t * 9 + i * 1.7) * .035 : .2 + (i % 2 ? -.04 : .03)) * (i === 3 ? 1.2 : 1);
+      const bx = Math.cos(a) * B.hx * .9, by = -1.64 + Math.sin(a) * .1, tx = bx + Math.cos(a) * len * (fl ? .6 : .9), ty = by + Math.sin(a) * len - (fl ? .06 : .02);
+      c.fillStyle = grad(by, ty); c.beginPath(); c.moveTo(bx - Math.sin(a) * .045, by + Math.cos(a) * .045); c.lineTo(tx, ty); c.lineTo(bx + Math.sin(a) * .045, by - Math.cos(a) * .045); c.closePath(); c.fill();
+    }
+    c.fillStyle = hair; ell(c, 0, -1.72, B.hx + .01, .055);
+  }
+  if (hs === 'braid' && front){ c.fillStyle = hair; for (let i = 0; i < 4; i++) ell(c, .13, -1.56 + i * .06, .03, .028); }
+}
 function drawCharacter(c, x, y, s, look, facing, swing, run, moving, t, tag, fx){
   const F0 = fx || NOFX, DP = F0.dance ? dancePose(F0.dance.id, F0.dance.t) : null;
   const F = DP ? Object.assign({}, F0, { lean:DP.lean, jump:DP.jump, crouch:DP.crouch, cheer:false, sad:false }) : F0;
   const head = IT(look.head), top = IT(look.top), bot = IT(look.bottom), shoe = IT(look.shoes), pad = IT(look.paddle || 'pad_wood');
-  const skin = SKINS[look.skin] || SKINS[0], skinD = shade(skin, -.2), hair = HAIRS[look.hair] || HAIRS[0], hairD = shade(hair, -.3);
-  const girl = look.gender === 'girl', front = facing === 'front', ps = front ? -1 : 1, B = girl ? BODY.girl : BODY.boy;
-  const hs = look.hairStyle || (girl ? 'ponytail' : 'short');
+  const HX = IT(look.hairx || 'hair_own'), hxi = HX.style ? HX : null;      // chest hairstyles override your own
+  const skin = SKINS[look.skin] || SKINS[0], skinD = shade(skin, -.2), hair = hxi ? hxi.c1 : HAIRS[look.hair] || HAIRS[0], hairD = shade(hair, -.3);
+  const girl = look.gender === 'girl', front = facing === 'front', ps = front ? -1 : 1, B = bodyOf(girl, look.body);
+  const hs = hxi ? hxi.style : look.hairStyle || (girl ? 'ponytail' : 'short');
+  const hk = clamp((look.height || (girl ? 165 : 175)) / 172, .87, 1.16);
   const t1 = top.c1 || '#f5f7fb', t2 = top.c2 || '#1f3b8c', tst = top.style || 'tee';
   const b1 = bot.c1 || '#1f3b8c', b2 = bot.c2 || '#ffffff', bst = bot.style || 'shorts';
   const tie = head.style === 'band' ? (head.c1 || '#ff5c9a') : '#ff5c9a';
   const SLEEVE = { tee:.55, polo:.55, jersey:.6, tank:0, hoodie:1, kit:.6 }[tst] ?? .55;
-  c.save(); c.translate(x, y); c.scale(s, s); c.lineCap = 'round'; c.lineJoin = 'round';
+  c.save(); c.translate(x, y); c.scale(s * hk, s * hk); c.lineCap = 'round'; c.lineJoin = 'round';
   // soft contact shadow, smaller while airborne
   const jump = F.jump || 0, sh = 1 / (1 + jump * 2.2);
   const sg = c.createRadialGradient(.04, .01, 0, .04, .01, .42);
@@ -2475,7 +2676,8 @@ function drawCharacter(c, x, y, s, look, facing, swing, run, moving, t, tag, fx)
   { const r2 = limb(c, -ps * shX, -1.37, -ps * fa, -ps * .35, .27, .25, skin, t1, SLEEVE, tst === 'hoodie' ? t1 : null, B.arm, B.fore); drawBand(c, IT(look.wrist), r2[2], r2[3], r2[0], r2[1], B.fore); }
   if (tst === 'hoodie'){ c.fillStyle = shade(t1, -.12); ell(c, 0, front ? -1.44 : -1.47, B.sh * .65, .08); }
   // long hair falls behind the shoulders
-  if (girl && hs === 'long' && front){ c.fillStyle = hair; rr(c, -.16, -1.66, .32, .34, .08); c.fill(); }
+  if (hs === 'long' && front){ c.fillStyle = hair; rr(c, -.16, -1.66, .32, .34, .08); c.fill(); }
+  if (front) backHair(c, hs, hair, tie, t, run, B);
   // torso shaped by gender, details clipped inside it
   const g = c.createLinearGradient(-B.sh, 0, B.sh, 0);
   g.addColorStop(0, shade(t1, -.14)); g.addColorStop(.45, t1); g.addColorStop(1, shade(t1, -.24));
@@ -2514,6 +2716,8 @@ function drawCharacter(c, x, y, s, look, facing, swing, run, moving, t, tag, fx)
     if (hs === 'long'){ c.beginPath(); c.moveTo(-.155, -1.6); c.quadraticCurveTo(-.19, -1.3, -.14, -1.22); c.lineTo(.14, -1.22); c.quadraticCurveTo(.19, -1.3, .155, -1.6); c.fill(); }
     if (hs === 'bob'){ rr(c, -.16, -1.68, .32, .22, .07); c.fill(); }
     ell(c, 0, -1.62, B.hx + .01, .15);
+    backHair(c, hs, hair, tie, t, run, B);
+    if (hs === 'braid'){ for (let i = 0; i < 6; i++){ c.fillStyle = i % 2 ? hairD : hair; ell(c, Math.sin(t * 2 + i) * .006, -1.5 + i * .055, .035 - i * .002, .032); } c.fillStyle = tie; ell(c, 0, -1.18, .025, .016); c.fillStyle = hair; }
     if (hs === 'buzz'){ c.fillStyle = skin; c.globalAlpha = .35; ell(c, 0, -1.6, B.hx - .01, .13); c.globalAlpha = 1; }
     if (!girl){ c.fillStyle = skin; ell(c, 0, -1.49, .07, .028); }
   } else {
@@ -2526,7 +2730,9 @@ function drawCharacter(c, x, y, s, look, facing, swing, run, moving, t, tag, fx)
       c.beginPath(); c.arc(0, -1.625, B.hx + .012, Math.PI, TAU); c.lineTo(B.hx + .012, -1.6); c.quadraticCurveTo(.04, -1.69, -.06, -1.635); c.quadraticCurveTo(-.11, -1.62, -B.hx - .012, -1.6); c.closePath(); c.fill();
     } else {
       c.beginPath(); c.arc(0, -1.635, B.hx + .008, Math.PI, TAU); c.lineTo(B.hx + .008, -1.62); c.quadraticCurveTo(.06, hs === 'buzz' ? -1.72 : -1.69, -.02, -1.665); c.quadraticCurveTo(-.09, hs === 'buzz' ? -1.72 : -1.7, -B.hx - .008, -1.62); c.closePath(); c.fill();
-      if (hs !== 'buzz'){ c.fillRect(-B.hx - .004, -1.65, .028, .07); c.fillRect(B.hx - .024, -1.65, .028, .07); }
+      if (hs !== 'buzz' && hs !== 'mohawk'){ c.fillRect(-B.hx - .004, -1.65, .028, .07); c.fillRect(B.hx - .024, -1.65, .028, .07); }
+      if (hs === 'long' || hs === 'bob'){ rr(c, -.175, -1.7, .07, hs === 'long' ? .4 : .25, .035); c.fill(); rr(c, .105, -1.7, .07, hs === 'long' ? .4 : .25, .035); c.fill(); }
+      if (hs === 'mohawk'){ c.fillStyle = skin; c.globalAlpha = .4; c.beginPath(); c.arc(0, -1.635, B.hx, Math.PI, TAU); c.fill(); c.globalAlpha = 1; c.fillStyle = hair; }
       if (hs === 'buzz'){ c.fillStyle = skin; c.globalAlpha = .35; c.beginPath(); c.arc(0, -1.635, B.hx, Math.PI, TAU); c.fill(); c.globalAlpha = 1; }
     }
     // face
@@ -2551,6 +2757,7 @@ function drawCharacter(c, x, y, s, look, facing, swing, run, moving, t, tag, fx)
   if (hs === 'spiky'){ c.fillStyle = hair; for (let i = -2; i <= 2; i++){ c.beginPath(); c.moveTo(i * .055 - .035, -1.73); c.lineTo(i * .06, -1.82 + Math.abs(i) * .02); c.lineTo(i * .055 + .035, -1.73); c.fill(); } }
   if (hs === 'curly'){ c.fillStyle = hair; for (let i = -3; i <= 3; i++) ell(c, i * .045, -1.74 + Math.abs(i) * .012, .04, .035); }
   if (hs === 'buns'){ c.fillStyle = hair; ell(c, -.1, -1.76, .055, .055); ell(c, .1, -1.76, .055, .055); c.fillStyle = tie; ell(c, -.1, -1.715, .03, .012); ell(c, .1, -1.715, .03, .012); }
+  topHair(c, hs, hair, hxi, t, B, front);
   // headwear
   const h1 = head.c1 || '#e23b3b', h2 = head.c2 || '#ffffff', hst = head.style || 'none';
   const clip = () => { c.save(); c.beginPath(); c.arc(0, -1.62, B.hx + .016, 0, TAU); c.clip(); };
@@ -2656,6 +2863,7 @@ function render(){
       if (G.doubles || G.mode === 'online'){
         c.font = `700 ${Math.round(clamp(.22 * q[2], 10, 14))}px Barlow, system-ui, sans-serif`; c.textAlign = 'center'; c.textBaseline = 'alphabetic';
         const hidden = HUD_RECT && q[1] - 24 < HUD_RECT.b + 6 && q[0] > HUD_RECT.l && q[0] < HUD_RECT.r && !$('#hud').classList.contains('sb-dim');
+        const fi = !hidden && flagImg(p.look && p.look.nation); if (fi){ const tw = c.measureText(p.name).width; c.drawImage(fi, q[0] - tw / 2 - 20, q[1] - 35, 16, 11); }
         if (!hidden){ c.lineWidth = 3; c.strokeStyle = 'rgba(5,10,25,.75)'; c.strokeText(p.name, q[0], q[1] - 24); c.fillStyle = p.human ? p.human.color : '#dbe4f3'; c.fillText(p.name, q[0], q[1] - 24); }
       }
       if (p.human) drawMeter(p);
@@ -2702,6 +2910,7 @@ function playerFx(p, q){
   const cheer = after && G.lastWin === p.team, sad = after && G.lastWin !== p.team;
   const jump = (p.jumpT > 0 ? Math.sin(Math.PI * (1 - p.jumpT / .5)) * .34 : 0) + (cheer ? Math.abs(Math.sin(G.time * 7 + p.x * 3)) * .2 : 0);
   if (G.dance && G.state === 'over' && p.team === G.dance.team) return { dance:{ id:(p.look && p.look.dance) || 'dance_pump', t:G.time - G.dance.start } };
+  if (G.cele && G.state === 'point' && p.team === G.cele.team && G.time - G.cele.start < 1.5) return { dance:{ id:(p.look && p.look.dance) || 'dance_pump', t:G.time - G.cele.start } };
   return { lean:p._lean, crouch:p._crouch, jump, cheer, sad, sprint:!!(p.sprinting && p.moving) };
 }
 /* speed streaks trailing behind a sprinting player */
@@ -2921,7 +3130,7 @@ function sbNames(t){
   return team(t).map(p => {
     const on = G.serverP === p && G.mode !== 'rally';
     const col = p.human ? p.human.color : 'var(--hud-muted)';
-    return `<div class="sbName ${on ? 'on' : ''}"><span class="sbBall"></span><b style="color:${p.human ? 'var(--hud-text)' : 'var(--hud-muted)'}"><span style="color:${col}">•</span> ${esc(p.name)}</b>${G.doubles ? `<span class="sbNum">S${G.serveNum}</span>` : ''}</div>`;
+    return `<div class="sbName ${on ? 'on' : ''}"><span class="sbBall"></span><b style="color:${p.human ? 'var(--hud-text)' : 'var(--hud-muted)'}"><span style="color:${col}">•</span> ${flagHTML(p.look && p.look.nation, 10)} ${esc(p.name)}</b>${G.doubles ? `<span class="sbNum">S${G.serveNum}</span>` : ''}</div>`;
   }).join('');
 }
 const setTxt = (sel, v) => { const el = $(sel); if (el._v !== v){ el._v = v; el.textContent = v; } };
@@ -2947,7 +3156,7 @@ function updateHUD(){
   setTxt('#h2Score', rally ? '·' : String(G.score[1]));
   if (rally && G.rally !== lastRally && G.rally > 0) popEl($('#h1Score'));
   lastRally = G.rally;
-  setTxt('#sbCall', rally ? `Best ${Math.max(data.bestRally, (ACC.user && ACC.user.bestRally) || 0)}` : scoreCall());
+  setTxt('#sbCall', rally ? `Best ${((getAcc() || {}).bestRally) || 0}` : scoreCall());
   const gp = gamePoint();
   $('#sbTag').classList.toggle('hidden', !gp && !rally);
   setTxt('#sbTag', rally ? 'RALLY' : 'GAME POINT');
@@ -3000,6 +3209,7 @@ function show(id){
   ({ gate:renderGate, shop:renderShop, menu:refreshMenu, diff:renderDiff, char:renderChar, rank:renderRank, signup:renderSignup, online:renderOnline, room:renderRoom, ctrl:renderCtrl, pause:renderPause }[screenNow] || (() => {}))();
   if (screenNow === 'rank' && Date.now() - ACC.boardT > 5000) loadBoard();
   if (['menu', 'online', 'room'].includes(screenNow)){ renderFriendBits(); loadFriends(); }
+  $('#bellBtn').classList.toggle('hidden', !MENU_SCREENS.includes(screenNow)); NOTIF.open = false; $('#notifPanel').classList.add('hidden');
   // signed-in players stay connected in the menus, so friends see them online and invites arrive anywhere
   if (ACC.server && ACC.user && MENU_SCREENS.includes(screenNow)) netConnect();
   if (screenNow === 'menu') claimDailyOnce();
@@ -3020,6 +3230,7 @@ function refreshMenu(){
   $('#mLevel').textContent = lv.level;
   $('#mRing').style.strokeDashoffset = String(263.9 * (1 - lv.into / lv.need));
   const n = a.wins + a.losses;
+  setTxt('#mKeys', String(a.keys | 0));
   const dp = CAT.dupr(a.mmr);
   setTxt('#mDupr', dp.toFixed(3)); setTxt('#mDuprTier', CAT.duprTier(dp)); $('#mDuprBar').style.width = ((dp - 2) / 6 * 100).toFixed(1) + '%';
   setTxt('#mWins', String(a.wins)); setTxt('#mRate', n ? Math.round(a.wins / n * 100) + '%' : '—'); setTxt('#mPeak', String(a.peak || a.mmr));
@@ -3034,7 +3245,7 @@ function refreshMenu(){
   $('#mXpText').textContent = `${lv.into} / ${lv.need} XP to level ${lv.level + 1}`;
   $('#mCoins').textContent = a.coins;
   $('#mMmr').textContent = a.mmr;
-  $('#mBest').textContent = `Best streak: ${Math.max(data.bestRally, a.bestRally || 0)}`;
+  $('#mBest').textContent = `Best streak: ${a.bestRally || 0}`;
   $('#sndBtn').textContent = `Sound: ${data.sound ? 'on' : 'off'}`;
   $('#mAccBtn').textContent = isServerAcc() ? 'Account' : (ACC.server ? 'Sign up / Log in' : 'Guest profile');
   $('#mNet').textContent = !ACC.checked ? 'Checking for a server…' : isServerAcc() ? `Signed in · ${location.host}` : ACC.server ? 'Playing anonymously · progress saved in this browser' : 'Offline · progress saved in this browser';
@@ -3134,7 +3345,7 @@ function renderRank(){
     const you = r.username === meName, medal = ['#f5c542', '#cfd6e0', '#d9925b'][i];
     return `<div ${ACC.server ? `data-act="viewPlayer" data-name="${esc(r.username)}" style="cursor:pointer"` : ''} class="flex items-center gap-3 rounded-xl px-3 py-2 ${you ? 'bg-[var(--accent)] text-[var(--accent-ink)]' : 'tile'}">
       <span class="font-display w-7 text-center tabular-nums rounded-md" ${medal && !you ? `style="background:${medal};color:#1b1b1b"` : ''}>${i + 1}</span>
-      <span class="flex-1 font-semibold truncate">${esc(r.username)}${you ? ' (you)' : ''}</span>
+      <span class="flex-1 font-semibold truncate">${flagHTML(r.nation, 12)} ${esc(r.username)}${you ? ' (you)' : ''}</span>
       <span class="text-xs font-bold opacity-80">Lv ${r.level || 1}</span><span class="text-xs font-bold hot tabular-nums">${(r.dupr ?? CAT.dupr(r.mmr)).toFixed(2)}</span><span class="text-sm tabular-nums opacity-80">${r.wins}–${r.losses}</span><span class="font-display tabular-nums w-14 text-right">${r.mmr}</span></div>`;
   }).join('') : `<div class="text-[var(--muted)]">${ACC.server ? 'No players yet. Sign up and win a ranked match to be first.' : 'Nothing here yet.'}</div>`;
   const hist = (a && a.history) || [];
@@ -3154,8 +3365,12 @@ function renderChar(){
   $$('.gbtn').forEach(b => b.classList.toggle('chip-on', b.dataset.v === base.gender));
   $('#skinRow').innerHTML = SKINS.map((c, i) => `<button data-act="skin" data-i="${i}" aria-label="Skin tone ${i + 1}" class="w-9 h-9 rounded-full border-[3px] ${base.skin === i ? 'border-[var(--accent)]' : 'border-[var(--line)]'}" style="background:${c}"></button>`).join('');
   $('#hairRow').innerHTML = HAIRS.map((c, i) => `<button data-act="hair" data-i="${i}" aria-label="Hair color ${i + 1}" class="w-9 h-9 rounded-full border-[3px] ${base.hair === i ? 'border-[var(--accent)]' : 'border-[var(--line)]'}" style="background:${c}"></button>`).join('');
+  $('#bodyRow').innerHTML = CAT.BODY_TYPES.map(b => `<button data-act="bodyType" data-v="${b}" class="${(base.body || 'regular') === b ? 'chip-on' : ''}">${BODY_NAME[b]}</button>`).join('');
+  const hgt = base.height || (base.gender === 'girl' ? 165 : 175); $('#heightIn').value = hgt; setTxt('#heightVal', `${hgt} cm`);
+  const ns = $('#nationSel'); if (!ns.options.length) ns.innerHTML = '<option value="">No flag</option>' + NATION_CODES.map(k => `<option value="${k}">${esc(CAT.NATIONS[k])}</option>`).join('');
+  ns.value = base.nation || ''; $('#nationFlag').innerHTML = flagHTML(base.nation, 20);
   $('#hairStyleRow').innerHTML = CAT.HAIR_STYLES[base.gender].map(h => `<button data-act="hairStyle" data-v="${h}" class="tile rounded-xl px-3 py-1.5 font-semibold ${base.hairStyle === h ? 'chip-on' : ''}">${HAIR_NAME[h]}</button>`).join('');
-  const slots = p2 ? ['head', 'top', 'bottom', 'shoes', 'wrist', 'paddle', 'ball', 'dance'] : ['head', 'top', 'bottom', 'shoes', 'wrist', 'paddle', 'ball', 'dance', 'court', 'partner'];
+  const slots = p2 ? ['hairx', 'head', 'top', 'bottom', 'shoes', 'wrist', 'paddle', 'ball', 'dance'] : ['hairx', 'head', 'top', 'bottom', 'shoes', 'wrist', 'paddle', 'ball', 'dance', 'court', 'partner'];
   $('#equipList').innerHTML = slots.map(sl => {
     const own = itemsOf(sl).filter(i => a.owned.includes(i.id)), total = itemsOf(sl).length;
     return `<div><div class="flex items-baseline justify-between"><span class="text-sm font-semibold text-[var(--muted)]">${SLOT_NAME[sl]}</span><span class="text-xs text-[var(--muted)]">${own.length}/${total} owned</span></div>
@@ -3182,6 +3397,7 @@ function statLine(i){
   if (i.slot === 'partner') return `Speed ${i.speed.toFixed(1)} · Accuracy ${Math.round(i.acc * 100)}%`;
   if (i.slot === 'court') return i.price ? 'New arena' : 'Home court';
   if (i.slot === 'wrist') return i.c1 ? 'Wristband' : 'Bare wrists';
+  if (i.slot === 'hairx') return i.style ? (i.glow ? 'Glowing hairstyle' : 'Special hairstyle') : 'Uses your own hairstyle';
   if (i.slot === 'dance') return '♪ Original beat · tap the picture to hear it';
   return STYLE_NAME[i.style] || '';
 }
@@ -3191,12 +3407,15 @@ function renderShop(){
   $$('#shopTabs button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === shopTab));
   $$('#shopSub button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === shopSub));
   $('#shopSub').classList.toggle('hidden', shopTab !== 'outfit');
+  setTxt('#shopKeys', String(a.keys | 0));
+  if (shopTab === 'chest'){ renderChests(a); return; }
   const slot = shopTab === 'outfit' ? shopSub : shopTab;
   $('#shopGrid').innerHTML = itemsOf(slot).map(i => {
     const owned = a.owned.includes(i.id), eqd = a.equip[slot] === i.id, low = lv < i.lvl;
     let btn;
     if (eqd) btn = `<button class="tile rounded-xl py-2 font-bold w-full" disabled>Equipped</button>`;
     else if (owned) btn = `<button data-act="shopEquip" data-slot="${slot}" data-id="${i.id}" class="tile rounded-xl py-2 font-bold w-full">Equip</button>`;
+    else if (i.chest) btn = `<button data-act="shopTab" data-v="chest" class="tile rounded-xl py-2 font-bold w-full">🎁 From chests</button>`;
     else if (low) btn = `<button class="tile rounded-xl py-2 font-bold w-full" disabled>🔒 Level ${i.lvl}</button>`;
     else btn = `<button data-act="shopBuy" data-id="${i.id}" class="primary rounded-xl py-2 font-bold w-full" ${a.coins < i.price ? 'disabled' : ''}>${COIN_SVG} ${i.price}</button>`;
     const rk = rarity(i);
@@ -3213,7 +3432,8 @@ function fitCanvas(cv2){
 function drawShop(t){
   for (const cv2 of $$('.shopPv')){
     const id = cv2.dataset.id, slot = cv2.dataset.slot;
-    if (['head', 'top', 'bottom', 'shoes', 'wrist'].includes(slot)) drawPreview(cv2, Object.assign(myLook(), { [slot]:id }), 'front', t, '');
+    if (['head', 'top', 'bottom', 'shoes', 'wrist', 'hairx'].includes(slot)) drawPreview(cv2, Object.assign(myLook(), { [slot]:id }), 'front', t, '');
+    else if (slot === 'chestArt') drawChestArt(cv2, id, t);
     else if (slot === 'dance') drawStage(cv2, myLook(), t, { facing:'front', noCone:true, dance:{ id, t:t % 4 } });
     else if (slot === 'partner') drawPreview(cv2, MATE_LOOK[id] || myLook(), 'front', t, '');
     else if (!fitCanvas(cv2)) continue;
@@ -3224,6 +3444,8 @@ function drawShop(t){
 }
 $('#cName').addEventListener('input', saveName);
 $('#rmCourt').addEventListener('change', e => netSend({ t:'court', v:e.target.value }));
+$('#heightIn').addEventListener('input', e => { data[editWho].height = +e.target.value; setTxt('#heightVal', `${e.target.value} cm`); save(); if (editWho === 'p1') syncLook(); });
+$('#nationSel').addEventListener('change', e => { data[editWho].nation = e.target.value; $('#nationFlag').innerHTML = flagHTML(e.target.value, 20); save(); if (editWho === 'p1') syncLook(); });
 { const pv = $('#pvBig');
   pv.addEventListener('pointerdown', e => { STAGE.drag = { x:e.clientX, a:STAGE.ang }; try { pv.setPointerCapture(e.pointerId); } catch (_) {} });
   pv.addEventListener('pointermove', e => { if (STAGE.drag) STAGE.ang = STAGE.drag.a + (e.clientX - STAGE.drag.x) * .012; });
@@ -3247,6 +3469,7 @@ function renderCtrl(){
   $$('#optGfx button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === (data.opts.gfx || 'auto')));
   $('#optFps').classList.toggle('chip-on', !!data.opts.fps);
   $('#optFull').classList.toggle('chip-on', data.opts.fullscreen !== false);
+  $('#optDance').classList.toggle('chip-on', data.opts.pointDance !== false);
   $('#optShake').classList.toggle('chip-on', !!data.opts.shake); $('#optSound').classList.toggle('chip-on', !!data.sound);
   $('#padInfo').textContent = padsSeen ? `${padsSeen} gamepad${padsSeen > 1 ? 's' : ''} connected. Gamepad 1 controls Player 1, gamepad 2 Player 2, and so on.` : 'Press any button on a gamepad to connect it.';
 }
@@ -3329,7 +3552,8 @@ function act(name, el){
       break;
     case 'pickMate': progEquip('partner', el.dataset.id).then(renderDiff).catch(() => {}); break;
     case 'lockedAi': showToast('Locked', 'Beat the opponent above to unlock this one'); break;
-    case 'hairStyle': data[editWho].hairStyle = el.dataset.v; save(); renderChar(); break;
+    case 'hairStyle': data[editWho].hairStyle = el.dataset.v; save(); renderChar(); if (editWho === 'p1') syncLook(); break;
+    case 'bodyType': data[editWho].body = el.dataset.v; save(); renderChar(); if (editWho === 'p1') syncLook(); break;
     case 'charDone': saveName(); syncLook(); netHello(); show('s-' + charFrom); break;
     case 'tab': saveName(); editWho = el.dataset.who; renderChar(); break;
     case 'turn': STAGE.ang += Math.PI; break;
@@ -3342,12 +3566,21 @@ function act(name, el){
     case 'ctrlTab': REB = null; ctrlSet = el.dataset.v; renderCtrl(); break;
     case 'bind': REB = { set:ctrlSet, act:el.dataset.a }; renderCtrl(); break;
     case 'dancePreview': previewDance(el.dataset.id); break;
+    case 'chestOpen': openChestUI(el.dataset.id, !!el.dataset.key); break;
+    case 'chestAgain': if (!CH.busy){ const a = getAcc() || ensureLocal(); const useKey = CH.key && (a.keys | 0) > 0; openChestUI(CH.chest, useKey); } break;
+    case 'chestClose': if (!CH.busy){ $('#chestOv').classList.add('hidden'); renderShop(); } break;
+    case 'chestEquip': if (CH.last && !CH.busy){ const it = IT(CH.last.id); progEquip(it.slot, it.id).then(() => { $('#chestOv').classList.add('hidden'); renderShop(); }); } break;
     case 'viewPlayer': openPlayer(el.dataset.name); break;
     case 'playerBack': show('s-' + (PROF.from && PROF.from !== 'player' ? PROF.from : 'menu')); break;
-    case 'ppFriend': if (PROF.p){ const add = !FR.keys.has(PROF.p.username.toLowerCase()); friendChange(PROF.p.username, add).then(renderPlayer); } break;
+    case 'ppFriend': if (PROF.p){ const act2 = { friend:'remove', asked:'accept', sent:'cancel', none:'add' }[el.dataset.state || 'none']; friendChange(PROF.p.username, act2).then(renderPlayer); } break;
+    case 'frAccept': friendChange(el.dataset.name, 'accept'); break;
+    case 'frDecline': friendChange(el.dataset.name, 'decline'); break;
+    case 'bell': NOTIF.open = !NOTIF.open; $('#notifPanel').classList.toggle('hidden', !NOTIF.open); if (NOTIF.open){ loadFriends(true); renderNotifs(); setTimeout(() => { NOTIF.items.forEach(n => n.read = true); renderNotifs(); }, 1500); } break;
+    case 'notifDrop': NOTIF.items.splice(+el.dataset.i, 1); renderNotifs(); break;
+    case 'notifJoin': { const n = NOTIF.items[+el.dataset.i]; NOTIF.items.splice(+el.dataset.i, 1); renderNotifs(); if (n && !['game', 'pause'].includes(screenNow)){ NW.err = ''; netSend({ t:'join', code:n.code }); NOTIF.open = false; $('#notifPanel').classList.add('hidden'); } break; }
     case 'ppInvite': if (PROF.p) netSend({ t:'invite', to:PROF.p.username }); break;
     case 'frInvite': netSend({ t:'invite', to:el.dataset.name }); break;
-    case 'frAdd': { const n = $('#frName').value.trim(); if (n.length >= 3) friendChange(n, true).then(ok => { if (ok) $('#frName').value = ''; }); break; }
+    case 'frAdd': { const n = $('#frName').value.trim(); if (n.length >= 3) friendChange(n, 'add').then(ok => { if (ok) $('#frName').value = ''; }); break; }
     case 'inviteClose': $('#inviteCard').classList.add('hidden'); break;
     case 'inviteJoin': {
       $('#inviteCard').classList.add('hidden');
@@ -3362,7 +3595,7 @@ function act(name, el){
       break;
     }
     case 'opt': data.opts[el.dataset.k] = el.dataset.v; save(); if (el.dataset.k === 'gfx') applyGfx(); if (el.dataset.k === 'camera') fitCamera(); renderCtrl(); updateHUD(); break;
-    case 'optToggle': data.opts[el.dataset.k] = !data.opts[el.dataset.k]; save(); renderCtrl(); break;
+    case 'optToggle': { const k = el.dataset.k, cur = data.opts[k] === undefined ? ['fullscreen', 'pointDance', 'shake', 'music'].includes(k) : !!data.opts[k]; data.opts[k] = !cur; save(); renderCtrl(); break; }
     case 'resetBinds': data.binds[ctrlSet] = clone(DEF_BINDS[ctrlSet]); save(); renderCtrl(); break;
     case 'rank': show('s-rank'); break;
     case 'how': show('s-how'); break;
@@ -3370,7 +3603,7 @@ function act(name, el){
     case 'signup': suMode = isServerAcc() ? suMode : 'signup'; $('#suErr').textContent = ''; show('s-signup'); break;
     case 'suTab': suMode = el.dataset.v; $('#suErr').textContent = ''; renderSignup(); break;
     case 'suGo': suGo(); break;
-    case 'logout': api('api/logout', {}).catch(() => {}); data.token = null; ACC.user = null; FR.list = []; FR.keys = new Set(); FR.t = 0; dailyTried = false; save(); netHello(); show('s-gate'); break;
+    case 'logout': api('api/logout', {}).catch(() => {}); data.token = null; ACC.user = null; FR.list = []; FR.keys = new Set(); FR.incoming = []; FR.outgoing = new Set(); NOTIF.items = []; renderNotifs(); FR.t = 0; dailyTried = false; save(); netHello(); show('s-gate'); break;
     case 'pause': togglePause(true); break;
     case 'resume': togglePause(false); break;
     case 'restart': case 'rematch':
@@ -3499,7 +3732,108 @@ function netConnect(){
   };
 }
 /* ---------- profiles, friends, invites, daily bonus ---------- */
-const PROF = { p:null, from:'menu' }, FR = { list:[], keys:new Set(), t:0 };
+/* ---------- chests: a spinning reel picks the prize (the server rolls it for accounts) ---------- */
+const CH = { busy:false, last:null, chest:null, key:false };
+const RAR_LABEL = { common:'Common', rare:'Rare', epic:'Epic', legendary:'Legendary' };
+function renderChests(a){
+  $('#shopGrid').innerHTML = CAT.CHESTS.map(ch => {
+    const gold = ch.id === 'chest_gold', rk = gold ? 'legendary' : 'rare';
+    return `<div class="chestCard r-${rk}" style="grid-column:1 / -1"><canvas class="shopPv" data-id="${ch.id}" data-slot="chestArt"></canvas>
+      <div class="min-w-0 flex flex-col gap-2"><div class="font-display text-2xl">${esc(ch.name)}</div>
+      <div class="text-sm text-[var(--muted)]">Balls, courts, special hair and chest-only outfits. Duplicates turn into coins.</div>
+      <div class="odds">${['common', 'rare', 'epic', 'legendary'].map(r => `<span style="color:${RARITY[r]}">${RAR_LABEL[r]} ${Math.round(ch.odds[r] * 100)}%</span>`).join('')}</div>
+      <div class="flex gap-2 flex-wrap mt-auto">
+        <button data-act="chestOpen" data-id="${ch.id}" class="primary rounded-xl px-4 py-2.5 font-bold" ${a.coins < ch.price ? 'disabled' : ''}>Open · ${COIN_SVG} ${ch.price}</button>
+        ${ch.keys ? `<button data-act="chestOpen" data-id="${ch.id}" data-key="1" class="tile rounded-xl px-4 py-2.5 font-bold" ${(a.keys | 0) < 1 ? 'disabled' : ''}>Use a key 🔑 (${a.keys | 0})</button>` : ''}
+      </div></div></div>`;
+  }).join('') + `<div class="text-sm text-[var(--muted)]" style="grid-column:1 / -1">You get a free chest key every time you level up. Collection: ${CAT.CHEST_POOL.filter(i => a.owned.includes(i.id)).length}/${CAT.CHEST_POOL.length} chest items.</div>`;
+}
+function drawChestArt(cv2, id, t){
+  if (!fitCanvas(cv2)) return;
+  const c = cv2.getContext('2d'), W = cv2.width / DPR, H = cv2.height / DPR, gold = id === 'chest_gold';
+  c.setTransform(DPR, 0, 0, DPR, 0, 0); c.clearRect(0, 0, W, H);
+  const cx = W / 2, cy = H / 2 + 8 + Math.sin(t * 2) * 3, w = Math.min(W * .62, 120), h = w * .62;
+  const glow = c.createRadialGradient(cx, cy, 0, cx, cy, w); glow.addColorStop(0, gold ? 'rgba(245,197,66,.45)' : 'rgba(56,189,248,.35)'); glow.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = glow; c.fillRect(0, 0, W, H);
+  const body = gold ? ['#b7791f', '#7c4a03'] : ['#8b5a2b', '#5a3816'], trim = gold ? '#fff3bf' : '#f5c542';
+  let g = c.createLinearGradient(0, cy - h * .2, 0, cy + h * .5); g.addColorStop(0, body[0]); g.addColorStop(1, body[1]);
+  c.fillStyle = g; rr(c, cx - w / 2, cy - h * .15, w, h * .65, 8); c.fill();
+  g = c.createLinearGradient(0, cy - h * .6, 0, cy - h * .1); g.addColorStop(0, shade(body[0], .15)); g.addColorStop(1, body[0]);
+  c.fillStyle = g; c.beginPath(); c.moveTo(cx - w / 2, cy - h * .12); c.quadraticCurveTo(cx - w / 2, cy - h * .62, cx, cy - h * .62); c.quadraticCurveTo(cx + w / 2, cy - h * .62, cx + w / 2, cy - h * .12); c.closePath(); c.fill();
+  c.fillStyle = trim; for (const fx2 of [-.38, .38]) c.fillRect(cx + w * fx2 - 5, cy - h * .58, 10, h * 1.05);
+  c.fillRect(cx - w / 2, cy - h * .17, w, 7); rr(c, cx - 11, cy - h * .25, 22, 26, 5); c.fill(); c.fillStyle = '#2b1a05'; ell(c, cx, cy - h * .12, 3.5, 5);
+  for (let i = 0; i < 6; i++){ const k = (t * .35 + i / 6) % 1, x = cx + Math.sin(i * 7.3) * w * .55, y = cy - h * .3 - k * h; c.globalAlpha = (1 - k) * .9; c.fillStyle = gold ? '#fff3bf' : '#bfefff'; ell(c, x, y, 2, 2); }
+  c.globalAlpha = 1;
+}
+function thumbOf(cv2, id){
+  const it = IT(id), slot = it.slot;
+  if (['top', 'bottom', 'hairx', 'head', 'shoes', 'wrist'].includes(slot)) drawPreview(cv2, Object.assign(myLook(), { [slot]:id }), 'front', 0, '');
+  else if (!fitCanvas(cv2)) return;
+  else if (slot === 'ball') previewBall(cv2, id, .4);
+  else if (slot === 'court') previewCourt(cv2, id);
+}
+function rollFor(ch){
+  let r = Math.random(), rar = 'common';
+  for (const k of ['legendary', 'epic', 'rare', 'common']){ if (r < ch.odds[k]){ rar = k; break; } r -= ch.odds[k]; }
+  const pool = CAT.CHEST_POOL.filter(i => CAT.rarityOf(i) === rar); return pool[(Math.random() * pool.length) | 0].id;
+}
+async function openChestUI(id, useKey){
+  if (CH.busy) return;
+  const ch = CAT.CHESTS.find(c => c.id === id); if (!ch) return;
+  CH.busy = true; CH.chest = id; CH.key = useKey;
+  let res;
+  try {
+    if (isServerAcc()){ const j = await api('api/chest', { id, key:useKey }); ACC.user = j.user; res = j.result; }
+    else { const a = ensureLocal(); const r = CAT.openChest(a, id, useKey); if (typeof r === 'string') throw new Error(r); save(); res = r; }
+  } catch (e){ CH.busy = false; showToast('Couldn’t open the chest', e.message); renderShop(); return; }
+  CH.last = res;
+  ensureAudio();
+  $('#chestOv').classList.remove('hidden'); setTxt('#chestTitle', ch.name); setTxt('#chestTag', useKey ? 'OPENED WITH A KEY' : 'OPENING');
+  $('#chestRes').innerHTML = ''; ['#chestEquip', '#chestAgain', '#chestClose'].forEach(sel => $(sel).classList.add('hidden'));
+  const N = 46, WIN = 40, STEP = 126, ids = Array.from({ length:N }, (_, i) => i === WIN ? res.id : rollFor(ch));
+  const reel = $('#reel');
+  reel.innerHTML = ids.map((iid, i) => { const it = IT(iid), rk = CAT.rarityOf(it); return `<div class="rc r-${rk}" data-i="${i}"><canvas data-id="${iid}"></canvas><span>${esc(it.name)}</span></div>`; }).join('');
+  reel.style.transition = 'none'; reel.style.transform = 'translateX(0px)';
+  invalidateRects();
+  requestAnimationFrame(() => {
+    reel.querySelectorAll('canvas').forEach(cv2 => thumbOf(cv2, cv2.dataset.id));
+    const win = $('.reelWin').clientWidth, target = WIN * STEP + 8 + 59 - win / 2 + (Math.random() - .5) * 70;
+    void reel.offsetWidth;
+    reel.style.transition = 'transform 5.4s cubic-bezier(.1,.75,.12,1)'; reel.style.transform = `translateX(${-target}px)`;
+    let lastIdx = -1;
+    const tick = () => {
+      if (!CH.busy) return;
+      const m = new DOMMatrixReadOnly(getComputedStyle(reel).transform), idx = Math.floor((-m.m41 + win / 2 - 8) / STEP);
+      if (idx !== lastIdx){ lastIdx = idx; if (actx) mTone(actx.currentTime, 1500, .03, 'square', .035, actx.destination); }
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+    setTimeout(() => {
+      CH.busy = false;
+      const card = reel.querySelector(`[data-i="${WIN}"]`); if (card) card.classList.add('win');
+      const it = IT(res.id), rk = res.rarity;
+      $('#chestRes').innerHTML = `<span class="lobbyTag" style="color:${RARITY[rk]}; border-color:${RARITY[rk]}">${RAR_LABEL[rk].toUpperCase()}</span><b style="color:${RARITY[rk]}">${esc(it.name)}</b>
+        <div class="text-sm font-semibold text-[var(--muted)]">${res.dup ? `Already in your collection · +${res.refund} coins` : `New ${({ ball:'ball', court:'court', top:'shirt', bottom:'shorts', hairx:'hairstyle' })[it.slot] || 'item'} unlocked!`}</div>`;
+      if (rk === 'epic' || rk === 'legendary') confetti();
+      playSfx(rk === 'legendary' || rk === 'epic' ? 'win' : 'perfect');
+      $('#chestEquip').classList.toggle('hidden', res.dup); $('#chestAgain').classList.remove('hidden'); $('#chestClose').classList.remove('hidden');
+      if (res.dup || !res.dup) addNotif({ type:'info', text:res.dup ? `Chest: duplicate ${it.name} → +${res.refund} coins` : `Chest: you got ${it.name} (${RAR_LABEL[rk]})` });
+      renderShop(); if (screenNow === 'menu') refreshMenu();
+    }, 5600);
+  });
+}
+const PROF = { p:null, from:'menu' }, FR = { list:[], keys:new Set(), incoming:[], outgoing:new Set(), t:0 };
+const NOTIF = { items:[], open:false };
+function addNotif(n){ NOTIF.items.unshift(Object.assign({ t:Date.now(), read:false }, n)); NOTIF.items = NOTIF.items.slice(0, 30); renderNotifs(); $('#bellBtn').classList.remove('ring'); void $('#bellBtn').offsetWidth; $('#bellBtn').classList.add('ring'); }
+function renderNotifs(){
+  const unread = FR.incoming.length + NOTIF.items.filter(n => !n.read).length;
+  $('#bellCount').classList.toggle('hidden', !unread); $('#bellCount').textContent = unread > 9 ? '9+' : String(unread);
+  const ago = t => { const m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'now' : m < 60 ? m + 'm' : Math.round(m / 60) + 'h'; };
+  const req = FR.incoming.map(f => `<div class="notif unread"><div class="min-w-0 flex-1"><b data-act="viewPlayer" data-name="${esc(f.username)}" style="cursor:pointer">${flagHTML(f.look && f.look.nation)} ${esc(f.username)}</b><div class="text-xs text-[var(--muted)]">wants to be your friend · ${f.dupr.toFixed(2)} DUPR</div></div>
+    <button data-act="frAccept" data-name="${esc(f.username)}" class="primary rounded-xl px-3 py-1.5 text-sm font-bold">Accept</button><button data-act="frDecline" data-name="${esc(f.username)}" class="tile rounded-xl px-2.5 py-1.5 text-sm font-bold" aria-label="Decline">✕</button></div>`);
+  const rest = NOTIF.items.map((n, i) => `<div class="notif ${n.read ? '' : 'unread'}"><div class="min-w-0 flex-1"><div class="font-semibold">${esc(n.text)}</div><div class="text-xs text-[var(--muted)]">${ago(n.t)}</div></div>
+    ${n.type === 'invite' ? `<button data-act="notifJoin" data-i="${i}" class="primary rounded-xl px-3 py-1.5 text-sm font-bold">Join</button>` : ''}<button data-act="notifDrop" data-i="${i}" class="tile rounded-xl px-2.5 py-1.5 text-sm font-bold" aria-label="Dismiss">✕</button></div>`);
+  $('#notifList').innerHTML = req.concat(rest).join('') || '<div class="mini text-[var(--muted)]">You’re all caught up.</div>';
+}
 const meKey = () => (ACC.user && ACC.user.username || '').toLowerCase();
 async function openPlayer(name){
   if (!ACC.server) return showToast('Profiles need the server', 'Play on your Render link to see other players');
@@ -3510,15 +3844,18 @@ async function openPlayer(name){
 }
 function renderPlayer(){
   const p = PROF.p; if (!p) return;
-  setTxt('#ppName', p.username); $('#ppDot').style.background = p.online ? 'var(--good)' : 'var(--muted)';
-  setTxt('#ppSub', `${p.online ? 'Online now' : 'Offline'} · playing since ${new Date(p.created || Date.now()).toLocaleDateString()}`);
+  $('#ppName').innerHTML = `${flagHTML(p.look && p.look.nation, 22)} ${esc(p.username)}`; $('#ppName')._v = null; $('#ppDot').style.background = p.online ? 'var(--good)' : 'var(--muted)';
+  setTxt('#ppSub', `${p.online ? 'Online now' : 'Offline'}${p.look && p.look.nation ? ' · ' + CAT.NATIONS[p.look.nation] : ''}${p.look ? ` · ${p.look.height || 170} cm, ${p.look.body || 'regular'} build` : ''} · playing since ${new Date(p.created || Date.now()).toLocaleDateString()}`);
   setTxt('#ppDupr', p.dupr.toFixed(3)); setTxt('#ppTier', p.tier); $('#ppBar').style.width = ((p.dupr - 2) / 6 * 100).toFixed(1) + '%';
   setTxt('#ppLevel', String(p.level)); setTxt('#ppMmr', String(p.mmr)); setTxt('#ppRec', `${p.wins}–${p.losses}`);
   setTxt('#ppRate', p.wins + p.losses ? Math.round(p.wins / (p.wins + p.losses) * 100) + '%' : '—'); setTxt('#ppRally', String(p.bestRally)); setTxt('#ppPeak', String(p.peak || p.mmr));
   $('#ppHist').innerHTML = p.history.length ? p.history.map(h => `<div class="mini"><span class="wl" style="background:${h.win ? 'rgba(74,222,128,.15)' : 'rgba(248,113,113,.15)'}; color:${h.win ? 'var(--good)' : 'var(--bad)'}">${h.win ? 'W' : 'L'}</span><span class="flex-1 min-w-0 truncate">${esc(h.opp)}</span><span class="tabular-nums text-[var(--muted)]">${esc(h.score)}</span></div>`).join('') : '<div class="mini text-[var(--muted)]">No ranked matches yet.</div>';
-  const self = p.username.toLowerCase() === meKey(), friend = FR.keys.has(p.username.toLowerCase());
+  const k = p.username.toLowerCase(), self = k === meKey(), friend = FR.keys.has(k), sent = FR.outgoing.has(k), asked = FR.incoming.some(f => f.username.toLowerCase() === k);
   $('#ppFriend').classList.toggle('hidden', self || !ACC.user);
-  $('#ppFriend').textContent = friend ? 'Remove friend' : 'Add friend'; $('#ppFriend').classList.toggle('primary', !friend); $('#ppFriend').classList.toggle('tile', friend);
+  const st = friend ? 'friend' : asked ? 'asked' : sent ? 'sent' : 'none';
+  $('#ppFriend').dataset.state = st;
+  $('#ppFriend').textContent = { friend:'Remove friend', asked:'Accept friend request', sent:'Request sent · tap to cancel', none:'Add friend' }[st];
+  $('#ppFriend').classList.toggle('primary', st === 'none' || st === 'asked'); $('#ppFriend').classList.toggle('tile', st === 'friend' || st === 'sent');
   $('#ppInvite').classList.toggle('hidden', self || !p.online || !NW.room || NW.room.state !== 'lobby');
   if (!ACC.user && !self) { setTxt('#ppMsg', 'Sign in to add friends.'); $('#ppMsg').style.color = 'var(--muted)'; }
 }
@@ -3526,14 +3863,22 @@ async function loadFriends(force){
   if (!ACC.server || !ACC.user){ FR.list = []; FR.keys = new Set(); renderFriendBits(); return; }
   if (!force && Date.now() - FR.t < 15000) return;
   FR.t = Date.now();
-  try { const j = await api('api/friends'); FR.list = j.friends; FR.keys = new Set(FR.list.map(f => f.username.toLowerCase())); renderFriendBits(); } catch (e) {}
+  try {
+    const j = await api('api/friends'); FR.list = j.friends; FR.keys = new Set(FR.list.map(f => f.username.toLowerCase()));
+    FR.incoming = j.incoming || []; FR.outgoing = new Set((j.outgoing || []).map(n => n.toLowerCase()));
+    renderFriendBits(); renderNotifs(); if (screenNow === 'player') renderPlayer();
+  } catch (e) {}
 }
-async function friendChange(name, add){
-  try { await api(add ? 'api/friends/add' : 'api/friends/remove', { username:name }); await loadFriends(true); showToast(add ? `${name} added` : `${name} removed`, add ? 'You’ll see when they’re online' : ''); return true; }
-  catch (e){ showToast('Couldn’t update friends', e.message); return false; }
+async function friendChange(name, action){
+  try {
+    const j = await api('api/friends/' + action, { username:name }); await loadFriends(true);
+    const msg = { add:j.status === 'friends' ? [`You and ${name} are now friends`, ''] : [`Friend request sent to ${name}`, 'It shows as pending until they accept'],
+      accept:[`You and ${name} are now friends`, ''], decline:['Request declined', ''], cancel:['Request cancelled', ''], remove:[`${name} removed from friends`, ''] }[action];
+    showToast(msg[0], msg[1]); return true;
+  } catch (e){ showToast('Couldn’t update friends', e.message); return false; }
 }
 function renderFriendBits(){
-  const row = (f, invite) => `<div class="mini"><i class="navDot" style="margin:0; background:${f.online ? 'var(--good)' : 'var(--muted)'}"></i><span data-act="viewPlayer" data-name="${esc(f.username)}" class="flex-1 min-w-0 truncate font-semibold" style="cursor:pointer">${esc(f.username)}</span><b class="tabular-nums hot">${f.dupr.toFixed(2)}</b>${invite && f.online ? `<button data-act="frInvite" data-name="${esc(f.username)}" class="primary rounded-lg px-2.5 py-1 text-xs font-bold">Invite</button>` : ''}</div>`;
+  const row = (f, invite) => `<div class="mini"><i class="navDot" style="margin:0; background:${f.online ? 'var(--good)' : 'var(--muted)'}"></i><span data-act="viewPlayer" data-name="${esc(f.username)}" class="flex-1 min-w-0 truncate font-semibold" style="cursor:pointer">${flagHTML(f.look && f.look.nation, 11)} ${esc(f.username)}</span><b class="tabular-nums hot">${f.dupr.toFixed(2)}</b>${invite && f.online ? `<button data-act="frInvite" data-name="${esc(f.username)}" class="primary rounded-lg px-2.5 py-1 text-xs font-bold">Invite</button>` : ''}</div>`;
   const none = !ACC.server ? 'Connect to the server to add friends.' : !ACC.user ? 'Sign in to add friends.' : 'No friends yet. Open a player’s profile to add them.';
   const list = FR.list.length ? FR.list : null;
   if ($('#mFriends')) $('#mFriends').innerHTML = list ? list.slice(0, 6).map(f => row(f)).join('') : `<div class="mini text-[var(--muted)]">${none}</div>`;
@@ -3553,8 +3898,8 @@ let dailyTried = false;
 async function claimDailyOnce(){
   if (dailyTried) return; dailyTried = true;
   try {
-    if (isServerAcc()){ const j = await api('api/daily', {}); if (j.bonus){ ACC.user = j.user; showToast(`Daily bonus: +${j.bonus.coins} coins`, 'Come back tomorrow for more'); refreshMenu(); } }
-    else { const a = getAcc(); const b = a && CAT.claimDaily(a); if (b){ save(); showToast(`Daily bonus: +${b.coins} coins`, 'Come back tomorrow for more'); refreshMenu(); } }
+    if (isServerAcc()){ const j = await api('api/daily', {}); if (j.bonus){ ACC.user = j.user; showToast(`Daily bonus: +${j.bonus.coins} coins`, 'Come back tomorrow for more'); addNotif({ type:'info', text:`Daily bonus: +${j.bonus.coins} coins` }); refreshMenu(); } }
+    else { const a = getAcc(); const b = a && CAT.claimDaily(a); if (b){ save(); showToast(`Daily bonus: +${b.coins} coins`, 'Come back tomorrow for more'); addNotif({ type:'info', text:`Daily bonus: +${b.coins} coins` }); refreshMenu(); } }
   } catch (e) { dailyTried = false; }
 }
 function refreshMusicBtns(){ $$('.musicBtn').forEach(b => { if (b.classList.contains('tile')) b.classList.toggle('chip-on', musicOn()); else b.textContent = `Music: ${musicOn() ? 'on' : 'off'}`; }); }
@@ -3592,7 +3937,11 @@ function netMsg(m){
       beginOnline(); if (wasReconnect || m.rejoin) showToast('Reconnected', 'You’re back in the match');
       break;
     }
-    case 'invited': showInvite(m); break;
+    case 'invited': showInvite(m); addNotif({ type:'invite', code:m.code, text:`${m.from} invited you to a ${m.mode} match` }); break;
+    case 'notify':
+      if (m.kind === 'request'){ showToast(`${m.from} sent you a friend request`, 'Open the bell to accept'); $('#bellBtn').classList.remove('ring'); void $('#bellBtn').offsetWidth; $('#bellBtn').classList.add('ring'); }
+      if (m.kind === 'accepted') addNotif({ type:'info', text:`${m.from} accepted your friend request` });
+      FR.t = 0; loadFriends(true); break;
     case 'inviteSent': showToast(m.ok ? `Invite sent to ${m.to}` : `${m.to} isn’t online right now`, ''); break;
     case 'rejoinFail': NW.reconnecting = null; setNetBanner(''); clearRejoin(); if (G.mode === 'online') leaveOnline(m.msg); break;
     case 'in': hostInput(m); break;
@@ -3644,7 +3993,7 @@ function renderRoom(){
     return `<div class="pcard ${team} ${sl.ready ? 'ready' : ''} ${you ? 'me' : ''} ${sl.away ? 'away' : ''}" style="animation-delay:${i * .07}s">
       ${you || isHost ? `<span class="pcBadge">${[you ? 'YOU' : '', isHost ? 'HOST' : ''].filter(Boolean).join(' · ')}</span>` : ''}
       <div class="pcNum">${num}</div><canvas class="pcAvatar" data-slot="${i}"></canvas>
-      <div class="pcName" ${sl.account ? `data-act="viewPlayer" data-name="${esc(sl.name)}" style="cursor:pointer; text-decoration:underline dotted; text-underline-offset:4px"` : ''}>${esc(sl.name)}</div><div class="pcMeta">${meta || '&nbsp;'}</div><div class="pcState">${state}</div></div>`;
+      <div class="pcName" ${sl.look && sl.look.nation ? `title="${esc(CAT.NATIONS[sl.look.nation] || '')}"` : ''} ${sl.account ? `data-act="viewPlayer" data-name="${esc(sl.name)}" style="cursor:pointer; text-decoration:underline dotted; text-underline-offset:4px"` : ''}>${flagHTML(sl.look && sl.look.nation, 12)} ${esc(sl.name)}</div><div class="pcMeta">${meta || '&nbsp;'}</div><div class="pcState">${state}</div></div>`;
   };
   const html = n === 2 ? `${card(0)}<div class="vs">VS</div>${card(1)}`
     : `<div class="teamCol"><div class="teamName" style="color:var(--accent)">TEAM 1</div><div class="cards">${card(0)}${card(2)}</div></div><div class="vs">VS</div><div class="teamCol"><div class="teamName" style="color:var(--hot)">TEAM 2</div><div class="cards">${card(1)}${card(3)}</div></div>`;
@@ -3737,7 +4086,7 @@ function hostInput(m){
 }
 function hostSnapshot(){
   const b = G.ball;
-  return { t:'st', s:G.state, sc:G.score, sv:G.server, sp:G.players.indexOf(G.serverP), rp:G.players.indexOf(G.recvP), sn:G.serveNum, lw:G.lastWin, wait:netWaiting(), sty:SERVES.indexOf(G.serverP ? G.serverP.serveType || 'volley' : 'volley'), mt:Math.round(G.matchT), r:G.rally,
+  return { t:'st', s:G.state, sc:G.score, sv:G.server, sp:G.players.indexOf(G.serverP), rp:G.players.indexOf(G.recvP), sn:G.serveNum, lw:G.lastWin, ce:G.cele && G.state === 'point' ? G.cele.team : 0, wait:netWaiting(), sty:SERVES.indexOf(G.serverP ? G.serverP.serveType || 'volley' : 'volley'), mt:Math.round(G.matchT), r:G.rally,
     b:[r3(b.x), r3(b.y), r3(b.z), TYPES.indexOf(b.type), b.live ? 1 : 0, b.hitCount, b.lastHitter, b.serveSign, BALL_IDS.indexOf(b.skin || 'ball_classic')], ct:COURT_IDS.indexOf(G.court),
     p:G.players.map(p => [r3(p.x), r3(p.y), r3(p.swing), r3(p.run), p.moving ? 1 : 0, Math.round(p.energy), ARMS.indexOf(p.armed), p.charging ? 1 : 0, r3(p.charge), r3(p.meterT), r3(p.meterQ), r3(p.jumpT || 0), Math.round(p.stamina ?? 100), p.sprinting ? 1 : 0]),
     ev:G.netEv.splice(0) };
@@ -3791,6 +4140,8 @@ function guestInterp(){
   if (G.state !== 'over') G.state = last.s;
   if (COURT_IDS[last.ct]) G.court = COURT_IDS[last.ct];
   G.lastWin = last.lw || 0;
+  if (last.ce && last.s === 'point' && !(G.cele && G.cele.live)){ G.cele = { team:last.ce, start:G.time, live:true }; const mine = team(last.ce).find(p => p.human && !p.human.remote); if (mine && musicOn() && actx) startTrack(IT((mine.look && mine.look.dance) || 'dance_pump').style || 'pump', { seconds:1.6, vol:.32 }); }
+  if (!last.ce && G.cele && G.cele.live) G.cele = null;
   G.serverP = G.players[last.sp] || null; if (G.serverP) G.serverP.serveType = SERVES[last.sty] || 'volley'; G.recvP = G.players[last.rp] || null; G.serveNum = last.sn || 1; G.server = last.sv; G.rally = last.r;
   if (typeof last.mt === 'number' && Math.abs(last.mt - G.matchT) > 1.5) G.matchT = last.mt;
   if (last.sc[0] !== G.score[0] || last.sc[1] !== G.score[1]){ G.score = last.sc.slice(); updateHUD(); }
