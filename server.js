@@ -62,7 +62,7 @@ async function loadDb() {
       db.users = d.users || {}; db.sessions = d.sessions || {};
     } catch (e) { /* first run */ }
   }
-  for (const u of Object.values(db.users)) { CAT.normalize(u); u.look = baseLook(u.look); }
+  for (const u of Object.values(db.users)) { CAT.normalize(u); u.look = baseLook(u.look); if (!Array.isArray(u.friends)) u.friends = []; }
   const cutoff = Date.now() - SESSION_DAYS * 864e5;
   for (const [t, s] of Object.entries(db.sessions)) if (!s || s.created < cutoff || !db.users[s.user]) delete db.sessions[t];
 }
@@ -123,6 +123,13 @@ function publicUser(u) {
     coins: u.coins, xp: u.xp, level: lv.level, owned: u.owned, equip: u.equip, beaten: u.beaten,
   };
 }
+/* ---------- profiles + friends ---------- */
+function onlineSet() { const s = new Set(); for (const c of clients) if (c.meta && c.meta.user) s.add(c.meta.user); return s; }
+function profileOf(u, online) {
+  const lv = CAT.levelInfo(u.xp), d = CAT.dupr(u.mmr);
+  return { username: u.username, level: lv.level, mmr: u.mmr, peak: u.peak, dupr: +d.toFixed(3), tier: CAT.duprTier(d), wins: u.wins, losses: u.losses,
+    bestRally: u.bestRally || 0, look: wornLook(u), history: (u.history || []).slice(0, 5), created: u.created, online: online ? online.has(u.username.toLowerCase()) : false };
+}
 function applyResult(u, delta, entry) {
   u.mmr = Math.max(0, u.mmr + delta);
   u.peak = Math.max(u.peak || 0, u.mmr);
@@ -181,6 +188,18 @@ async function handleApi(req, res, url) {
     return json(res, 200, { rows });
   }
 
+  const pm = route.match(/^\/api\/player\/([A-Za-z0-9_]{3,14})$/);
+  if (pm && req.method === 'GET') {
+    const u = db.users[pm[1].toLowerCase()];
+    return u ? json(res, 200, { player: profileOf(u, onlineSet()) }) : json(res, 404, { error: 'No player with that name' });
+  }
+  if (route === '/api/friends' && req.method === 'GET') {
+    const u = authUser(req);
+    if (!u) return json(res, 401, { error: 'Sign in first' });
+    const on = onlineSet();
+    const list = (u.friends || []).map((k) => db.users[k]).filter(Boolean).map((f) => profileOf(f, on)).sort((a, b) => (b.online - a.online) || b.mmr - a.mmr);
+    return json(res, 200, { friends: list });
+  }
   if (route === '/api/me' && req.method === 'GET') {
     const u = authUser(req);
     return u ? json(res, 200, { user: publicUser(u) }) : json(res, 401, { error: 'Not signed in' });
@@ -241,6 +260,22 @@ async function handleApi(req, res, url) {
     if (n > (u.bestRally || 0)) u.bestRally = n;
     touchUser(u);
     return json(res, 200, { user: publicUser(u), result: rew });
+  }
+  if (route === '/api/friends/add' || route === '/api/friends/remove') {
+    const key = String(body.username || '').trim().toLowerCase();
+    const f = db.users[key];
+    if (!f) return json(res, 404, { error: 'No player with that name' });
+    if (key === u.username.toLowerCase()) return json(res, 400, { error: 'That’s you!' });
+    u.friends = u.friends || [];
+    if (route.endsWith('add')) { if (!u.friends.includes(key)) { if (u.friends.length >= 100) return json(res, 400, { error: 'Friend list is full' }); u.friends.push(key); } }
+    else u.friends = u.friends.filter((k) => k !== key);
+    touchUser(u);
+    return json(res, 200, { ok: true, friends: u.friends.length });
+  }
+  if (route === '/api/daily') {
+    const got = CAT.claimDaily(u);
+    if (got) touchUser(u);
+    return json(res, 200, { user: publicUser(u), bonus: got });
   }
   if (route === '/api/buy') {
     const err = CAT.buy(u, String(body.id || ''));
@@ -353,9 +388,10 @@ function makeCode() {
   return c;
 }
 function slotOf(room, ws) { return room.slots.indexOf(ws); }
+const COURTS = CAT.ITEMS.filter((i) => i.slot === 'court').map((i) => i.id);
 function roomInfo(room) {
   return {
-    code: room.code, name: room.name, mode: room.mode, state: room.state, host: slotOf(room, room.host),
+    code: room.code, name: room.name, mode: room.mode, state: room.state, host: slotOf(room, room.host), court: room.court || 'random',
     slots: room.slots.map((c) => c ? { name: c.meta.name, look: c.meta.look, account: !!c.meta.user, mmr: c.meta.user && db.users[c.meta.user] ? db.users[c.meta.user].mmr : null,
       ready: c === room.host || !!c.meta.ready, level: c.meta.user && db.users[c.meta.user] ? CAT.levelInfo(db.users[c.meta.user].xp).level : null,
       away: !!c.away, awayLeft: c.away ? Math.max(0, Math.ceil((c.until - Date.now()) / 1000)) : 0 } : null),
@@ -506,6 +542,20 @@ function onConnection(ws) {
         break;
       }
       case 'leave': leaveRoom(ws); send(ws, { t: 'rooms', rooms: roomList() }); break;
+      case 'court': {
+        if (!room || room.host !== ws || room.state !== 'lobby') return;
+        room.court = m.v === 'random' || COURTS.includes(m.v) ? m.v : 'random'; broadcastRoom(room);
+        break;
+      }
+      case 'invite': {
+        // invite a signed-in friend to the room you are in
+        if (!room) return;
+        const to = String(m.to || '').toLowerCase();
+        let sent = false;
+        for (const c of clients) if (c.meta && c.meta.user === to && c !== ws) { send(c, { t: 'invited', from: ws.meta.name, code: room.code, mode: room.mode }); sent = true; }
+        send(ws, { t: 'inviteSent', to: m.to, ok: sent });
+        break;
+      }
       case 'ready': {
         if (!room || room.state !== 'lobby') return;
         ws.meta.ready = !!m.v; broadcastRoom(room);

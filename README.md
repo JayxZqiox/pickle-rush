@@ -26,9 +26,33 @@ Set two environment variables and the server creates (or updates) that account o
 
 Then log in with that username and password. MMR and DUPR still start at 0 / 2.000 and are earned in ranked games.
 
+## Friends and profiles
+
+Tap a player's name (leaderboard, Top players, lobby cards, friends list) to open their profile: character, level, DUPR, MMR, record and recent matches. Signed-in players can **Add friend**, see which friends are online (green dot), and **invite** online friends to the room they are in. Invites pop up anywhere in the menus.
+
+## Coins
+
+Ranked wins pay 90 coins (Rookie) up to 390 (The Pickle King), losses still pay something, and there is a **300-coin daily bonus** the first time you open the menu each day.
+
+## Shop extras
+
+- **Wristbands** in 11 colors plus Rainbow and Gold.
+- **7 more paddles** with stripes, dots, waves and split designs.
+- **Every outfit piece in 11 colors** (tees, polos, shorts, skirts, sneakers, caps, headbands).
+- **Victory dances**: Fist Pump, The Dab, Robot, Tinikling Hop, Brazilian Funk, Budots and Weng Weng Shuffle. The winners dance on court after the match. Each dance has an original beat made in the game (tap a dance in the shop to hear it).
+- AI opponents use Rare, Epic and Legendary balls as they get stronger.
+
+## Courts in custom and online games
+
+Settings → *Court in custom games* picks the court for 1v1, 2v2 and new online rooms (🎲 Random by default). In a room, the host can change it with the Court menu.
+
+## Music
+
+The menus have background music. Turn it on or off with *Music* in the sidebar or in Settings.
+
 ## DUPR rating
 
-The dashboard, ranking page, leaderboard, lobby cards and opponent list show a **DUPR (est.)** rating on pickleball's real 2.000–8.000 scale. It is estimated from your in-game MMR (the game can't read official DUPR): 0 MMR ≈ 2.0 Beginner, 400 ≈ 3.2 Intermediate, 1000 ≈ 4.6 Expert, 1800 ≈ 5.8 Elite pro.
+The dashboard, ranking page, leaderboard, lobby cards and opponent list show a **DUPR (est.)** rating on pickleball's real 2.000–8.000 scale. It is estimated from your in-game MMR (the game can't read official DUPR): 0 MMR = 2.0 and every 667 MMR adds 1.0, up to 4000 MMR = 8.0. Tiers: Beginner 2.0–2.99, Intermediate 3.0–3.49, Advanced intermediate 3.5–3.99, Advanced 4.0–4.99, Semi-professional 5.0–5.99, Professional 6.0–6.99, World-best 7.0–8.0. The 16 AI opponents are spread across all tiers, from Rookie Rex (2.00) to The Pickle King (8.00).
 
 ## Sprint
 

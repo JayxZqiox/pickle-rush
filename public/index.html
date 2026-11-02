@@ -148,7 +148,11 @@ input{font-size:16px;} /* stops iOS zooming into inputs */
 .duprTile #mDuprTier{color:var(--text); text-transform:none; letter-spacing:0; font-size:14px;}
 .duprTile em{display:block; font-style:normal; font-size:10px; color:var(--muted); margin-top:3px;}
 .duprBar{width:110px; height:6px; border-radius:99px; background:rgba(255,255,255,.1); margin:6px 0 0 auto; overflow:hidden;} .duprBar i{display:block; height:100%; width:0; border-radius:99px; background:linear-gradient(90deg, var(--accent), var(--hot)); transition:width .9s var(--ease);}
+/* profile */
+.profGrid{display:grid; grid-template-columns:300px minmax(0,1fr); gap:20px; align-items:start;}
+@media (max-width:720px){ .profGrid{grid-template-columns:minmax(0,1fr);} .profGrid .lockStage{height:250px;} }
 /* lobby */
+.courtSel{background:var(--panel2); color:var(--text); border:1px solid var(--line); border-radius:12px; padding:7px 10px; font-weight:700;}
 .lobbyTag{display:inline-block; font-size:11px; font-weight:800; letter-spacing:.14em; padding:3px 10px; border-radius:999px; color:var(--hot); background:rgba(255,122,61,.12); border:1px solid rgba(255,122,61,.35);}
 .lobbyHead{display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:center;}
 .codeBox{display:flex; align-items:center; gap:10px; padding:6px 6px 6px 14px; border-radius:16px; background:rgba(0,0,0,.3); border:1px solid var(--line);}
@@ -331,6 +335,7 @@ input::placeholder{opacity:1;color:#8492a6}
 .font-extrabold{font-weight:800}
 .font-medium{font-weight:500}
 .font-semibold{font-weight:600}
+.gap-1{gap:0.25rem}
 .gap-1\.5{gap:0.375rem}
 .gap-2{gap:0.5rem}
 .gap-2\.5{gap:0.625rem}
@@ -376,6 +381,7 @@ input::placeholder{opacity:1;color:#8492a6}
 .max-w-\[640px\]{max-width:640px}
 .max-w-\[820px\]{max-width:820px}
 .max-w-\[860px\]{max-width:860px}
+.max-w-\[880px\]{max-width:880px}
 .mb-1{margin-bottom:0.25rem}
 .mb-1\.5{margin-bottom:0.375rem}
 .mb-2{margin-bottom:0.5rem}
@@ -404,8 +410,10 @@ input::placeholder{opacity:1;color:#8492a6}
 .pr-1{padding-right:0.25rem}
 .px-1{padding-left:0.25rem;padding-right:0.25rem}
 .px-2{padding-left:0.5rem;padding-right:0.5rem}
+.px-2\.5{padding-left:0.625rem;padding-right:0.625rem}
 .px-3{padding-left:0.75rem;padding-right:0.75rem}
 .px-4{padding-left:1rem;padding-right:1rem}
+.px-5{padding-left:1.25rem;padding-right:1.25rem}
 .px-6{padding-left:1.5rem;padding-right:1.5rem}
 .px-8{padding-left:2rem;padding-right:2rem}
 .py-0\.5{padding-top:0.125rem;padding-bottom:0.125rem}
@@ -422,6 +430,7 @@ input::placeholder{opacity:1;color:#8492a6}
 .rounded-md{border-radius:.375rem}
 .rounded-xl{border-radius:.75rem}
 .select-none{-webkit-user-select:none;user-select:none}
+.self-center{align-self:center}
 .self-start{align-self:flex-start}
 .shadow-2xl{box-shadow:0 25px 50px -12px rgba(0,0,0,.25)}
 .shrink-0{flex-shrink:0}
@@ -468,6 +477,7 @@ input::placeholder{opacity:1;color:#8492a6}
 .w-full{width:100%}
 .z-10{z-index:10}
 .z-30{z-index:30}
+.z-40{z-index:40}
 @media (min-width:640px){.sm\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.sm\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.sm\:grid-cols-\[250px_1fr\]{grid-template-columns:250px 1fr}.sm\:p-6{padding:1.5rem}}
 </style>
 </head>
@@ -508,7 +518,7 @@ input::placeholder{opacity:1;color:#8492a6}
         <button data-act="ctrl" class="navBtn"><svg class="ico " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/></svg><span>Settings</span></button>
         <button data-act="how" class="navBtn"><svg class="ico " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.5a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1 .8-1 1.6v.6M12 17h.01"/></svg><span>How to play</span></button>
       </nav>
-      <div class="navFoot"><button data-act="sound" id="sndBtn" class="text-sm font-semibold text-[var(--muted)]">Sound: on</button></div>
+      <div class="navFoot grid gap-1"><button data-act="sound" id="sndBtn" class="text-sm font-semibold text-[var(--muted)] text-left">Sound: on</button><button data-act="music" class="musicBtn text-sm font-semibold text-[var(--muted)] text-left">Music: on</button></div>
     </aside>
     <main class="dashMain">
       <div class="glass hero">
@@ -550,6 +560,7 @@ input::placeholder{opacity:1;color:#8492a6}
       </div>
       <div><div class="sideHead">Recent matches</div><div id="mRecent" class="grid gap-1.5"></div></div>
       <div><div class="sideHead">Top players</div><div id="mTop" class="grid gap-1.5"></div></div>
+      <div><div class="sideHead">Friends</div><div id="mFriends" class="grid gap-1.5"></div></div>
       <div id="mNet" class="text-xs text-[var(--muted)] mt-auto">Checking for a server…</div>
     </aside>
   </div>
@@ -658,12 +669,44 @@ input::placeholder{opacity:1;color:#8492a6}
           <button data-act="onJoinCode" class="tile rounded-xl py-2.5 font-display w-full mt-2">Join</button>
         </div>
       </div>
+      <div class="tile rounded-2xl p-4 mt-3">
+        <div class="font-bold">Friends</div>
+        <div class="flex gap-2 mt-2"><input id="frName" maxlength="14" class="tile rounded-xl px-3 py-2.5 flex-1 min-w-0 bg-[var(--panel)] text-[var(--text)]" placeholder="Add a friend by username" autocomplete="off" spellcheck="false"><button data-act="frAdd" class="primary rounded-xl px-4 font-bold">Add</button></div>
+        <div id="onFriends" class="grid gap-1.5 mt-2 max-h-[180px] overflow-y-auto scroll-thin"></div>
+      </div>
       <div id="onErr" class="text-sm font-semibold mt-2 min-h-[20px]" style="color:var(--bad)"></div>
       <div class="flex items-center justify-between mt-1"><h3 class="font-bold">Open rooms</h3><span id="onConn" class="text-sm text-[var(--muted)]">Connecting…</span></div>
       <div id="onRooms" class="grid gap-2 mt-2 max-h-[240px] overflow-y-auto scroll-thin pr-1"></div>
     </div>
   </div>
 </section>
+
+<!-- ============ PLAYER PROFILE ============ -->
+<section id="s-player" class="screen off">
+  <div class="glass rounded-[30px] w-full max-w-[880px] p-5 sm:p-6">
+    <div class="flex items-center justify-between gap-3"><span class="lobbyTag">PLAYER PROFILE</span><button data-act="playerBack" class="tile rounded-xl px-3 py-2 font-bold">Back</button></div>
+    <div class="profGrid mt-4">
+      <canvas id="pvPlayer" class="lockStage" aria-label="Player"></canvas>
+      <div class="min-w-0 flex flex-col gap-3">
+        <div class="flex items-center gap-2 min-w-0"><i id="ppDot" class="navDot" style="margin:0"></i><div id="ppName" class="font-display text-3xl truncate">Player</div></div>
+        <div id="ppSub" class="text-sm text-[var(--muted)]"></div>
+        <div class="duprTile"><div><span>DUPR <i>(est.)</i></span><b id="ppDupr" class="tabular-nums">2.000</b></div><div class="text-right min-w-0"><span id="ppTier" style="color:var(--text);text-transform:none;letter-spacing:0;font-size:14px">Beginner</span><div class="duprBar"><i id="ppBar"></i></div></div></div>
+        <div class="statGrid">
+          <div class="statTile"><span>Level</span><b id="ppLevel">1</b></div><div class="statTile"><span>MMR</span><b id="ppMmr" class="hot">0</b></div>
+          <div class="statTile"><span>Record</span><b id="ppRec">0–0</b></div><div class="statTile"><span>Win rate</span><b id="ppRate">—</b></div>
+          <div class="statTile"><span>Best rally</span><b id="ppRally">0</b></div><div class="statTile"><span>Peak MMR</span><b id="ppPeak">0</b></div>
+        </div>
+        <div><div class="sideHead">Recent matches</div><div id="ppHist" class="grid gap-1.5"></div></div>
+        <div class="flex gap-2 flex-wrap"><button id="ppFriend" data-act="ppFriend" class="primary rounded-2xl px-5 py-3 font-display">Add friend</button><button id="ppInvite" data-act="ppInvite" class="tile rounded-2xl px-5 py-3 font-bold">Invite to my room</button></div>
+        <div id="ppMsg" class="text-sm font-semibold min-h-[20px]"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="inviteCard" class="hidden fixed z-40 left-1/2 -translate-x-1/2 glass rounded-2xl px-4 py-3 flex items-center gap-3" style="top:calc(env(safe-area-inset-top,0px) + 16px)">
+  <span id="invTxt" class="font-semibold">Invite</span><button id="invJoin" data-act="inviteJoin" class="primary rounded-xl px-4 py-2 font-bold">Join</button><button data-act="inviteClose" class="text-[var(--muted)] font-bold px-1" aria-label="Dismiss">✕</button>
+</div>
 
 <!-- ============ ROOM (lobby) ============ -->
 <section id="s-room" class="screen off">
@@ -673,7 +716,10 @@ input::placeholder{opacity:1;color:#8492a6}
       <div class="text-center min-w-0"><div id="rmMode" class="lobbyTag">1V1 ROOM</div><div id="rmName" class="font-display text-2xl truncate mt-1">Room</div></div>
       <div class="codeBox"><span>CODE</span><b id="rmCode">ABCD</b><button data-act="onInvite" class="primary rounded-xl px-3 py-2 font-bold">Invite</button></div>
     </div>
+    <div class="flex items-center justify-center gap-2 mt-3 flex-wrap text-sm font-semibold"><span class="text-[var(--muted)]">Court</span>
+      <select id="rmCourt" class="courtSel"></select><span id="rmCourtTxt" class="lobbyTag"></span></div>
     <div id="rmSlots" class="slotRow"></div>
+    <div id="rmFriends" class="flex gap-2 flex-wrap justify-center mt-3"></div>
     <div class="lobbyFoot">
       <p id="rmInfo" class="font-semibold text-[var(--muted)]">Waiting…</p>
       <div class="flex gap-3 items-center flex-wrap justify-center">
@@ -730,10 +776,10 @@ input::placeholder{opacity:1;color:#8492a6}
       </div>
     </div>
     <div id="shopTabs" class="seg mt-4">
-      <button data-act="shopTab" data-v="outfit">Outfits</button><button data-act="shopTab" data-v="paddle">Paddles</button><button data-act="shopTab" data-v="ball">Balls</button><button data-act="shopTab" data-v="court">Courts</button><button data-act="shopTab" data-v="partner">Teammates</button>
+      <button data-act="shopTab" data-v="outfit">Outfits</button><button data-act="shopTab" data-v="paddle">Paddles</button><button data-act="shopTab" data-v="ball">Balls</button><button data-act="shopTab" data-v="court">Courts</button><button data-act="shopTab" data-v="partner">Teammates</button><button data-act="shopTab" data-v="dance">Dances</button>
     </div>
     <div id="shopSub" class="seg mt-2">
-      <button data-act="shopSub" data-v="head">Hats</button><button data-act="shopSub" data-v="top">Shirts</button><button data-act="shopSub" data-v="bottom">Shorts</button><button data-act="shopSub" data-v="shoes">Shoes</button>
+      <button data-act="shopSub" data-v="head">Hats</button><button data-act="shopSub" data-v="top">Shirts</button><button data-act="shopSub" data-v="bottom">Shorts</button><button data-act="shopSub" data-v="shoes">Shoes</button><button data-act="shopSub" data-v="wrist">Wristbands</button>
     </div>
     <div id="shopErr" class="text-sm font-semibold mt-2 min-h-[20px]" style="color:var(--bad)"></div>
     <div id="shopGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-[58vh] overflow-y-auto scroll-thin pr-1"></div>
@@ -766,6 +812,10 @@ input::placeholder{opacity:1;color:#8492a6}
         <div id="optTouch" class="seg"><button data-act="opt" data-k="touch" data-v="normal">Normal</button><button data-act="opt" data-k="touch" data-v="big">Big</button></div>
       </div>
       <div class="flex items-center justify-between gap-3 flex-wrap">
+        <div><div class="font-bold">Court in custom games</div><div class="text-sm text-[var(--muted)]">1v1, 2v2 and new online rooms can use any court</div></div>
+        <div id="optCourt" class="seg flex-wrap"></div>
+      </div>
+      <div class="flex items-center justify-between gap-3 flex-wrap">
         <div><div class="font-bold">Camera</div><div class="text-sm text-[var(--muted)]">Also the C key or the camera button during a match</div></div>
         <div id="optCam" class="seg flex-wrap"><button data-act="opt" data-k="camera" data-v="classic">Classic</button><button data-act="opt" data-k="camera" data-v="action">Action</button><button data-act="opt" data-k="camera" data-v="low">Low</button><button data-act="opt" data-k="camera" data-v="sky">Sky</button><button data-act="opt" data-k="camera" data-v="broadcast">Broadcast</button><button data-act="opt" data-k="camera" data-v="corner">Corner</button></div>
       </div>
@@ -775,7 +825,7 @@ input::placeholder{opacity:1;color:#8492a6}
       </div>
       <div class="flex items-center justify-between gap-3 flex-wrap">
         <div><div class="font-bold">Shake, sound and FPS</div><div class="text-sm text-[var(--muted)]">FPS shows your frame rate (and ping online) in the corner</div></div>
-        <div class="flex gap-2"><button id="optShake" data-act="optToggle" data-k="shake" class="tile rounded-xl px-3 py-1.5 font-bold">Shake</button><button id="optSound" data-act="sound" class="tile rounded-xl px-3 py-1.5 font-bold">Sound</button><button id="optFps" data-act="optToggle" data-k="fps" class="tile rounded-xl px-3 py-1.5 font-bold">FPS</button><button id="optFull" data-act="optToggle" data-k="fullscreen" class="tile rounded-xl px-3 py-1.5 font-bold">Fullscreen</button></div>
+        <div class="flex gap-2"><button id="optShake" data-act="optToggle" data-k="shake" class="tile rounded-xl px-3 py-1.5 font-bold">Shake</button><button id="optSound" data-act="sound" class="tile rounded-xl px-3 py-1.5 font-bold">Sound</button><button id="optFps" data-act="optToggle" data-k="fps" class="tile rounded-xl px-3 py-1.5 font-bold">FPS</button><button id="optFull" data-act="optToggle" data-k="fullscreen" class="tile rounded-xl px-3 py-1.5 font-bold">Fullscreen</button><button data-act="music" class="musicBtn tile rounded-xl px-3 py-1.5 font-bold">Music</button></div>
       </div>
       <div class="flex items-center justify-between gap-3">
         <div><div class="font-bold">Gamepads</div><div id="padInfo" class="text-sm text-[var(--muted)]">Press any button on a gamepad to connect it.</div></div>
@@ -947,7 +997,7 @@ const CAT = window.PR_CATALOG;
 const IT = id => CAT.BY_ID[id] || {};
 const itemsOf = slot => CAT.ITEMS.filter(i => i.slot === slot);
 const BALL_IDS = itemsOf('ball').map(i => i.id), COURT_IDS = itemsOf('court').map(i => i.id);
-const SLOT_NAME = { head:'Hats', top:'Shirts', bottom:'Shorts & skirts', shoes:'Shoes', paddle:'Paddle', ball:'Ball', court:'Court', partner:'2v2 teammate' };
+const SLOT_NAME = { head:'Hats', top:'Shirts', bottom:'Shorts & skirts', shoes:'Shoes', wrist:'Wristband', paddle:'Paddle', ball:'Ball', court:'Court', partner:'2v2 teammate', dance:'Victory dance' };
 const HAIR_NAME = { short:'Short', spiky:'Spiky', buzz:'Buzz', curly:'Curly', ponytail:'Ponytail', bob:'Bob', long:'Long', buns:'Buns' };
 // fixed looks for the AI teammates you can unlock
 const MATE_LOOK = {
@@ -973,11 +1023,30 @@ const AIS = {
   partner:     { key:'partner', name:'Ace', mmr:0, speed:4.9, react:.14, aimSd:.33, mistake:.035, skill:.25, smash:.8, tScale:.95, judge:.8, depth:5.0, netRush:false, acc:.9 },
   coach:       { key:'coach', name:'Coach', mmr:0, speed:6.2, react:.08, aimSd:.15, mistake:0, skill:0, smash:0, tScale:1.28, judge:0, depth:5.4, netRush:false, acc:0, coach:true },
 };
-for (const a of CAT.LADDER){ Object.assign(AIS[a.key], { mmr:a.mmr, name:a.name, name2:a.name2 }); }
-const KITCHEN_PLAY = { rookie:.3, amateur:.45, club:.6, pro:.75, veteran:.85, elite:.9, legend:.95, champion:1, grandmaster:1, nightmare:1 };
-for (const k in KITCHEN_PLAY) AIS[k].kitchen = KITCHEN_PLAY[k];
+/* Every ladder opponent's skill comes from its DUPR: beginners are slow and make lots of errors,
+   advanced players are consistent and tactical, world-best players barely miss. */
+const AI_BLURB = {
+  rookie:'Just picked up a paddle. Slow, and misses a lot.', amateur:'Knows the rules, still learning to place the ball.', club:'Plays at the park on weekends. Beatable with steady shots.',
+  pro:'Keeps rallies going and starts moving up to the kitchen.', veteran:'Patient, reads your angles, rarely gives free points.', elite:'Loves slice and spin. Dinks well.',
+  legend:'Advanced: strong kitchen play and real consistency.', champion:'Advanced: smart placement and quick hands at the net.', grandmaster:'Advanced: almost no unforced errors.',
+  semi1:'Semi-pro: tournament-level speed-ups and drops.', semi2:'Semi-pro: punishes anything high.', tour1:'Pro: fast feet, sharp volleys, deep drives.',
+  tour2:'Pro: controls the kitchen battle from start to finish.', nightmare:'World-best: lightning reactions and ruthless attacks.', atlas:'World No.1: near-perfect in every part of the game.',
+  king:'8.0 DUPR. The final boss of pickleball.' };
+function aiFromDupr(d){
+  const t = clamp((d - 2) / 6, 0, 1);
+  return { speed:3.0 + 3.4 * Math.pow(t, .9), react:.42 - .38 * Math.pow(t, .8), aimSd:.85 - .73 * Math.pow(t, .7), mistake:.2 * Math.pow(1 - t, 3) + .004,
+    skill:.03 + .57 * t, smash:.3 + .7 * t, tScale:1.32 - .54 * t, judge:.2 + .8 * t, acc:.4 + .6 * t, depth:6.2 - 1.4 * t, netRush:d >= 3.4, kitchen:clamp(.15 + 1.6 * t, 0, 1) };
+}
+for (const a of CAT.LADDER) AIS[a.key] = Object.assign(aiFromDupr(a.dupr), { key:a.key, name:a.name, name2:a.name2, mmr:a.mmr, dupr:a.dupr, blurb:AI_BLURB[a.key] || '' });
 for (const m of itemsOf('partner')) AIS[m.id] = { key:m.id, name:m.name, mmr:0, speed:m.speed, react:m.react, aimSd:m.aimSd, mistake:m.mistake, skill:m.skill, smash:m.smash, tScale:m.tScale, judge:m.judge, depth:5.0, netRush:false, acc:m.acc, kitchen:.85 };
 const LADDER = CAT.LADDER.map(a => a.key);
+// stronger opponents hit with fancier balls (Rare, Epic, Legendary) and celebrate with dances
+function aiGear(key){
+  const d = (AIS[key] && AIS[key].dupr) || 2, pick = a => a[(Math.random() * a.length) | 0];
+  const ball = d < 3 ? 'ball_classic' : d < 4 ? pick(['ball_fire', 'ball_ice']) : d < 5 ? pick(['ball_bolt', 'ball_rainbow']) : pick(['ball_galaxy', 'ball_gold']);
+  const dance = d < 3 ? 'dance_pump' : pick(['dance_funk', 'dance_budots', 'dance_weng', 'dance_tinikling', 'dance_robot', 'dance_dab']);
+  return { ball, dance };
+}
 const RANKED = m => m === '1p' || m === 'duo-ai';
 
 /* ---------- local save ---------- */
@@ -991,7 +1060,7 @@ const DEF_BINDS = {
 };
 const DEF = { p1:{ name:'Player 1', gender:'boy', skin:1, hair:0, hairStyle:'short' },
   p2:{ name:'Player 2', gender:'girl', skin:0, hair:1, hairStyle:'ponytail', equip:{ head:'head_none', top:'tee_blue', bottom:'shorts_black', shoes:'sneak_black', paddle:'pad_wood', ball:'ball_classic' } },
-  bestRally:0, sound:true, binds:JSON.parse(JSON.stringify(DEF_BINDS)), opts:{ meter:'normal', swing:'auto', touch:'normal', shake:true, gfx:'auto', fps:false, fullscreen:true, camera:'classic' },
+  bestRally:0, sound:true, binds:JSON.parse(JSON.stringify(DEF_BINDS)), opts:{ meter:'normal', swing:'auto', touch:'normal', shake:true, gfx:'auto', fps:false, fullscreen:true, camera:'classic', music:true, customCourt:'random' },
   localAcc:null, token:null };
 const clone = o => JSON.parse(JSON.stringify(o));
 function load(){
@@ -1065,6 +1134,7 @@ async function progBuy(id){
 async function progEquip(slot, id){
   if (slot === 'p2'){ return; }
   STAGE.pose = performance.now() / 1000;
+  if (slot === 'dance') previewDance(id);
   if (isServerAcc()){ ACC.user = (await api('api/equip', { slot, id })).user; }
   else { const e = CAT.equip(ensureLocal(), slot, id); if (e) throw new Error(e); save(); }
   netHello();
@@ -1127,6 +1197,108 @@ function playSfx(k){
   else if (k === 'lose'){ tone(420, .14, 'triangle', .1); tone(300, .2, 'triangle', .1, 1, .12); }
   else if (k === 'win'){ [523, 659, 784, 1047].forEach((f, i) => tone(f, .2, 'triangle', .12, 1, i * .1)); }
   else if (k === 'tick'){ tone(900, .03, 'square', .04); }
+}
+/* ---------- music: menu loop + victory dance beats ---------- */
+const MUSIC = { cur:null, timer:null, noise:null, onEnd:null };
+const NOTE = n => 440 * Math.pow(2, (n - 69) / 12);
+function noiseBuf(){ if (!MUSIC.noise){ const b = actx.createBuffer(1, actx.sampleRate, actx.sampleRate), d = b.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; MUSIC.noise = b; } return MUSIC.noise; }
+function mKick(t, v, d){ const o = actx.createOscillator(), g = actx.createGain(); o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(40, t + .14); g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.001, t + .24); o.connect(g).connect(d); o.start(t); o.stop(t + .26); }
+function mNoise(t, v, d, f, q, dur, type){ const src = actx.createBufferSource(); src.buffer = noiseBuf(); const fl = actx.createBiquadFilter(); fl.type = type || 'bandpass'; fl.frequency.value = f; fl.Q.value = q; const g = actx.createGain(); g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.001, t + dur); src.connect(fl).connect(g).connect(d); src.start(t, Math.random() * .5); src.stop(t + dur + .02); }
+const mSnare = (t, v, d) => mNoise(t, v, d, 1800, .8, .16), mHat = (t, v, d) => mNoise(t, v, d, 8000, .7, .04, 'highpass'), mClap = (t, v, d) => mNoise(t, v, d, 1200, 1.4, .12);
+function mTone(t, f, dur, type, v, d, glide, cutoff){
+  const o = actx.createOscillator(), g = actx.createGain(); o.type = type; o.frequency.setValueAtTime(f, t); if (glide) o.frequency.exponentialRampToValueAtTime(glide, t + dur);
+  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v, t + .01); g.gain.exponentialRampToValueAtTime(.0008, t + dur);
+  if (cutoff){ const fl = actx.createBiquadFilter(); fl.type = 'lowpass'; fl.frequency.value = cutoff; o.connect(fl).connect(g); } else o.connect(g);
+  g.connect(d); o.start(t); o.stop(t + dur + .03);
+}
+function mWobble(t, f, dur, v, d){   // the "weng weng" synth: a saw whose filter opens and closes twice
+  const o = actx.createOscillator(), fl = actx.createBiquadFilter(), g = actx.createGain(); o.type = 'sawtooth'; o.frequency.setValueAtTime(f, t); o.frequency.linearRampToValueAtTime(f * .94, t + dur);
+  fl.type = 'lowpass'; fl.Q.value = 9; fl.frequency.setValueAtTime(180, t); fl.frequency.linearRampToValueAtTime(2200, t + dur * .25); fl.frequency.linearRampToValueAtTime(260, t + dur * .5); fl.frequency.linearRampToValueAtTime(1800, t + dur * .75); fl.frequency.linearRampToValueAtTime(200, t + dur);
+  g.gain.setValueAtTime(v, t); g.gain.setValueAtTime(v, t + dur * .9); g.gain.linearRampToValueAtTime(.0001, t + dur);
+  o.connect(fl).connect(g).connect(d); o.start(t); o.stop(t + dur + .02);
+}
+const mWood = (t, f, v, d) => mTone(t, f, .07, 'sine', v, d);
+const PAT = (str, i) => str[i % str.length] === 'x';
+const TRACKS = {
+  menu: { bpm:104, play(i, t, sd, d){
+    const s = i % 16, bar = Math.floor(i / 16) % 4, CH = [[57, 60, 64], [53, 57, 60], [48, 52, 55], [55, 59, 62]][bar];
+    if (s % 4 === 0) mKick(t, .5, d); if (s === 4 || s === 12) mClap(t, .14, d); if (s % 2 === 1) mHat(t, .05, d);
+    if (s === 0) for (const n of CH) mTone(t, NOTE(n), sd * 15, 'triangle', .035, d, 0, 1400);
+    if (s % 4 === 0 || s === 14) mTone(t, NOTE(CH[0] - 24), sd * 2.5, 'square', .06, d, 0, 500);
+    if (s % 2 === 0) mTone(t, NOTE(CH[(s / 2) % 3] + 12 + (bar === 3 && s > 8 ? 2 : 0)), sd * 1.6, 'triangle', .025, d, 0, 2400);
+  } },
+  funk: { bpm:130, play(i, t, sd, d){   // Brazilian funk groove
+    if (PAT('x..x..x...x..x..', i)) mKick(t, .8, d); if (i % 16 === 4 || i % 16 === 12) mClap(t, .35, d);
+    if (PAT('..x.x..x..x.x..x', i)) mTone(t, NOTE(i % 3 ? 52 : 55), .09, 'sine', .3, d);
+    if (PAT('x..x..x...x.....', i)) mTone(t, NOTE([62, 65, 62, 60][(i >> 4) % 4]), .12, 'square', .07, d, 0, 1800);
+    mHat(t, i % 2 ? .04 : .07, d);
+  } },
+  budots: { bpm:128, play(i, t, sd, d){  // Pinoy budots-style beat with "pew" zaps
+    if (i % 4 === 0) mKick(t, .75, d); if (i % 4 === 2) mTone(t, 1300, .09, 'square', .07, d, 280);
+    if (i % 2 === 1) mHat(t, .05, d); if (i % 16 === 14) mTone(t, 900, .25, 'sawtooth', .05, d, 1600, 2500);
+    if (i % 8 === 6) mTone(t, NOTE(41), .14, 'square', .1, d, 0, 400);
+  } },
+  weng: { bpm:118, play(i, t, sd, d){   // "weng weng weng" wobble shuffle
+    if (i % 8 === 0) mKick(t, .8, d); if (i % 16 === 8) mSnare(t, .3, d); if (i % 2 === 0) mHat(t, .05, d);
+    if (PAT('x..x..x.x..x..x.', i)) mWobble(t, NOTE([45, 45, 48, 43][(i >> 4) % 4]), sd * 2.6, .09, d);
+  } },
+  tinikling: { bpm:150, bar:12, play(i, t, sd, d){   // bamboo-clap rhythm in three
+    const s = i % 12; if (s === 0 || s === 4) mWood(t, 900, .35, d); if (s === 8) { mWood(t, 600, .3, d); mWood(t + .02, 620, .25, d); }
+    if (s % 2 === 0) mTone(t, NOTE([69, 72, 74, 76, 79, 76][(i >> 1) % 6]), sd * 1.8, 'triangle', .06, d);
+    if (s === 0) mTone(t, NOTE(45), sd * 6, 'triangle', .1, d);
+  } },
+  robot: { bpm:110, play(i, t, sd, d){
+    if (i % 8 === 0) mKick(t, .7, d); if (i % 8 === 4) mSnare(t, .3, d);
+    mTone(t, NOTE([60, 67, 72, 67][i % 4] + ((i >> 4) % 2) * 3), sd * .8, 'square', .045, d, 0, 2000);
+  } },
+  dab: { bpm:140, play(i, t, sd, d){     // trap: rolling hats and a sliding 808
+    const s = i % 16; if (s === 0 || s === 7 || s === 10) mKick(t, .8, d); if (s === 8) mClap(t, .4, d);
+    mHat(t, .04, d); if (s >= 12) mHat(t + sd / 2, .03, d);
+    if (s === 0) mTone(t, NOTE(36), sd * 6, 'sine', .25, d, NOTE(31));
+  } },
+  pump: { bpm:120, play(i, t, sd, d){    // short fanfare + crowd roar
+    if (i === 0) mNoise(t, .25, d, 900, .5, 2.6, 'lowpass');
+    const F = { 0:60, 2:64, 4:67, 8:72 }; if (F[i % 16] !== undefined && i < 16) mTone(t, NOTE(F[i % 16]), sd * (i === 8 ? 6 : 1.8), 'sawtooth', .08, d, 0, 2200);
+    if (i % 4 === 0) mKick(t, .5, d);
+  } },
+};
+function stopTrack(){
+  if (MUSIC.timer) clearInterval(MUSIC.timer); MUSIC.timer = null;
+  const m = MUSIC.cur; MUSIC.cur = null;
+  if (m && actx){ try { m.bus.gain.setTargetAtTime(0, actx.currentTime, .08); setTimeout(() => { try { m.bus.disconnect(); } catch (e) {} }, 600); } catch (e) {} }
+}
+function startTrack(name, o = {}){
+  if (!actx || !TRACKS[name]) return;
+  stopTrack();
+  const tr = TRACKS[name], sd = 60 / tr.bpm / 4, bus = actx.createGain(); bus.gain.value = o.vol ?? .3; bus.connect(actx.destination);
+  const m = MUSIC.cur = { name, tr, sd, step:0, next:actx.currentTime + .06, loop:!!o.loop, total:o.seconds ? Math.ceil(o.seconds / sd) : Infinity, bus, onEnd:o.onEnd };
+  const tick = () => {
+    if (MUSIC.cur !== m) return;
+    while (m.next < actx.currentTime + .25){
+      if (m.step >= m.total){ const cb = m.onEnd; stopTrack(); if (cb) setTimeout(cb, 300); return; }
+      try { m.tr.play(m.step, m.next, m.sd, m.bus); } catch (e) {}
+      m.step++; m.next += m.sd;
+    }
+  };
+  MUSIC.timer = setInterval(tick, 50); tick();
+}
+const musicOn = () => data.opts.music !== false;
+function updateMusic(){
+  if (!actx) return;
+  const menuish = ['menu', 'diff', 'char', 'rank', 'how', 'signup', 'online', 'room', 'duo', 'gate', 'shop', 'player'].includes(screenNow) || (screenNow === 'ctrl' && ctrlFrom === 'menu');
+  const want = musicOn() && menuish;
+  if (want && (!MUSIC.cur || MUSIC.cur.name !== 'menu') && !(MUSIC.cur && MUSIC.cur.preview)) startTrack('menu', { loop:true, vol:.2 });
+  if (!want && MUSIC.cur && MUSIC.cur.name === 'menu') stopTrack();
+}
+function playDance(id, vol = .45){
+  if (!musicOn() || !actx) return;
+  startTrack(IT(id).style || 'pump', { seconds:3.8, vol, onEnd:updateMusic });
+}
+function previewDance(id){
+  if (!actx) return;
+  startTrack(IT(id).style || 'pump', { seconds:3.6, vol:.4, onEnd:updateMusic });
+  if (MUSIC.cur) MUSIC.cur.preview = true;
+  STAGE.dance = { id, start:performance.now() / 1000 };
 }
 function emit(ev){ if (G.netRole === 'host') G.netEv.push(ev); }
 function sfx(k){ emit({ k:'sfx', n:k }); playSfx(k); }
@@ -1437,7 +1609,7 @@ const newBall = () => ({ x:0, y:0, z:1, vx:0, vy:0, vz:0, ax:0, type:'drive', bo
 function randomLook(){
   const pick = a => a[(Math.random() * a.length) | 0];
   const gender = Math.random() < .5 ? 'boy' : 'girl', l = { name:'', gender, skin:(Math.random() * SKINS.length) | 0, hair:(Math.random() * 4) | 0, hairStyle:pick(CAT.HAIR_STYLES[gender]) };
-  for (const sl of ['head', 'top', 'bottom', 'shoes', 'paddle']) l[sl] = pick(itemsOf(sl).filter(i => i.lvl < 9)).id;
+  for (const sl of ['head', 'top', 'bottom', 'shoes', 'paddle', 'wrist']) l[sl] = pick(itemsOf(sl).filter(i => i.lvl < 9)).id;
   if (gender === 'boy' && IT(l.bottom).style === 'skirt') l.bottom = 'shorts_black';
   l.ball = 'ball_classic';
   return l;
@@ -1455,7 +1627,7 @@ const lookP3 = () => Object.assign(myLook(), { head:'cap_red', top:'polo_orange'
 
 function buildPlayers(mode, diff){
   const H = (set, o, alt = false, pad = 0) => makePlayer(Object.assign({ human:{ set, alt, pad, tag:set.toUpperCase(), color:HCOL[set] } }, o));
-  const AI = (key, o, nm) => { const p = makePlayer(Object.assign({ name:nm || AIS[key].name }, o)); p.ai = mkAI(AIS[key]); return p; };
+  const AI = (key, o, nm) => { const p = makePlayer(Object.assign({ name:nm || AIS[key].name }, o)); p.ai = mkAI(AIS[key]); if (LADDER.includes(key)) Object.assign(p.look = Object.assign({}, p.look), aiGear(key)); return p; };
   const n1 = myName(), n2 = data.p2.name || 'Player 2';
   switch (mode){
     case 'demo':
@@ -1480,9 +1652,10 @@ function startMatch(mode, diff, players){
   G.score = [0, 0]; G.server = 1; G.rally = 0; G.over = null; G.paused = false; G.pred = null;
   G.serveNum = 2; G.serverP = null; G.recvP = null; G.matchT = 0; G.firstSetup = true;
   if (mode === 'demo') G.court = COURT_IDS[(Math.random() * COURT_IDS.length) | 0];
+  else if (CUSTOM_MODES.includes(mode)) G.court = resolveCourt(data.opts.customCourt);       // custom games: any court, or a random one
   else if (G.netRole !== 'guest'){ const a = getAcc(); G.court = (a && a.equip.court) || 'court_stadium'; }
   G.bfx = [];   // first-serve exception: the opening team gets one server (0-0-2)
-  G.ball = newBall(); G.fx = []; G.rings = []; G.texts = []; G.trail = []; G.confetti = []; G.flashes = []; G.lastWin = 0; G.hitstop = 0;
+  G.ball = newBall(); G.fx = []; G.rings = []; G.texts = []; G.trail = []; G.confetti = []; G.flashes = []; G.lastWin = 0; G.hitstop = 0; G.dance = null;
   G.stats = { perfect:0, winners:0, longest:0, cur:0 };
   if (mode !== 'online') { G.netRole = null; G.flip = false; }
   if (CAM.preset !== camKey() || (mode !== 'online' && CAM.yaw !== CAMS[camKey()].yaw)) fitCamera();
@@ -1574,7 +1747,7 @@ function launch(p, type, tx, depth, tScale = 1, err = null, label = null, lcol =
   calc();
   if (!err){ for (let i = 0; i < 70; i++){ const tn = (NET - y0) / vy, zn = z0 + vz * tn - .5 * GRAV * tn * tn; if (zn >= S.req) break; T += .03; calc(); } }
   Object.assign(b, { x:x0, y:y0, z:z0, vx, vy, vz, ax, type, bounces:0, lastHitter:p.team, lastP:p, netHit:false, rolling:false, live:true,
-    skin:p.human && p.look && p.look.ball ? p.look.ball : 'ball_classic' });
+    skin:p.look && p.look.ball ? p.look.ball : 'ball_classic' });
   b.hitCount++; G.pred = null;
   p.swing = 1;
   hitFx(type, x0, y0, z0);
@@ -2113,7 +2286,12 @@ function showResult(w, sc){
   $('#resAgain').textContent = online ? 'Rematch' : 'Rematch';
   $('#resMenu').textContent = online ? (host ? 'Back to room' : 'Leave room') : 'Menu';
   $('#resWait').classList.toggle('hidden', !(online && !host));
-  setTimeout(() => { if (G.state === 'over') show('s-result'); }, 700);
+  // the winners celebrate on court with their victory dance before the results appear
+  G.dance = { team:w, start:G.time };
+  const dancer = team(w).find(p => p.human && !p.human.remote) || team(w)[0];
+  const did = (dancer && dancer.look && dancer.look.dance) || 'dance_pump';
+  playDance(did, won || versus ? .45 : .25);
+  setTimeout(() => { if (G.state === 'over') show('s-result'); }, 3900);
 }
 async function rankedResult(won, sc){
   const doubles = G.mode === 'duo-ai', a = getAcc();
@@ -2187,6 +2365,14 @@ function drawPaddle(c, it, hx, hy, ang){
   c.strokeStyle = 'rgba(255,255,255,.25)'; c.lineWidth = .008; for (let i = 0; i < 4; i++) seg(c, i * .035, -.025, i * .035 + .02, .025);
   const g = c.createLinearGradient(.12, -.12, .4, .12); g.addColorStop(0, shade(c1, .18)); g.addColorStop(1, shade(c1, -.18));
   c.fillStyle = g; rr(c, .12, -.12, .28, .24, .1); c.fill();
+  if (it.deco){
+    c.save(); rr(c, .12, -.12, .28, .24, .1); c.clip(); c.fillStyle = c2; c.strokeStyle = c2;
+    if (it.deco === 'stripe'){ c.globalAlpha = .9; c.beginPath(); c.moveTo(.18, .12); c.lineTo(.26, .12); c.lineTo(.36, -.12); c.lineTo(.28, -.12); c.closePath(); c.fill(); }
+    else if (it.deco === 'dots'){ c.globalAlpha = .85; for (let ix = 0; ix < 4; ix++) for (let iy = 0; iy < 3; iy++) ell(c, .16 + ix * .065, -.075 + iy * .075, .016, .016); }
+    else if (it.deco === 'split'){ c.globalAlpha = .9; c.fillRect(.26, -.12, .16, .24); }
+    else if (it.deco === 'wave'){ c.lineWidth = .025; c.globalAlpha = .9; c.beginPath(); for (let k = 0; k <= 12; k++){ const xx = .12 + k * .024, yy = Math.sin(k * .9) * .05; k ? c.lineTo(xx, yy) : c.moveTo(xx, yy); } c.stroke(); }
+    c.restore();
+  }
   if (it.id === 'pad_carbon'){ c.strokeStyle = 'rgba(255,255,255,.12)'; c.lineWidth = .006; for (let i = -.1; i < .12; i += .03) seg(c, .14, i, .38, i + .05); }
   if (it.id === 'pad_phoenix'){ c.fillStyle = '#ffd23f'; c.beginPath(); c.moveTo(.2, .07); c.quadraticCurveTo(.25, -.1, .3, -.02); c.quadraticCurveTo(.33, -.11, .36, .07); c.closePath(); c.fill(); }
   c.strokeStyle = c2; c.lineWidth = .028; rr(c, .12, -.12, .28, .24, .1); c.stroke();
@@ -2217,8 +2403,29 @@ function torsoPath(c, B){
   c.closePath();
 }
 const NOFX = {};
+/* victory dances: each returns body offsets and arm angles for time t (seconds) */
+function dancePose(id, t){
+  const st = IT(id).style || 'pump';
+  if (st === 'funk'){ const b = t * 130 / 60; return { x:Math.sin(b * Math.PI) * .09, lean:Math.sin(b * Math.PI) * .15, jump:Math.abs(Math.sin(b * TAU)) * .05, crouch:.35 + .3 * Math.sin(b * TAU), fa:2.0 + Math.sin(b * Math.PI) * .8, a:1.2 - Math.sin(b * Math.PI) * .9, legs:Math.sin(b * Math.PI) * .8 }; }
+  if (st === 'budots'){ const b = t * 128 / 60; return { x:Math.sin(b * Math.PI * .5) * .13, lean:Math.sin(b * Math.PI) * .09, jump:Math.abs(Math.sin(b * Math.PI)) * .05, crouch:.9, fa:1.45 + Math.sin(t * 16) * .38, a:1.45 + Math.sin(t * 16 + 1.3) * .38, legs:Math.sin(b * Math.PI) * .6 }; }
+  if (st === 'weng'){ const b = t * 118 / 60; return { x:Math.sin(b * Math.PI * .5) * .32, lean:Math.cos(b * Math.PI * .5) * .1, jump:Math.abs(Math.sin(b * Math.PI)) * .07, crouch:.2, fa:1.7 + Math.sin(b * TAU) * .55, a:1.7 - Math.sin(b * TAU) * .55, legs:Math.sin(t * 14) }; }
+  if (st === 'tinikling'){ const b = t * 150 / 60 / 1.5, ph = b % 1, side = Math.floor(b) % 2 ? 1 : -1; return { x:side * .22 * Math.min(1, ph * 3), lean:side * .05, jump:Math.sin(Math.min(1, ph * 1.6) * Math.PI) * .28, crouch:0, fa:.55, a:.55, legs:ph < .5 ? .9 : -.9 }; }
+  if (st === 'robot'){ const k = Math.floor(t * 110 / 60 * 2), P = [[1.6, .2], [.2, 1.6], [1.6, 1.6], [2.6, .4], [.4, 2.6]][k % 5]; return { x:0, lean:0, jump:0, crouch:k % 2 ? .3 : 0, fa:P[0], a:P[1], legs:k % 2 ? .4 : -.4 }; }
+  if (st === 'dab'){ const k = Math.floor(t * 140 / 60 / 2) % 2; return { x:0, lean:k ? .22 : -.22, jump:0, crouch:.2, fa:k ? 2.5 : 1.0, a:k ? 1.0 : 2.5, legs:0 }; }
+  return { x:0, lean:0, jump:Math.abs(Math.sin(t * 7)) * .2, crouch:0, fa:2.75 + Math.sin(t * 9 + 1) * .15, a:2.85 + Math.sin(t * 9) * .15 };
+}
+function drawBand(c, it, ex, ey, hx, hy, w){
+  if (!it || !it.c1) return;
+  const px = ex + (hx - ex) * .8, py = ey + (hy - ey) * .8, dx = (hx - ex), dy = (hy - ey), L2 = Math.hypot(dx, dy) || 1, ux = dx / L2 * .035, uy = dy / L2 * .035;
+  let col = it.c1;
+  if (it.fx === 'rainbow'){ const g = c.createLinearGradient(px - ux, py - uy, px + ux, py + uy); g.addColorStop(0, '#ff5c5c'); g.addColorStop(.33, '#ffe14d'); g.addColorStop(.66, '#4dd2ff'); g.addColorStop(1, '#c084fc'); col = g; }
+  c.save(); c.lineCap = 'butt'; c.strokeStyle = col; c.lineWidth = w + .024; seg(c, px - ux, py - uy, px + ux, py + uy);
+  if (it.c2){ c.strokeStyle = it.c2; c.globalAlpha = .6; c.lineWidth = w + .028; seg(c, px - ux * .15, py - uy * .15, px + ux * .15, py + uy * .15); }
+  c.restore();
+}
 function drawCharacter(c, x, y, s, look, facing, swing, run, moving, t, tag, fx){
-  const F = fx || NOFX;
+  const F0 = fx || NOFX, DP = F0.dance ? dancePose(F0.dance.id, F0.dance.t) : null;
+  const F = DP ? Object.assign({}, F0, { lean:DP.lean, jump:DP.jump, crouch:DP.crouch, cheer:false, sad:false }) : F0;
   const head = IT(look.head), top = IT(look.top), bot = IT(look.bottom), shoe = IT(look.shoes), pad = IT(look.paddle || 'pad_wood');
   const skin = SKINS[look.skin] || SKINS[0], skinD = shade(skin, -.2), hair = HAIRS[look.hair] || HAIRS[0], hairD = shade(hair, -.3);
   const girl = look.gender === 'girl', front = facing === 'front', ps = front ? -1 : 1, B = girl ? BODY.girl : BODY.boy;
@@ -2233,7 +2440,8 @@ function drawCharacter(c, x, y, s, look, facing, swing, run, moving, t, tag, fx)
   const sg = c.createRadialGradient(.04, .01, 0, .04, .01, .42);
   sg.addColorStop(0, `rgba(0,0,0,${.42 * sh})`); sg.addColorStop(1, 'rgba(0,0,0,0)');
   c.fillStyle = sg; ell(c, .04, .01, .42 * sh, .12 * sh);
-  const sw = moving ? Math.sin(run) : 0;
+  if (DP && DP.x) c.translate(DP.x, 0);
+  const sw = DP && DP.legs !== undefined ? DP.legs : moving ? Math.sin(run) : 0;
   const bob = moving ? Math.abs(Math.cos(run)) * .035 : Math.sin(t * 2.2) * .01;
   c.translate(0, -bob - jump);
   if (F.lean) c.rotate(F.lean);
@@ -2263,8 +2471,8 @@ function drawCharacter(c, x, y, s, look, facing, swing, run, moving, t, tag, fx)
     else { c.lineWidth = .018; for (const sx of [-1, 1]) seg(c, sx * (w + .015), -.96, sx * (w + .035), hem + .02); }
   }
   // back arm
-  const fa = F.cheer ? 2.75 + Math.sin(t * 9 + 1) * .15 : F.sad ? .06 : .18 + (moving ? -sw * (F.sprint ? .85 : .4) : Math.sin(t * 2) * .03), shX = B.sh - .03;
-  limb(c, -ps * shX, -1.37, -ps * fa, -ps * .35, .27, .25, skin, t1, SLEEVE, tst === 'hoodie' ? t1 : null, B.arm, B.fore);
+  const fa = DP ? DP.fa : F.cheer ? 2.75 + Math.sin(t * 9 + 1) * .15 : F.sad ? .06 : .18 + (moving ? -sw * (F.sprint ? .85 : .4) : Math.sin(t * 2) * .03), shX = B.sh - .03;
+  { const r2 = limb(c, -ps * shX, -1.37, -ps * fa, -ps * .35, .27, .25, skin, t1, SLEEVE, tst === 'hoodie' ? t1 : null, B.arm, B.fore); drawBand(c, IT(look.wrist), r2[2], r2[3], r2[0], r2[1], B.fore); }
   if (tst === 'hoodie'){ c.fillStyle = shade(t1, -.12); ell(c, 0, front ? -1.44 : -1.47, B.sh * .65, .08); }
   // long hair falls behind the shoulders
   if (girl && hs === 'long' && front){ c.fillStyle = hair; rr(c, -.16, -1.66, .32, .34, .08); c.fill(); }
@@ -2359,8 +2567,9 @@ function drawCharacter(c, x, y, s, look, facing, swing, run, moving, t, tag, fx)
   if (hst === 'crown'){ c.fillStyle = h1; c.beginPath(); c.moveTo(-.12, -1.71); c.lineTo(-.13, -1.86); c.lineTo(-.065, -1.78); c.lineTo(0, -1.89); c.lineTo(.065, -1.78); c.lineTo(.13, -1.86); c.lineTo(.12, -1.71); c.closePath(); c.fill(); c.fillStyle = h2; ell(c, 0, -1.75, .02, .02); ell(c, -.075, -1.74, .014, .014); ell(c, .075, -1.74, .014, .014); }
   // paddle arm
   const pr = 1 - swing;
-  const a = F.cheer ? 2.85 + Math.sin(t * 9) * .15 : F.sad ? .35 : .85 + (swing > 0 ? Math.sin(pr * Math.PI) * 1.5 : 0) + (moving ? (F.sprint ? sw * .55 : 0) : Math.sin(t * 2) * .05) + (F.crouch || 0) * .25;
+  const a = DP ? DP.a : F.cheer ? 2.85 + Math.sin(t * 9) * .15 : F.sad ? .35 : .85 + (swing > 0 ? Math.sin(pr * Math.PI) * 1.5 : 0) + (moving ? (F.sprint ? sw * .55 : 0) : Math.sin(t * 2) * .05) + (F.crouch || 0) * .25;
   const [hx, hy, ex, ey] = limb(c, ps * shX, -1.37, ps * a, ps * .3, .27, .25, skin, t1, SLEEVE, tst === 'hoodie' ? t1 : null, B.arm, B.fore);
+  drawBand(c, IT(look.wrist), ex, ey, hx, hy, B.fore);
   drawPaddle(c, pad, hx, hy, Math.atan2(hy - ey, hx - ex));
   c.restore();
 }
@@ -2492,6 +2701,7 @@ function playerFx(p, q){
   const after = (G.state === 'point' || G.state === 'over') && G.lastWin;
   const cheer = after && G.lastWin === p.team, sad = after && G.lastWin !== p.team;
   const jump = (p.jumpT > 0 ? Math.sin(Math.PI * (1 - p.jumpT / .5)) * .34 : 0) + (cheer ? Math.abs(Math.sin(G.time * 7 + p.x * 3)) * .2 : 0);
+  if (G.dance && G.state === 'over' && p.team === G.dance.team) return { dance:{ id:(p.look && p.look.dance) || 'dance_pump', t:G.time - G.dance.start } };
   return { lean:p._lean, crouch:p._crouch, jump, cheer, sad, sprint:!!(p.sprinting && p.moving) };
 }
 /* speed streaks trailing behind a sprinting player */
@@ -2671,7 +2881,7 @@ function drawStage(cvs, look, t, o = {}){
   const ang = o.ang !== undefined ? o.ang : t * .7, cs = Math.cos(ang);
   const facing = o.facing || (cs >= 0 ? 'front' : 'back'), sx = o.facing ? 1 : .3 + .7 * Math.abs(cs);
   const pose = o.pose && t - o.pose < 1.4 ? t - o.pose : -1;
-  const fx = pose >= 0 ? { cheer:true, jump:Math.abs(Math.sin(pose * 7)) * .2 } : null;
+  const fx = o.dance ? { dance:o.dance } : pose >= 0 ? { cheer:true, jump:Math.abs(Math.sin(pose * 7)) * .2 } : null;
   const cyc = (t * .7) % 3.2, sw = pose < 0 && cyc < .3 ? 1 - cyc / .3 : 0;
   c.save(); c.translate(cx, base); c.scale(sx, 1); drawCharacter(c, 0, 0, sc, look, facing, sw, 0, false, t, o.tag || '', fx); c.restore();
 }
@@ -2780,7 +2990,7 @@ function toast(t, s){ emit({ k:'toast', a:t, b:s || '' }); showToast(t, s); }
 
 /* ---------- screens ---------- */
 let screenNow = 'menu', ctrlFrom = 'menu', charFrom = 'menu';
-const MENU_SCREENS = ['menu', 'diff', 'char', 'rank', 'how', 'signup', 'online', 'room', 'duo', 'gate', 'shop'];
+const MENU_SCREENS = ['menu', 'diff', 'char', 'rank', 'how', 'signup', 'online', 'room', 'duo', 'gate', 'shop', 'player'];
 function show(id){
   $$('.screen').forEach(s => s.classList.toggle('off', s.id !== id));
   screenNow = id ? id.replace('s-', '') : 'game';
@@ -2789,8 +2999,15 @@ function show(id){
   invalidateRects(); HUD_RECT = null;
   ({ gate:renderGate, shop:renderShop, menu:refreshMenu, diff:renderDiff, char:renderChar, rank:renderRank, signup:renderSignup, online:renderOnline, room:renderRoom, ctrl:renderCtrl, pause:renderPause }[screenNow] || (() => {}))();
   if (screenNow === 'rank' && Date.now() - ACC.boardT > 5000) loadBoard();
-  updateHUD();
+  if (['menu', 'online', 'room'].includes(screenNow)){ renderFriendBits(); loadFriends(); }
+  // signed-in players stay connected in the menus, so friends see them online and invites arrive anywhere
+  if (ACC.server && ACC.user && MENU_SCREENS.includes(screenNow)) netConnect();
+  if (screenNow === 'menu') claimDailyOnce();
+  updateHUD(); refreshMusicBtns();
+  if (screenNow !== 'result') updateMusic();
 }
+// browsers only allow sound after the first tap or key press
+['pointerdown', 'keydown'].forEach(ev => document.addEventListener(ev, () => { ensureAudio(); updateMusic(); }, { once:true, capture:true }));
 let rotTimer = 0;
 function playGame(mode, diff){
   ensureAudio(); goFullscreen(); startMatch(mode, diff); show(null);
@@ -2810,7 +3027,7 @@ function refreshMenu(){
   $('#mRecent').innerHTML = hist.length ? hist.map(h => `<div class="mini"><span class="wl" style="background:${h.win ? 'rgba(74,222,128,.15)' : 'rgba(248,113,113,.15)'}; color:${h.win ? 'var(--good)' : 'var(--bad)'}">${h.win ? 'W' : 'L'}</span><span class="flex-1 min-w-0 truncate">${esc(h.opp)}</span><span class="tabular-nums text-[var(--muted)]">${esc(h.score)}</span><b class="tabular-nums" style="color:${h.delta > 0 ? 'var(--good)' : 'var(--bad)'}">${h.delta > 0 ? '+' : '−'}${Math.abs(h.delta)}</b></div>`).join('')
     : '<div class="mini text-[var(--muted)]">Win a ranked match to start your history.</div>';
   const top = ACC.server ? ACC.board.slice(0, 3) : [];
-  $('#mTop').innerHTML = top.length ? top.map((r, i) => `<div class="mini"><span class="wl" style="background:${['#f5c542', '#cfd6e0', '#d9925b'][i]}; color:#1b1b1b">${i + 1}</span><span class="flex-1 min-w-0 truncate font-semibold">${esc(r.username)}</span><b class="tabular-nums hot">${r.mmr}</b></div>`).join('')
+  $('#mTop').innerHTML = top.length ? top.map((r, i) => `<div class="mini" data-act="viewPlayer" data-name="${esc(r.username)}" style="cursor:pointer"><span class="wl" style="background:${['#f5c542', '#cfd6e0', '#d9925b'][i]}; color:#1b1b1b">${i + 1}</span><span class="flex-1 min-w-0 truncate font-semibold">${esc(r.username)}</span><b class="tabular-nums hot">${r.mmr}</b></div>`).join('')
     : `<div class="mini text-[var(--muted)]">${ACC.server ? 'No ranked players yet. Be the first!' : 'Connect to the server to see the leaderboard.'}</div>`;
   if (ACC.server && Date.now() - ACC.boardT > 30000) loadBoard().then(() => { if (screenNow === 'menu') refreshMenu(); });
   $('#mXp').style.width = Math.round(lv.into / lv.need * 100) + '%';
@@ -2852,6 +3069,8 @@ function renderDiff(){
     const btn = document.createElement('button');
     btn.className = 'tile rounded-2xl p-3.5 text-left flex items-center gap-3' + (locked ? ' opacity-60' : '');
     btn.dataset.act = locked ? 'lockedAi' : 'diff'; btn.dataset.key = k;
+    const tier = CAT.duprTier(ai.dupr), prevTier = i ? CAT.duprTier(AIS[LADDER[i - 1]].dupr) : '';
+    if (tier !== prevTier){ const h = document.createElement('div'); h.className = 'sideHead'; h.style.margin = '10px 0 2px'; h.textContent = `${tier} · ${({ Beginner:'2.0–2.99', Intermediate:'3.0–3.49', 'Advanced intermediate':'3.5–3.99', Advanced:'4.0–4.99', 'Semi-professional':'5.0–5.99', Professional:'6.0–6.99', 'World-best':'7.0–8.0' })[tier]} DUPR`; list.appendChild(h); }
     btn.innerHTML = `<span class="font-display text-lg w-7 text-center text-[var(--muted)] tabular-nums">${locked ? '🔒' : beaten ? '✓' : i + 1}</span>
       <div class="flex-1 min-w-0"><div class="font-display text-lg leading-none">${esc(m === '1p' ? ai.name : ai.name + ' & ' + ai.name2.split(' ')[1])}</div>
       <div class="text-sm text-[var(--muted)] mt-1">${locked ? `Beat ${esc(AIS[LADDER[i - 1]].name)} to unlock` : ai.blurb}</div></div>
@@ -2884,7 +3103,7 @@ async function suGo(){
   $('#suGo').disabled = true;
   try {
     const j = await api(suMode === 'login' ? 'api/login' : 'api/signup', { username:name, password:pass, look:data.p1 });
-    data.token = j.token; ACC.user = j.user;
+    data.token = j.token; ACC.user = j.user; FR.t = 0; dailyTried = false; if (NW.open) netHello();
     if (suMode === 'login' && j.user.look) Object.assign(data.p1, j.user.look);
     data.p1.name = j.user.username.slice(0, 12); save();
     $('#suPass').value = ''; netHello();
@@ -2913,7 +3132,7 @@ function renderRank(){
   $('#rCount').textContent = rows.length ? `${rows.length} player${rows.length === 1 ? '' : 's'}` : '';
   $('#rBoard').innerHTML = rows.length ? rows.map((r, i) => {
     const you = r.username === meName, medal = ['#f5c542', '#cfd6e0', '#d9925b'][i];
-    return `<div class="flex items-center gap-3 rounded-xl px-3 py-2 ${you ? 'bg-[var(--accent)] text-[var(--accent-ink)]' : 'tile'}">
+    return `<div ${ACC.server ? `data-act="viewPlayer" data-name="${esc(r.username)}" style="cursor:pointer"` : ''} class="flex items-center gap-3 rounded-xl px-3 py-2 ${you ? 'bg-[var(--accent)] text-[var(--accent-ink)]' : 'tile'}">
       <span class="font-display w-7 text-center tabular-nums rounded-md" ${medal && !you ? `style="background:${medal};color:#1b1b1b"` : ''}>${i + 1}</span>
       <span class="flex-1 font-semibold truncate">${esc(r.username)}${you ? ' (you)' : ''}</span>
       <span class="text-xs font-bold opacity-80">Lv ${r.level || 1}</span><span class="text-xs font-bold hot tabular-nums">${(r.dupr ?? CAT.dupr(r.mmr)).toFixed(2)}</span><span class="text-sm tabular-nums opacity-80">${r.wins}–${r.losses}</span><span class="font-display tabular-nums w-14 text-right">${r.mmr}</span></div>`;
@@ -2936,7 +3155,7 @@ function renderChar(){
   $('#skinRow').innerHTML = SKINS.map((c, i) => `<button data-act="skin" data-i="${i}" aria-label="Skin tone ${i + 1}" class="w-9 h-9 rounded-full border-[3px] ${base.skin === i ? 'border-[var(--accent)]' : 'border-[var(--line)]'}" style="background:${c}"></button>`).join('');
   $('#hairRow').innerHTML = HAIRS.map((c, i) => `<button data-act="hair" data-i="${i}" aria-label="Hair color ${i + 1}" class="w-9 h-9 rounded-full border-[3px] ${base.hair === i ? 'border-[var(--accent)]' : 'border-[var(--line)]'}" style="background:${c}"></button>`).join('');
   $('#hairStyleRow').innerHTML = CAT.HAIR_STYLES[base.gender].map(h => `<button data-act="hairStyle" data-v="${h}" class="tile rounded-xl px-3 py-1.5 font-semibold ${base.hairStyle === h ? 'chip-on' : ''}">${HAIR_NAME[h]}</button>`).join('');
-  const slots = p2 ? ['head', 'top', 'bottom', 'shoes', 'paddle', 'ball'] : ['head', 'top', 'bottom', 'shoes', 'paddle', 'ball', 'court', 'partner'];
+  const slots = p2 ? ['head', 'top', 'bottom', 'shoes', 'wrist', 'paddle', 'ball', 'dance'] : ['head', 'top', 'bottom', 'shoes', 'wrist', 'paddle', 'ball', 'dance', 'court', 'partner'];
   $('#equipList').innerHTML = slots.map(sl => {
     const own = itemsOf(sl).filter(i => a.owned.includes(i.id)), total = itemsOf(sl).length;
     return `<div><div class="flex items-baseline justify-between"><span class="text-sm font-semibold text-[var(--muted)]">${SLOT_NAME[sl]}</span><span class="text-xs text-[var(--muted)]">${own.length}/${total} owned</span></div>
@@ -2962,6 +3181,8 @@ function statLine(i){
   if (i.slot === 'ball') return FX_NAME[i.fx] || '';
   if (i.slot === 'partner') return `Speed ${i.speed.toFixed(1)} · Accuracy ${Math.round(i.acc * 100)}%`;
   if (i.slot === 'court') return i.price ? 'New arena' : 'Home court';
+  if (i.slot === 'wrist') return i.c1 ? 'Wristband' : 'Bare wrists';
+  if (i.slot === 'dance') return '♪ Original beat · tap the picture to hear it';
   return STYLE_NAME[i.style] || '';
 }
 function renderShop(){
@@ -2979,7 +3200,7 @@ function renderShop(){
     else if (low) btn = `<button class="tile rounded-xl py-2 font-bold w-full" disabled>🔒 Level ${i.lvl}</button>`;
     else btn = `<button data-act="shopBuy" data-id="${i.id}" class="primary rounded-xl py-2 font-bold w-full" ${a.coins < i.price ? 'disabled' : ''}>${COIN_SVG} ${i.price}</button>`;
     const rk = rarity(i);
-    return `<div class="rcard r-${rk}"><span class="rtag">${rk.toUpperCase()}</span><canvas class="shopPv w-full h-[120px] rounded-xl" data-id="${i.id}" data-slot="${slot}"></canvas>
+    return `<div class="rcard r-${rk}"><span class="rtag">${rk.toUpperCase()}</span><canvas class="shopPv w-full h-[120px] rounded-xl" data-id="${i.id}" data-slot="${slot}" ${slot === 'dance' ? `data-act="dancePreview" style="cursor:pointer"` : ''}></canvas>
       <div class="font-bold truncate">${esc(i.name)}</div><div class="text-xs text-[var(--muted)] min-h-[16px]">${statLine(i)}</div>${btn}</div>`;
   }).join('');
 }
@@ -2992,7 +3213,8 @@ function fitCanvas(cv2){
 function drawShop(t){
   for (const cv2 of $$('.shopPv')){
     const id = cv2.dataset.id, slot = cv2.dataset.slot;
-    if (['head', 'top', 'bottom', 'shoes'].includes(slot)) drawPreview(cv2, Object.assign(myLook(), { [slot]:id }), 'front', t, '');
+    if (['head', 'top', 'bottom', 'shoes', 'wrist'].includes(slot)) drawPreview(cv2, Object.assign(myLook(), { [slot]:id }), 'front', t, '');
+    else if (slot === 'dance') drawStage(cv2, myLook(), t, { facing:'front', noCone:true, dance:{ id, t:t % 4 } });
     else if (slot === 'partner') drawPreview(cv2, MATE_LOOK[id] || myLook(), 'front', t, '');
     else if (!fitCanvas(cv2)) continue;
     else if (slot === 'ball') previewBall(cv2, id, t);
@@ -3001,6 +3223,7 @@ function drawShop(t){
   }
 }
 $('#cName').addEventListener('input', saveName);
+$('#rmCourt').addEventListener('change', e => netSend({ t:'court', v:e.target.value }));
 { const pv = $('#pvBig');
   pv.addEventListener('pointerdown', e => { STAGE.drag = { x:e.clientX, a:STAGE.ang }; try { pv.setPointerCapture(e.pointerId); } catch (_) {} });
   pv.addEventListener('pointermove', e => { if (STAGE.drag) STAGE.ang = STAGE.drag.a + (e.clientX - STAGE.drag.x) * .012; });
@@ -3019,6 +3242,7 @@ function renderCtrl(){
   $$('#optMeter button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === data.opts.meter));
   $$('#optSwing button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === data.opts.swing));
   $$('#optTouch button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === data.opts.touch));
+  $('#optCourt').innerHTML = ['random', ...COURT_IDS].map(k => `<button data-act="opt" data-k="customCourt" data-v="${k}" class="${(data.opts.customCourt || 'random') === k ? 'chip-on' : ''}">${k === 'random' ? '🎲 Random' : esc(IT(k).name)}</button>`).join('');
   $$('#optCam button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === (data.opts.camera || 'classic')));
   $$('#optGfx button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === (data.opts.gfx || 'auto')));
   $('#optFps').classList.toggle('chip-on', !!data.opts.fps);
@@ -3117,6 +3341,21 @@ function act(name, el){
     case 'ctrlBack': REB = null; show(ctrlFrom === 'pause' ? 's-pause' : 's-menu'); break;
     case 'ctrlTab': REB = null; ctrlSet = el.dataset.v; renderCtrl(); break;
     case 'bind': REB = { set:ctrlSet, act:el.dataset.a }; renderCtrl(); break;
+    case 'dancePreview': previewDance(el.dataset.id); break;
+    case 'viewPlayer': openPlayer(el.dataset.name); break;
+    case 'playerBack': show('s-' + (PROF.from && PROF.from !== 'player' ? PROF.from : 'menu')); break;
+    case 'ppFriend': if (PROF.p){ const add = !FR.keys.has(PROF.p.username.toLowerCase()); friendChange(PROF.p.username, add).then(renderPlayer); } break;
+    case 'ppInvite': if (PROF.p) netSend({ t:'invite', to:PROF.p.username }); break;
+    case 'frInvite': netSend({ t:'invite', to:el.dataset.name }); break;
+    case 'frAdd': { const n = $('#frName').value.trim(); if (n.length >= 3) friendChange(n, true).then(ok => { if (ok) $('#frName').value = ''; }); break; }
+    case 'inviteClose': $('#inviteCard').classList.add('hidden'); break;
+    case 'inviteJoin': {
+      $('#inviteCard').classList.add('hidden');
+      if (screenNow === 'game' || screenNow === 'pause'){ showToast('Finish your match first', 'Then join from Online'); break; }
+      if (NW.invite){ NW.err = ''; netSend({ t:'join', code:NW.invite.code }); }
+      break;
+    }
+    case 'music': data.opts.music = !musicOn(); save(); if (musicOn()) updateMusic(); else stopTrack(); refreshMusicBtns(); break;
     case 'camCycle': {
       const i = CAM_ORDER.indexOf(data.opts.camera || 'classic'), k = CAM_ORDER[(i + 1) % CAM_ORDER.length];
       data.opts.camera = k; save(); fitCamera(); showToast(`Camera: ${CAMS[k].name}`, CAMS[k].hint);
@@ -3131,7 +3370,7 @@ function act(name, el){
     case 'signup': suMode = isServerAcc() ? suMode : 'signup'; $('#suErr').textContent = ''; show('s-signup'); break;
     case 'suTab': suMode = el.dataset.v; $('#suErr').textContent = ''; renderSignup(); break;
     case 'suGo': suGo(); break;
-    case 'logout': api('api/logout', {}).catch(() => {}); data.token = null; ACC.user = null; save(); netHello(); show('s-gate'); break;
+    case 'logout': api('api/logout', {}).catch(() => {}); data.token = null; ACC.user = null; FR.list = []; FR.keys = new Set(); FR.t = 0; dailyTried = false; save(); netHello(); show('s-gate'); break;
     case 'pause': togglePause(true); break;
     case 'resume': togglePause(false); break;
     case 'restart': case 'rematch':
@@ -3256,9 +3495,69 @@ function netConnect(){
     }
     NW.leaving = false;
     renderOnline();
-    setTimeout(() => { if (['online', 'room'].includes(screenNow)) netConnect(); }, 2000);
+    setTimeout(() => { if (['online', 'room'].includes(screenNow) || ACC.user) netConnect(); }, 2000);
   };
 }
+/* ---------- profiles, friends, invites, daily bonus ---------- */
+const PROF = { p:null, from:'menu' }, FR = { list:[], keys:new Set(), t:0 };
+const meKey = () => (ACC.user && ACC.user.username || '').toLowerCase();
+async function openPlayer(name){
+  if (!ACC.server) return showToast('Profiles need the server', 'Play on your Render link to see other players');
+  if (screenNow !== 'player') PROF.from = screenNow;
+  PROF.p = null; show('s-player'); setTxt('#ppName', name); setTxt('#ppMsg', 'Loading…'); $('#ppMsg').style.color = 'var(--muted)';
+  try { const j = await api('api/player/' + encodeURIComponent(name)); PROF.p = j.player; setTxt('#ppMsg', ''); renderPlayer(); }
+  catch (e){ setTxt('#ppMsg', e.message); $('#ppMsg').style.color = 'var(--bad)'; }
+}
+function renderPlayer(){
+  const p = PROF.p; if (!p) return;
+  setTxt('#ppName', p.username); $('#ppDot').style.background = p.online ? 'var(--good)' : 'var(--muted)';
+  setTxt('#ppSub', `${p.online ? 'Online now' : 'Offline'} · playing since ${new Date(p.created || Date.now()).toLocaleDateString()}`);
+  setTxt('#ppDupr', p.dupr.toFixed(3)); setTxt('#ppTier', p.tier); $('#ppBar').style.width = ((p.dupr - 2) / 6 * 100).toFixed(1) + '%';
+  setTxt('#ppLevel', String(p.level)); setTxt('#ppMmr', String(p.mmr)); setTxt('#ppRec', `${p.wins}–${p.losses}`);
+  setTxt('#ppRate', p.wins + p.losses ? Math.round(p.wins / (p.wins + p.losses) * 100) + '%' : '—'); setTxt('#ppRally', String(p.bestRally)); setTxt('#ppPeak', String(p.peak || p.mmr));
+  $('#ppHist').innerHTML = p.history.length ? p.history.map(h => `<div class="mini"><span class="wl" style="background:${h.win ? 'rgba(74,222,128,.15)' : 'rgba(248,113,113,.15)'}; color:${h.win ? 'var(--good)' : 'var(--bad)'}">${h.win ? 'W' : 'L'}</span><span class="flex-1 min-w-0 truncate">${esc(h.opp)}</span><span class="tabular-nums text-[var(--muted)]">${esc(h.score)}</span></div>`).join('') : '<div class="mini text-[var(--muted)]">No ranked matches yet.</div>';
+  const self = p.username.toLowerCase() === meKey(), friend = FR.keys.has(p.username.toLowerCase());
+  $('#ppFriend').classList.toggle('hidden', self || !ACC.user);
+  $('#ppFriend').textContent = friend ? 'Remove friend' : 'Add friend'; $('#ppFriend').classList.toggle('primary', !friend); $('#ppFriend').classList.toggle('tile', friend);
+  $('#ppInvite').classList.toggle('hidden', self || !p.online || !NW.room || NW.room.state !== 'lobby');
+  if (!ACC.user && !self) { setTxt('#ppMsg', 'Sign in to add friends.'); $('#ppMsg').style.color = 'var(--muted)'; }
+}
+async function loadFriends(force){
+  if (!ACC.server || !ACC.user){ FR.list = []; FR.keys = new Set(); renderFriendBits(); return; }
+  if (!force && Date.now() - FR.t < 15000) return;
+  FR.t = Date.now();
+  try { const j = await api('api/friends'); FR.list = j.friends; FR.keys = new Set(FR.list.map(f => f.username.toLowerCase())); renderFriendBits(); } catch (e) {}
+}
+async function friendChange(name, add){
+  try { await api(add ? 'api/friends/add' : 'api/friends/remove', { username:name }); await loadFriends(true); showToast(add ? `${name} added` : `${name} removed`, add ? 'You’ll see when they’re online' : ''); return true; }
+  catch (e){ showToast('Couldn’t update friends', e.message); return false; }
+}
+function renderFriendBits(){
+  const row = (f, invite) => `<div class="mini"><i class="navDot" style="margin:0; background:${f.online ? 'var(--good)' : 'var(--muted)'}"></i><span data-act="viewPlayer" data-name="${esc(f.username)}" class="flex-1 min-w-0 truncate font-semibold" style="cursor:pointer">${esc(f.username)}</span><b class="tabular-nums hot">${f.dupr.toFixed(2)}</b>${invite && f.online ? `<button data-act="frInvite" data-name="${esc(f.username)}" class="primary rounded-lg px-2.5 py-1 text-xs font-bold">Invite</button>` : ''}</div>`;
+  const none = !ACC.server ? 'Connect to the server to add friends.' : !ACC.user ? 'Sign in to add friends.' : 'No friends yet. Open a player’s profile to add them.';
+  const list = FR.list.length ? FR.list : null;
+  if ($('#mFriends')) $('#mFriends').innerHTML = list ? list.slice(0, 6).map(f => row(f)).join('') : `<div class="mini text-[var(--muted)]">${none}</div>`;
+  if ($('#onFriends')) $('#onFriends').innerHTML = list ? list.map(f => row(f, !!(NW.room && NW.room.state === 'lobby'))).join('') : `<div class="mini text-[var(--muted)]">${none}</div>`;
+  if ($('#rmFriends')){
+    const inRoom = new Set(((NW.room && NW.room.slots) || []).filter(Boolean).map(x => (x.name || '').toLowerCase()));
+    const on = FR.list.filter(f => f.online && !inRoom.has(f.username.toLowerCase()));
+    $('#rmFriends').innerHTML = NW.room && NW.room.state === 'lobby' && on.length ? `<span class="text-sm font-semibold text-[var(--muted)] self-center">Invite a friend:</span>` + on.map(f => `<button data-act="frInvite" data-name="${esc(f.username)}" class="tile rounded-xl px-3 py-1.5 text-sm font-bold"><i class="navDot" style="display:inline-block; margin:0 6px 0 0; background:var(--good)"></i>${esc(f.username)}</button>`).join('') : '';
+  }
+}
+function showInvite(m){
+  NW.invite = m; setTxt('#invTxt', `${m.from} invited you to a ${m.mode} match`); $('#inviteCard').classList.remove('hidden');
+  clearTimeout(NW.invT); NW.invT = setTimeout(() => $('#inviteCard').classList.add('hidden'), 25000);
+  playSfx('perfect');
+}
+let dailyTried = false;
+async function claimDailyOnce(){
+  if (dailyTried) return; dailyTried = true;
+  try {
+    if (isServerAcc()){ const j = await api('api/daily', {}); if (j.bonus){ ACC.user = j.user; showToast(`Daily bonus: +${j.bonus.coins} coins`, 'Come back tomorrow for more'); refreshMenu(); } }
+    else { const a = getAcc(); const b = a && CAT.claimDaily(a); if (b){ save(); showToast(`Daily bonus: +${b.coins} coins`, 'Come back tomorrow for more'); refreshMenu(); } }
+  } catch (e) { dailyTried = false; }
+}
+function refreshMusicBtns(){ $$('.musicBtn').forEach(b => { if (b.classList.contains('tile')) b.classList.toggle('chip-on', musicOn()); else b.textContent = `Music: ${musicOn() ? 'on' : 'off'}`; }); }
 function setNetBanner(txt){
   const el = $('#netWarn'); if (!el) return;
   el.classList.toggle('hidden', !txt); if (txt) setTxt('#netWarn', txt);
@@ -3274,7 +3573,9 @@ function netMsg(m){
     case 'welcome': NW.name = m.name; NW.account = m.account; renderOnline(); break;
     case 'rooms': NW.rooms = m.rooms || []; renderOnline(); break;
     case 'room': {
+      const fresh = !NW.room || NW.room.code !== m.room.code;
       NW.room = m.room; NW.you = m.you; if (m.rid) NW.rid = m.rid; saveRejoin();
+      if (fresh && m.room.host === m.you && m.room.state === 'lobby' && (data.opts.customCourt || 'random') !== (m.room.court || 'random')) netSend({ t:'court', v:data.opts.customCourt || 'random' });
       if (G.mode === 'online' && ['game', 'pause', 'result', 'ctrl'].includes(screenNow)){
         if (m.room.state === 'lobby'){ G.netRole = null; show('s-room'); break; }
         syncSlots(m.room);
@@ -3291,6 +3592,8 @@ function netMsg(m){
       beginOnline(); if (wasReconnect || m.rejoin) showToast('Reconnected', 'You’re back in the match');
       break;
     }
+    case 'invited': showInvite(m); break;
+    case 'inviteSent': showToast(m.ok ? `Invite sent to ${m.to}` : `${m.to} isn’t online right now`, ''); break;
     case 'rejoinFail': NW.reconnecting = null; setNetBanner(''); clearRejoin(); if (G.mode === 'online') leaveOnline(m.msg); break;
     case 'in': hostInput(m); break;
     case 'st': if (G.netRole === 'guest') guestSnap(m); break;
@@ -3341,11 +3644,14 @@ function renderRoom(){
     return `<div class="pcard ${team} ${sl.ready ? 'ready' : ''} ${you ? 'me' : ''} ${sl.away ? 'away' : ''}" style="animation-delay:${i * .07}s">
       ${you || isHost ? `<span class="pcBadge">${[you ? 'YOU' : '', isHost ? 'HOST' : ''].filter(Boolean).join(' · ')}</span>` : ''}
       <div class="pcNum">${num}</div><canvas class="pcAvatar" data-slot="${i}"></canvas>
-      <div class="pcName">${esc(sl.name)}</div><div class="pcMeta">${meta || '&nbsp;'}</div><div class="pcState">${state}</div></div>`;
+      <div class="pcName" ${sl.account ? `data-act="viewPlayer" data-name="${esc(sl.name)}" style="cursor:pointer; text-decoration:underline dotted; text-underline-offset:4px"` : ''}>${esc(sl.name)}</div><div class="pcMeta">${meta || '&nbsp;'}</div><div class="pcState">${state}</div></div>`;
   };
   const html = n === 2 ? `${card(0)}<div class="vs">VS</div>${card(1)}`
     : `<div class="teamCol"><div class="teamName" style="color:var(--accent)">TEAM 1</div><div class="cards">${card(0)}${card(2)}</div></div><div class="vs">VS</div><div class="teamCol"><div class="teamName" style="color:var(--hot)">TEAM 2</div><div class="cards">${card(1)}${card(3)}</div></div>`;
   const el = $('#rmSlots'); if (el._v !== html){ el._v = html; el.innerHTML = html; invalidateRects(); }
+  const sel = $('#rmCourt'), cname = v => v === 'random' ? '🎲 Random court' : IT(v).name;
+  if (!sel.options.length) sel.innerHTML = ['random', ...COURT_IDS].map(k => `<option value="${k}">${esc(cname(k))}</option>`).join('');
+  sel.value = r.court || 'random'; sel.classList.toggle('hidden', !host); setTxt('#rmCourtTxt', cname(r.court || 'random')); $('#rmCourtTxt').classList.toggle('hidden', host);
   const humans = r.slots.filter(Boolean), waiting = humans.filter((sl, i) => r.slots.indexOf(sl) !== r.host && !sl.away && !sl.ready).length;
   const empties = r.slots.filter(x => !x).length;
   $('#rmReady').classList.toggle('hidden', host);
@@ -3367,6 +3673,8 @@ function drawLobby(t){
 }
 function slotTeam(i){ return i % 2 === 0 ? 1 : 2; }
 function slotLane(i, n){ return n === 2 ? 0 : [-1, 1, 1, -1][i]; }
+const CUSTOM_MODES = ['2p', '2v2', 'duo-coop', 'duo-vs'];
+function resolveCourt(v){ return v && v !== 'random' && COURT_IDS.includes(v) ? v : COURT_IDS[(Math.random() * COURT_IDS.length) | 0]; }
 function beginOnline(){
   const r = NW.room, n = r.slots.length, isHost = r.host === NW.you;
   const ps = r.slots.map((s, i) => {
@@ -3378,6 +3686,7 @@ function beginOnline(){
   G.netRole = isHost ? 'host' : 'guest'; G.netEv = []; NW.snaps = []; NW.hit = false; NW.arms = [];
   G.flip = slotTeam(NW.you) === 2; NW.warned = false; NW.auth = null; fitCamera();
   startMatch('online', null, ps);
+  if (isHost) G.court = resolveCourt(r.court);          // the room's court (or a random one); guests get it from the host
   show(null);
   showToast(isHost ? 'You’re hosting' : 'Match started', `${teamName(1)} vs ${teamName(2)}`);
 }
@@ -3582,10 +3891,16 @@ function frame(nowMs){
     render();
     if (inPlay) hudAutoHide(Math.min(.1, now - (G.hudLast || now))), G.hudLast = now;
     if (screenNow === 'menu') drawStage($('#pvMenu'), myLook(), now, { pose:STAGE.pose, tag:(myName() || '?').slice(0, 1).toUpperCase() });
-    if (screenNow === 'char'){ if (!STAGE.drag) STAGE.ang += Math.min(.05, d) * .6; drawStage($('#pvBig'), editWho === 'p2' ? p2Look() : myLook(), now, { ang:STAGE.ang, pose:STAGE.pose, tag:(myName() || '?').slice(0, 1).toUpperCase() }); }
+    if (screenNow === 'char'){
+      if (!STAGE.drag) STAGE.ang += Math.min(.05, d) * .6;
+      const dn = STAGE.dance && now - STAGE.dance.start < 3.8 ? { id:STAGE.dance.id, t:now - STAGE.dance.start } : null;
+      drawStage($('#pvBig'), editWho === 'p2' ? p2Look() : myLook(), now, { ang:dn ? 0 : STAGE.ang, facing:dn ? 'front' : undefined, dance:dn, pose:STAGE.pose, tag:(myName() || '?').slice(0, 1).toUpperCase() });
+    }
     if (screenNow === 'signup' && ACC.user) drawPreview($('#pvSign'), myLook(), 'front', now, '');
     if (screenNow === 'shop' && now - lastShop >= 1 / 20){ lastShop = now; drawShop(now); }
     if (screenNow === 'room') drawLobby(now);
+    if (screenNow === 'player' && PROF.p) drawStage($('#pvPlayer'), PROF.p.look, now, { tag:PROF.p.username.slice(0, 1).toUpperCase() });
+    if (['menu', 'online', 'room', 'player'].includes(screenNow) && (NW.frT = (NW.frT || 0) + d) > 15){ NW.frT = 0; loadFriends(); }
   }
   if ((hudTick += d) > .1){ hudTick = 0; tickBars(); if (screenNow === 'game') updateHUD(); }
   const fb = $('#fpsBox');

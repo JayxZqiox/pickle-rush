@@ -5,19 +5,30 @@
 (function (root) {
   'use strict';
 
-  /* ---------- AI ladder (beat one to unlock the next) ---------- */
+  /* ---------- AI ladder (beat one to unlock the next), placed on the DUPR scale ----------
+   * Beginner 2.0–2.99 · Intermediate 3.0–3.49 · Advanced intermediate 3.5–3.99 · Advanced 4.0–4.99
+   * Semi-professional 5.0–5.99 · Professional 6.0–6.99 · World-best 7.0–8.0 */
   const LADDER = [
-    { key:'rookie',      name:'Rookie Rex',       name2:'Rookie Ria',      mmr:0 },
-    { key:'amateur',     name:'Amateur Amy',      name2:'Amateur Abe',     mmr:120 },
-    { key:'club',        name:'Club Casey',       name2:'Club Cody',       mmr:250 },
-    { key:'pro',         name:'Pro Paula',        name2:'Pro Pete',        mmr:400 },
-    { key:'veteran',     name:'Veteran Victor',   name2:'Veteran Vera',    mmr:600 },
-    { key:'elite',       name:'Elite Elena',      name2:'Elite Eli',       mmr:800 },
-    { key:'legend',      name:'Legend Leo',       name2:'Legend Lia',      mmr:1000 },
-    { key:'champion',    name:'Champion Kai',     name2:'Champion Kim',    mmr:1250 },
-    { key:'grandmaster', name:'Grandmaster Mira', name2:'Grandmaster Max', mmr:1500 },
-    { key:'nightmare',   name:'Nightmare Nova',   name2:'Nightmare Nyx',   mmr:1800 },
+    { key:'rookie',      name:'Rookie Rex',        name2:'Rookie Ria',       dupr:2.00 },
+    { key:'amateur',     name:'Amateur Amy',       name2:'Amateur Abe',      dupr:2.30 },
+    { key:'club',        name:'Club Casey',        name2:'Club Cody',        dupr:2.65 },
+    { key:'pro',         name:'Rally Paula',       name2:'Rally Pete',       dupr:3.10 },
+    { key:'veteran',     name:'Veteran Victor',    name2:'Veteran Vera',     dupr:3.40 },
+    { key:'elite',       name:'Spin Elena',        name2:'Spin Eli',         dupr:3.75 },
+    { key:'legend',      name:'Kitchen Leo',       name2:'Kitchen Lia',      dupr:4.15 },
+    { key:'champion',    name:'Captain Kai',       name2:'Captain Kim',      dupr:4.50 },
+    { key:'grandmaster', name:'Master Mira',       name2:'Master Max',       dupr:4.85 },
+    { key:'semi1',       name:'Semi-Pro Santi',    name2:'Semi-Pro Sol',     dupr:5.20 },
+    { key:'semi2',       name:'Semi-Pro Bea',      name2:'Semi-Pro Ben',     dupr:5.65 },
+    { key:'tour1',       name:'Tour Pro Tomas',    name2:'Tour Pro Tess',    dupr:6.15 },
+    { key:'tour2',       name:'Tour Pro Mia',      name2:'Tour Pro Marco',   dupr:6.65 },
+    { key:'nightmare',   name:'Nightmare Nova',    name2:'Nightmare Nyx',    dupr:7.15 },
+    { key:'atlas',       name:'World No.1 Atlas',  name2:'World No.2 Aria',  dupr:7.60 },
+    { key:'king',        name:'The Pickle King',   name2:'The Pickle Queen', dupr:8.00 },
   ];
+  // DUPR-style rating: a straight line from 0 MMR = 2.000 up to 4000 MMR = 8.000
+  const MMR_PER_POINT = 4000 / 6;
+  LADDER.forEach(a => { a.mmr = Math.round((a.dupr - 2) * MMR_PER_POINT); });
 
   /* ---------- skills: every shot is available from level 1 ---------- */
   const SKILL_LEVELS = {};
@@ -70,6 +81,25 @@
     { id:'pad_spin',       slot:'paddle', name:'Spin Doctor',   price:600,  lvl:4, c1:'#7c4dff', c2:'#2a1366', power:0, control:0, spin:2 },
     { id:'pad_carbon',     slot:'paddle', name:'Carbon Elite',  price:1000, lvl:6, c1:'#2a2d36', c2:'#e8ff3d', power:1, control:1, spin:1 },
     { id:'pad_phoenix',    slot:'paddle', name:'Phoenix Legend',price:2000, lvl:9, c1:'#ff6a1a', c2:'#ffd23f', power:2, control:1, spin:2 },
+    { id:'pad_tropic',     slot:'paddle', name:'Tropic Wave',   price:300,  lvl:2, c1:'#14b8a6', c2:'#ffd23f', power:0, control:0, spin:1, deco:'wave' },
+    { id:'pad_neon',       slot:'paddle', name:'Neon Rush',     price:350,  lvl:2, c1:'#ff4fd8', c2:'#5ff4ff', power:1, control:0, spin:0, deco:'stripe' },
+    { id:'pad_sakura',     slot:'paddle', name:'Sakura Swing',  price:450,  lvl:3, c1:'#ffb3cf', c2:'#ff5c9a', power:0, control:1, spin:1, deco:'dots' },
+    { id:'pad_glacier',    slot:'paddle', name:'Glacier',       price:550,  lvl:4, c1:'#bfefff', c2:'#2d7ff9', power:0, control:2, spin:1, deco:'split' },
+    { id:'pad_stealth',    slot:'paddle', name:'Stealth',       price:700,  lvl:5, c1:'#1c1f26', c2:'#ff3b3b', power:2, control:0, spin:0, deco:'stripe' },
+    { id:'pad_lava',       slot:'paddle', name:'Lava Core',     price:900,  lvl:6, c1:'#ff4d1a', c2:'#ffd23f', power:2, control:0, spin:1, deco:'wave' },
+    { id:'pad_galaxy',     slot:'paddle', name:'Galaxy Pro',    price:1400, lvl:7, c1:'#3b0764', c2:'#c4b5fd', power:1, control:2, spin:1, deco:'dots' },
+    // wristbands
+    { id:'wrist_none',     slot:'wrist', name:'No wristband',   price:0,    lvl:1, c1:'' },
+    { id:'wrist_rainbow',  slot:'wrist', name:'Rainbow band',   price:900,  lvl:5, c1:'#ff5c5c', c2:'#4dd2ff', fx:'rainbow' },
+    { id:'wrist_gold',     slot:'wrist', name:'Gold band',      price:1200, lvl:6, c1:'#f5c542', c2:'#fff3bf' },
+    // victory dances (each has its own original beat)
+    { id:'dance_pump',     slot:'dance', name:'Fist Pump',      price:0,    lvl:1, style:'pump',  bpm:120 },
+    { id:'dance_dab',      slot:'dance', name:'The Dab',        price:300,  lvl:1, style:'dab',   bpm:140 },
+    { id:'dance_robot',    slot:'dance', name:'Robot',          price:400,  lvl:1, style:'robot', bpm:110 },
+    { id:'dance_tinikling',slot:'dance', name:'Tinikling Hop',  price:500,  lvl:2, style:'tinikling', bpm:150 },
+    { id:'dance_funk',     slot:'dance', name:'Brazilian Funk', price:600,  lvl:2, style:'funk',  bpm:130 },
+    { id:'dance_budots',   slot:'dance', name:'Budots',         price:700,  lvl:3, style:'budots', bpm:128 },
+    { id:'dance_weng',     slot:'dance', name:'Weng Weng Shuffle', price:800, lvl:3, style:'weng', bpm:118 },
     // balls (visual effects)
     { id:'ball_classic',   slot:'ball', name:'Classic',         price:0,    lvl:1, fx:'none',      c1:'#e8ff3d' },
     { id:'ball_fire',      slot:'ball', name:'Fireball',        price:300,  lvl:2, fx:'fire',      c1:'#ffb020' },
@@ -92,10 +122,24 @@
     { id:'mate_titan',     slot:'partner', name:'Titan',        price:1500, lvl:8, speed:5.5, react:.09, aimSd:.23, mistake:.022, skill:.42, smash:.93, tScale:.89, judge:.92, acc:.97 },
     { id:'mate_zen',       slot:'partner', name:'Zen Master',   price:2500, lvl:10,speed:5.8, react:.07, aimSd:.18, mistake:.015, skill:.5,  smash:.97, tScale:.86, judge:.97, acc:1 },
   ];
+  // every outfit piece in 11 colors
+  const PALETTE = [['red','Red','#e23b3b'],['orange','Orange','#ff8a3d'],['yellow','Yellow','#ffd23f'],['lime','Lime','#a6f23d'],['teal','Teal','#14b8a6'],
+    ['sky','Sky','#38bdf8'],['navy','Navy','#1f3b8c'],['purple','Purple','#7c4dff'],['pink','Pink','#ff7eb6'],['black','Black','#23262e'],['white','White','#f5f7fb']];
+  const ink = hex => { const n = parseInt(hex.slice(1), 16); return ((n >> 16) * .3 + ((n >> 8) & 255) * .59 + (n & 255) * .11) > 150 ? '#14213d' : '#ffffff'; };
+  for (const [k, nm, col] of PALETTE) {
+    ITEMS.push({ id:'tee_c_' + k,    slot:'top',    name:nm + ' tee',        price:120, lvl:1, style:'tee',     c1:col, c2:ink(col) });
+    ITEMS.push({ id:'polo_c_' + k,   slot:'top',    name:nm + ' polo',       price:200, lvl:1, style:'polo',    c1:col, c2:ink(col) });
+    ITEMS.push({ id:'shorts_c_' + k, slot:'bottom', name:nm + ' shorts',     price:120, lvl:1, style:'shorts',  c1:col, c2:ink(col) });
+    ITEMS.push({ id:'skirt_c_' + k,  slot:'bottom', name:nm + ' skirt',      price:150, lvl:1, style:'skirt',   c1:col, c2:ink(col) });
+    ITEMS.push({ id:'shoes_c_' + k,  slot:'shoes',  name:nm + ' sneakers',   price:180, lvl:1, style:'sneaker', c1:col, c2:ink(col) });
+    ITEMS.push({ id:'cap_c_' + k,    slot:'head',   name:nm + ' cap',        price:150, lvl:1, style:'cap',     c1:col, c2:ink(col) });
+    ITEMS.push({ id:'band_c_' + k,   slot:'head',   name:nm + ' headband',   price:60,  lvl:1, style:'band',    c1:col });
+    ITEMS.push({ id:'wrist_' + k,    slot:'wrist',  name:nm + ' wristband',  price:80,  lvl:1, c1:col, c2:ink(col) });
+  }
   const BY_ID = {}; ITEMS.forEach(i => { BY_ID[i.id] = i; });
-  const SLOTS = ['head', 'top', 'bottom', 'shoes', 'paddle', 'ball', 'court', 'partner'];
+  const SLOTS = ['head', 'top', 'bottom', 'shoes', 'wrist', 'paddle', 'ball', 'court', 'partner', 'dance'];
   const STARTER = ITEMS.filter(i => i.price === 0).map(i => i.id);
-  const DEFAULT_EQUIP = { head:'band_red', top:'tee_white', bottom:'shorts_navy', shoes:'sneak_white', paddle:'pad_wood', ball:'ball_classic', court:'court_stadium', partner:'mate_ace' };
+  const DEFAULT_EQUIP = { head:'band_red', top:'tee_white', bottom:'shorts_navy', shoes:'sneak_white', wrist:'wrist_none', paddle:'pad_wood', ball:'ball_classic', court:'court_stadium', partner:'mate_ace', dance:'dance_pump' };
   const HAIR_STYLES = { boy:['short', 'spiky', 'buzz', 'curly'], girl:['ponytail', 'bob', 'long', 'buns'] };
 
   /* ---------- levels ---------- */
@@ -108,11 +152,11 @@
   }
 
   /* ---------- DUPR-style rating ----------
-   * DUPR is pickleball's real rating scale (2.000 beginner to 8.000 top pro). The game can't read
+   * DUPR is pickleball's real rating scale (2.000 beginner to 8.000 world-best). The game can't read
    * official DUPR, so this estimates a rating on the same scale from in-game MMR. */
-  function dupr(mmr) { return Math.min(8, 2 + 6 * (1 - Math.exp(-Math.max(0, mmr || 0) / 1800))); }
+  function dupr(mmr) { return Math.max(2, Math.min(8, 2 + Math.max(0, mmr || 0) / MMR_PER_POINT)); }
   function duprTier(d) {
-    return d < 3 ? 'Beginner' : d < 3.5 ? 'Intermediate' : d < 4 ? 'Advanced intermediate' : d < 4.5 ? 'Advanced' : d < 5 ? 'Expert' : d < 5.5 ? 'Pro level' : 'Elite pro';
+    return d < 3 ? 'Beginner' : d < 3.5 ? 'Intermediate' : d < 4 ? 'Advanced intermediate' : d < 5 ? 'Advanced' : d < 6 ? 'Semi-professional' : d < 7 ? 'Professional' : 'World-best';
   }
   // total XP needed to reach a level (used to set up the owner account)
   function xpForLevel(level) { let xp = 0; for (let n = 1; n < level; n++) xp += 100 + 60 * (n - 1); return xp; }
@@ -121,10 +165,17 @@
   function aiIndex(key) { return LADDER.findIndex(a => a.key === key); }
   function matchRewards(key, won) {
     const i = Math.max(0, aiIndex(key));
-    return won ? { coins: 40 + 10 * i, xp: 60 + 8 * i } : { coins: 12 + 3 * i, xp: 25 + 3 * i };
+    return won ? { coins: 90 + 20 * i, xp: 60 + 8 * i } : { coins: 30 + 6 * i, xp: 25 + 3 * i };
   }
-  function rallyRewards(returns) { return { coins: Math.min(25, Math.floor(returns / 3)), xp: Math.min(30, returns * 2) }; }
-  function onlineRewards(won) { return won ? { coins: 50, xp: 70 } : { coins: 20, xp: 30 }; }
+  function rallyRewards(returns) { return { coins: Math.min(60, returns * 2), xp: Math.min(30, returns * 2) }; }
+  function onlineRewards(won) { return won ? { coins: 160, xp: 80 } : { coins: 60, xp: 35 }; }
+  const DAILY_COINS = 300;
+  function claimDaily(p) {
+    const today = new Date().toISOString().slice(0, 10);
+    if (p.lastDaily === today) return null;
+    p.lastDaily = today; p.coins = (p.coins | 0) + DAILY_COINS;
+    return { coins: DAILY_COINS };
+  }
 
   function elo(mmr, opp, won) {
     const exp = 1 / (1 + Math.pow(10, (opp - mmr) / 400));
@@ -141,7 +192,7 @@
 
   /* ---------- profiles ---------- */
   function newProgress() {
-    return { mmr: 0, peak: 0, wins: 0, losses: 0, history: [], bestRally: 0, coins: 150, xp: 0,
+    return { mmr: 0, peak: 0, wins: 0, losses: 0, history: [], bestRally: 0, coins: 300, xp: 0,
       owned: STARTER.slice(), equip: Object.assign({}, DEFAULT_EQUIP), beaten: [] };
   }
   // fill in anything missing (old saves); old profiles from before progression restart at 0 MMR
@@ -212,12 +263,12 @@
     const styles = HAIR_STYLES[gender];
     const out = { gender, skin: Math.max(0, Math.min(3, l.skin | 0)), hair: Math.max(0, Math.min(4, l.hair | 0)),
       hairStyle: styles.includes(l.hairStyle) ? l.hairStyle : styles[0] };
-    for (const s of ['head', 'top', 'bottom', 'shoes', 'paddle', 'ball']) { const it = BY_ID[l[s]]; out[s] = it && it.slot === s ? it.id : DEFAULT_EQUIP[s]; }
+    for (const s of ['head', 'top', 'bottom', 'shoes', 'wrist', 'paddle', 'ball', 'dance']) { const it = BY_ID[l[s]]; out[s] = it && it.slot === s ? it.id : DEFAULT_EQUIP[s]; }
     return out;
   }
 
   const API = { LADDER, SKILL_LEVELS, ITEMS, BY_ID, SLOTS, STARTER, DEFAULT_EQUIP, HAIR_STYLES,
-    levelInfo, aiIndex, dupr, duprTier, xpForLevel, matchRewards, rallyRewards, onlineRewards, elo, aiUnlocked,
+    levelInfo, aiIndex, dupr, duprTier, xpForLevel, claimDaily, DAILY_COINS, PALETTE, matchRewards, rallyRewards, onlineRewards, elo, aiUnlocked,
     newProgress, normalize, addRewards, applyMatch, buy, equip, cleanLook };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
   else root.PR_CATALOG = API;
