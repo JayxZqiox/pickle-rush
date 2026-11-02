@@ -1035,9 +1035,41 @@ input::placeholder{opacity:1;color:#8492a6}
     <button id="hitBtn" data-t="hit" class="tbtn rounded-full font-display primary">Hit</button>
   </div>
 </div>
-<script src="catalog.js"></script>
+<script src="catalog.js?v=13"></script>
+<script>
+/* Safety net: if catalog.js is missing or older than this page, reload once without the cache,
+   then explain what to fix instead of showing a blank screen. Startup errors are shown too. */
+(function(){
+  var NEED = 13;
+  function box(title, msg){
+    var d = document.createElement('div');
+    d.style.cssText = 'position:fixed;inset:0;z-index:99;display:grid;place-items:center;padding:20px;background:#070f1f;color:#eef3fb;font:16px/1.5 system-ui,sans-serif';
+    d.innerHTML = '<div style="max-width:520px;background:#0f1b33;border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:24px"><div style="font-size:22px;font-weight:800;margin-bottom:8px">' + title + '</div><div style="color:#93a4bf">' + msg + '</div><button onclick="location.reload()" style="margin-top:16px;padding:10px 18px;border-radius:12px;border:0;background:#a6f23d;font-weight:800;cursor:pointer">Reload</button></div>';
+    (document.body || document.documentElement).appendChild(d);
+  }
+  window.__prBox = box;
+  var cat = window.PR_CATALOG;
+  if (!cat || cat.VERSION !== NEED){
+    var tried = false; try { tried = sessionStorage.getItem('pr.reloaded') === '1'; } catch (e) {}
+    if (!tried){
+      try { sessionStorage.setItem('pr.reloaded', '1'); } catch (e) {}
+      if (window.caches) caches.keys().then(function(k){ return Promise.all(k.map(function(n){ return caches.delete(n); })); }).finally(function(){ location.reload(); });
+      else location.reload();
+    } else document.addEventListener('DOMContentLoaded', function(){
+      box('Pickle Rush needs an update', 'The game page and <b>public/catalog.js</b> are from different versions. Upload the newest <b>public/catalog.js</b> (and index.html) to GitHub, wait for Render to show “Live”, then reload.');
+    });
+    window.__prStop = true;
+  } else { try { sessionStorage.removeItem('pr.reloaded'); } catch (e) {} }
+  window.addEventListener('error', function(e){
+    if (window.__prStarted || window.__prStop) return;
+    document.addEventListener('DOMContentLoaded', function(){}); 
+    setTimeout(function(){ if (!window.__prStarted) box('Something went wrong while starting', String(e.message || e) + '<br><br>Try reloading. If it keeps happening, send this message to the developer.'); }, 0);
+  });
+})();
+</script>
 <script>
 (() => {
+if (window.__prStop) return;
 'use strict';
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const TAU = Math.PI * 2, L = 13.41, HW = 3.05, NET = L / 2, KIT = 2.13, GRAV = 9.8, COST = 35, REACH = 0.95;
@@ -4277,6 +4309,7 @@ detectServer().then(() => {
 });
 window.__pickleRushNet = { drop(){ try { if (NW.ws) NW.ws.close(); } catch (e) {} } };   // used by the automated tests to simulate a lost connection
 window.__pickleRush = () => ({ mode:G.mode, role:G.netRole, state:G.state, score:G.score.slice(), screen:screenNow, players:G.players.map(p => [p.name, +p.x.toFixed(2), +p.y.toFixed(2), p.charging]) });
+window.__prStarted = true;
 requestAnimationFrame(frame);
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(() => {});
 })();

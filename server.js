@@ -342,7 +342,7 @@ function serveStatic(req, res, url) {
   fs.readFile(file, (err, buf) => {
     if (err) { res.writeHead(404, { 'Content-Type': 'text/plain' }); return res.end('Not found'); }
     const ext = path.extname(file).toLowerCase();
-    res.writeHead(200, { 'Content-Type': TYPES[ext] || 'application/octet-stream', 'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=3600' });
+    res.writeHead(200, { 'Content-Type': TYPES[ext] || 'application/octet-stream', 'Cache-Control': ['.html', '.js', '.webmanifest', '.json', '.css'].includes(ext) ? 'no-cache' : 'public, max-age=3600' });
     res.end(buf);
   });
 }

@@ -336,7 +336,7 @@
     return out;
   }
 
-  const API = { LADDER, SKILL_LEVELS, ITEMS, BY_ID, SLOTS, STARTER, DEFAULT_EQUIP, HAIR_STYLES, ALL_HAIR, HAIR_COLORS, BODY_TYPES, NATIONS,
+  const API = { VERSION: 13, LADDER, SKILL_LEVELS, ITEMS, BY_ID, SLOTS, STARTER, DEFAULT_EQUIP, HAIR_STYLES, ALL_HAIR, HAIR_COLORS, BODY_TYPES, NATIONS,
     rarityOf, CHESTS, CHEST_POOL, DUP_REFUND, openChest,
     levelInfo, aiIndex, dupr, duprTier, xpForLevel, claimDaily, DAILY_COINS, PALETTE, matchRewards, rallyRewards, onlineRewards, elo, aiUnlocked,
     newProgress, normalize, addRewards, applyMatch, buy, equip, cleanLook };
