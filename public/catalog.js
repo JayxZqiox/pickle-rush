@@ -122,6 +122,33 @@
     { id:'hair_flame',     slot:'hairx', name:'Flame hair',       price:700, lvl:1, chest:true, rarity:'epic',      style:'flame',      c1:'#ff4d1a', tip:'#ffd23f', glow:true },
     { id:'hair_galaxy',    slot:'hairx', name:'Galaxy waves',     price:700, lvl:1, chest:true, rarity:'epic',      style:'long',       c1:'#6d28d9', tip:'#f0abfc', glow:true },
     { id:'hair_super',     slot:'hairx', name:'Super spikes',     price:1500,lvl:1, chest:true, rarity:'legendary', style:'superspike', c1:'#ffd23f', tip:'#fff6c2', glow:true },
+    // jerseys and sandos (sando = tank top)
+    { id:'sando_23',      slot:'top', name:'Basketball sando #23', price:250, lvl:1, style:'tank',   c1:'#c8102e', c2:'#ffffff', deco:'number', num:'23' },
+    { id:'sando_11',      slot:'top', name:'Basketball sando #11', price:250, lvl:1, style:'tank',   c1:'#552583', c2:'#fdb927', deco:'number', num:'11' },
+    { id:'sando_stripe',  slot:'top', name:'Barangay stripe sando', price:200, lvl:1, style:'tank',  c1:'#ffffff', c2:'#1d4ed8', deco:'stripes' },
+    { id:'sando_retro',   slot:'top', name:'Retro hoop sando',     price:220, lvl:1, style:'tank',   c1:'#f97316', c2:'#0f766e', deco:'hoops' },
+    { id:'jersey_stripe', slot:'top', name:'Striped jersey',       price:300, lvl:2, style:'jersey', c1:'#111827', c2:'#f9fafb', deco:'stripes' },
+    { id:'jersey_sash',   slot:'top', name:'Sash jersey',          price:300, lvl:2, style:'jersey', c1:'#ffffff', c2:'#dc2626', c3:'#111827', deco:'sash' },
+    { id:'jersey_hoops',  slot:'top', name:'Hooped jersey',        price:300, lvl:2, style:'jersey', c1:'#15803d', c2:'#ffffff', deco:'hoops' },
+    { id:'tee_seven',     slot:'top', name:'Lucky 7 tee',          price:180, lvl:1, style:'tee',    c1:'#0ea5e9', c2:'#ffffff', deco:'number', num:'7' },
+    // national team jerseys
+    { id:'jer_ph', slot:'top', name:'Philippines jersey', price:450, lvl:2, style:'jersey', c1:'#0038a8', c2:'#ce1126', c3:'#fcd116', deco:'halves', nation:'PH' },
+    { id:'jer_us', slot:'top', name:'USA jersey',         price:450, lvl:2, style:'jersey', c1:'#1e3a8a', c2:'#dc2626', c3:'#ffffff', deco:'sash',   nation:'US' },
+    { id:'jer_au', slot:'top', name:'Australia jersey',   price:450, lvl:2, style:'jersey', c1:'#047857', c2:'#fbbf24', deco:'hoops',  nation:'AU' },
+    { id:'jer_jp', slot:'top', name:'Japan jersey',       price:450, lvl:2, style:'jersey', c1:'#1d3d8f', c2:'#ffffff', c3:'#bc002d', deco:'sides',  nation:'JP' },
+    { id:'jer_cn', slot:'top', name:'China jersey',       price:450, lvl:2, style:'jersey', c1:'#de2910', c2:'#ffde00', c3:'#ffde00', deco:'sash',   nation:'CN' },
+    { id:'jer_kr', slot:'top', name:'Korea jersey',       price:450, lvl:2, style:'jersey', c1:'#ffffff', c2:'#cd2e3a', c3:'#0047a0', deco:'sides',  nation:'KR' },
+    { id:'jer_br', slot:'top', name:'Brazil jersey',      price:450, lvl:2, style:'jersey', c1:'#ffdf00', c2:'#009c3b', c3:'#002776', deco:'sides',  nation:'BR' },
+    { id:'jer_es', slot:'top', name:'Spain jersey',       price:450, lvl:2, style:'jersey', c1:'#aa151b', c2:'#f1bf00', deco:'hoops',  nation:'ES' },
+    { id:'jer_in', slot:'top', name:'India jersey',       price:450, lvl:2, style:'jersey', c1:'#1e40af', c2:'#ff9933', c3:'#138808', deco:'sash',   nation:'IN' },
+    { id:'jer_gb', slot:'top', name:'UK jersey',          price:450, lvl:2, style:'jersey', c1:'#ffffff', c2:'#012169', c3:'#c8102e', deco:'sash',   nation:'GB' },
+    // tournament-only prizes (can't be bought or found in chests)
+    { id:'top_cup_club', slot:'top',    name:'Club Cup champion jersey', price:600,  lvl:1, tour:'cup_club',  rarity:'epic',      style:'jersey', c1:'#0f766e', c2:'#cd7f32', c3:'#fde68a', deco:'sash' },
+    { id:'dance_trophy', slot:'dance',  name:'Trophy Lift',              price:600,  lvl:1, tour:'cup_club',  rarity:'epic',      style:'trophy', bpm:120 },
+    { id:'top_cup_open', slot:'top',    name:'Pro Open champion kit',    price:1200, lvl:1, tour:'cup_open',  rarity:'legendary', style:'kit',    c1:'#e5e7eb', c2:'#64748b', c3:'#f5c542', deco:'sides' },
+    { id:'head_laurel',  slot:'head',   name:'Golden laurel',            price:1200, lvl:1, tour:'cup_open',  rarity:'legendary', style:'laurel', c1:'#f5c542', c2:'#b7791f' },
+    { id:'pad_cup',      slot:'paddle', name:'Champion’s Cup paddle',    price:2500, lvl:1, tour:'cup_world', rarity:'legendary', c1:'#f5c542', c2:'#ffffff', power:2, control:2, spin:2, deco:'cup' },
+    { id:'head_wc',      slot:'head',   name:'World Champion crown',     price:2500, lvl:1, tour:'cup_world', rarity:'legendary', style:'crown',  c1:'#fff3bf', c2:'#38bdf8', aura:true },
     // wristbands
     { id:'wrist_none',     slot:'wrist', name:'No wristband',   price:0,    lvl:1, c1:'' },
     { id:'wrist_rainbow',  slot:'wrist', name:'Rainbow band',   price:900,  lvl:5, c1:'#ff5c5c', c2:'#4dd2ff', fx:'rainbow' },
@@ -155,6 +182,17 @@
     { id:'mate_nova',      slot:'partner', name:'Nova',         price:800,  lvl:5, speed:5.2, react:.11, aimSd:.28, mistake:.03,  skill:.36, smash:.88, tScale:.92, judge:.86, acc:.93 },
     { id:'mate_titan',     slot:'partner', name:'Titan',        price:1500, lvl:8, speed:5.5, react:.09, aimSd:.23, mistake:.022, skill:.42, smash:.93, tScale:.89, judge:.92, acc:.97 },
     { id:'mate_zen',       slot:'partner', name:'Zen Master',   price:2500, lvl:10,speed:5.8, react:.07, aimSd:.18, mistake:.015, skill:.5,  smash:.97, tScale:.86, judge:.97, acc:1 },
+    // national teammates
+    { id:'mate_ph', slot:'partner', name:'Paolo · Philippines', nation:'PH', price:500,  lvl:2, speed:4.7, react:.16, aimSd:.38, mistake:.048, skill:.24, smash:.78, tScale:.98, judge:.75, acc:.84 },
+    { id:'mate_us', slot:'partner', name:'Mason · USA',         nation:'US', price:700,  lvl:3, speed:4.9, react:.14, aimSd:.34, mistake:.042, skill:.28, smash:.84, tScale:.95, judge:.8,  acc:.87 },
+    { id:'mate_au', slot:'partner', name:'Chloe · Australia',   nation:'AU', price:700,  lvl:3, speed:5.0, react:.14, aimSd:.33, mistake:.042, skill:.27, smash:.8,  tScale:.95, judge:.8,  acc:.88 },
+    { id:'mate_jp', slot:'partner', name:'Haruto · Japan',      nation:'JP', price:900,  lvl:4, speed:5.1, react:.12, aimSd:.3,  mistake:.036, skill:.33, smash:.84, tScale:.93, judge:.84, acc:.91 },
+    { id:'mate_cn', slot:'partner', name:'Mei · China',         nation:'CN', price:900,  lvl:4, speed:5.0, react:.12, aimSd:.29, mistake:.035, skill:.35, smash:.82, tScale:.93, judge:.85, acc:.92 },
+    { id:'mate_kr', slot:'partner', name:'Ji-woo · Korea',      nation:'KR', price:1100, lvl:5, speed:5.2, react:.11, aimSd:.27, mistake:.031, skill:.37, smash:.88, tScale:.91, judge:.87, acc:.93 },
+    { id:'mate_br', slot:'partner', name:'Lucas · Brazil',      nation:'BR', price:1100, lvl:5, speed:5.3, react:.11, aimSd:.28, mistake:.032, skill:.35, smash:.92, tScale:.9,  judge:.86, acc:.92 },
+    { id:'mate_es', slot:'partner', name:'Sofia · Spain',       nation:'ES', price:1300, lvl:6, speed:5.3, react:.1,  aimSd:.25, mistake:.027, skill:.4,  smash:.9,  tScale:.9,  judge:.89, acc:.95 },
+    { id:'mate_in', slot:'partner', name:'Arjun · India',       nation:'IN', price:1300, lvl:6, speed:5.4, react:.1,  aimSd:.25, mistake:.027, skill:.38, smash:.9,  tScale:.89, judge:.9,  acc:.95 },
+    { id:'mate_gb', slot:'partner', name:'Oliver · UK',         nation:'GB', price:1600, lvl:7, speed:5.5, react:.09, aimSd:.22, mistake:.022, skill:.42, smash:.93, tScale:.88, judge:.92, acc:.97 },
   ];
   // every outfit piece in 11 colors
   const PALETTE = [['red','Red','#e23b3b'],['orange','Orange','#ff8a3d'],['yellow','Yellow','#ffd23f'],['lime','Lime','#a6f23d'],['teal','Teal','#14b8a6'],
@@ -203,7 +241,7 @@
   const HAIR_STYLES = { boy:ALL_HAIR.slice(), girl:['ponytail', 'bob', 'long', 'buns', 'pigtails', 'braid', 'pixie', 'twintails', 'short', 'spiky', 'buzz', 'curly', 'mohawk', 'afro', 'undercut', 'manbun'] };
   const HAIR_COLORS = 12;
   const BODY_TYPES = ['slim', 'regular', 'athletic', 'stocky'];
-  const NATIONS = { PH:'Philippines', US:'United States', JP:'Japan', KR:'South Korea', CN:'China', TH:'Thailand', ID:'Indonesia', VN:'Vietnam', MY:'Malaysia', SG:'Singapore',
+  const NATIONS = { PH:'Philippines', US:'United States', JP:'Japan', KR:'South Korea', CN:'China', AU:'Australia', TH:'Thailand', ID:'Indonesia', VN:'Vietnam', MY:'Malaysia', SG:'Singapore',
     IN:'India', AE:'United Arab Emirates', SA:'Saudi Arabia', TR:'Türkiye', GB:'United Kingdom', IE:'Ireland', FR:'France', DE:'Germany', IT:'Italy', ES:'Spain', NL:'Netherlands',
     SE:'Sweden', NO:'Norway', PL:'Poland', UA:'Ukraine', CA:'Canada', MX:'Mexico', BR:'Brazil', AR:'Argentina', CO:'Colombia', PE:'Peru', NG:'Nigeria' };
 
@@ -284,7 +322,7 @@
     const after = levelInfo(p.xp).level;
     if (after > before) p.keys = (p.keys | 0) + (after - before);       // a free chest key for every level up
     const skills = Object.keys(SKILL_LEVELS).filter(s => SKILL_LEVELS[s] > before && SKILL_LEVELS[s] <= after);
-    const items = ITEMS.filter(i => i.price > 0 && !i.chest && i.lvl > before && i.lvl <= after).length;
+    const items = ITEMS.filter(i => i.price > 0 && !i.chest && !i.tour && i.lvl > before && i.lvl <= after).length;
     return { coins: r.coins | 0, xp: r.xp | 0, levelBefore: before, level: after, skills, newItems: items, keys: Math.max(0, after - before) };
   }
   // ranked match against the AI ladder. Returns an error string or the result summary.
@@ -372,6 +410,8 @@
     { id:'a_friend',  icon:'🤝', name:'Better Together',    desc:'Make a friend',                    test:p => (p.friends || []).length >= 1, coins:150 },
     { id:'a_grind',   icon:'📅', name:'Daily Grinder',      desc:'Complete 20 challenges',           test:p => st(p, 'challenges') >= 20, coins:600, keys:1 },
     { id:'a_season',  icon:'🗓️', name:'Season Veteran',     desc:'Finish a season',                  test:p => (p.seasons || []).length >= 1, coins:300 },
+    { id:'a_cup',     icon:'🏆', name:'Trophy Cabinet',     desc:'Win any tournament',               test:p => Object.values(p.trophies || {}).some(n => n > 0), coins:500, keys:1 },
+    { id:'a_wc',      icon:'🌍', name:'World Champion',     desc:'Win the World Championship',       test:p => ((p.trophies || {}).cup_world || 0) > 0, coins:3000, keys:3 },
   ];
   function checkAchievements(p) {
     p.ach = p.ach || []; const got = [];
@@ -421,6 +461,57 @@
     return { practice: false, easy, win: easy ? '1–3' : rw, loss: Math.max(3, -rawElo(mmr, ai.mmr, false)), coins: easy ? scaleRew(base, .5).coins : base.coins };
   }
 
+  /* ---------- tournaments: 8-team knockout (Quarterfinal, Semifinal, Final) ---------- */
+  const CUPS = [
+    { id:'cup_club',  name:'Club Cup',           lo:2.3, hi:3.8, need:0,   prev:null,       coins:[100, 150, 350],  xp:[60, 80, 150],   keys:1, prizes:['top_cup_club', 'dance_trophy'] },
+    { id:'cup_open',  name:'Pro Open',           lo:3.8, hi:5.4, need:3.5, prev:'cup_club', coins:[180, 260, 700],  xp:[90, 120, 250],  keys:2, prizes:['top_cup_open', 'head_laurel'] },
+    { id:'cup_world', name:'World Championship', lo:5.6, hi:8.0, need:5.0, prev:'cup_open', coins:[320, 480, 1400], xp:[140, 200, 400], keys:3, prizes:['pad_cup', 'head_wc'] },
+  ];
+  const CUP_BY = {}; CUPS.forEach(c => { CUP_BY[c.id] = c; });
+  const ROUND_NAME = ['Quarterfinal', 'Semifinal', 'Final'];
+  function cupUnlocked(p, cupId) { const c = CUP_BY[cupId]; if (!c) return false; return !c.need || dupr(p.peak || p.mmr || 0) >= c.need || ((p.trophies || {})[c.prev] || 0) > 0; }
+  function tourNew(cupId, rnd, myNation) {
+    rnd = rnd || Math.random;
+    const c = CUP_BY[cupId], pool = LADDER.filter(a => a.dupr >= c.lo && a.dupr <= c.hi);
+    const opp = [pool[0], pool[Math.floor(pool.length / 2)], pool[pool.length - 1]].map(a => a.key);
+    const nat = Object.keys(NATIONS).filter(k => k !== myNation);
+    for (let i = nat.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [nat[i], nat[j]] = [nat[j], nat[i]]; }
+    const any = () => pool[Math.floor(rnd() * pool.length)].key;
+    // seats: 0 = you; your path is seat 1 (QF), then the winner of 2v3 (SF), then the winner of 4–7 (F)
+    const teams = [{ you:true }];
+    for (let i = 1; i < 8; i++) teams.push({ nation:nat[i - 1], name:'Team ' + NATIONS[nat[i - 1]], ai:any() });
+    teams[1].ai = opp[0];
+    const sfSeat = 2 + Math.floor(rnd() * 2); teams[sfSeat].ai = opp[1];
+    const fSeat = 4 + Math.floor(rnd() * 4); teams[fSeat].ai = opp[2];
+    const other = (a, b, keep) => keep === a ? a : keep === b ? b : (rnd() < .5 ? a : b);
+    const qf = [0, other(2, 3, sfSeat), other(4, 5, fSeat), other(6, 7, fSeat)];
+    const sf = [0, fSeat < 6 ? qf[2] : qf[3]];
+    return { id:Math.floor(rnd() * 1e9).toString(36), cup:cupId, round:0, alive:true, champion:false, teams, path:[1, sfSeat, fSeat], qf, sf, t:Date.now() };
+  }
+  function tourOpp(t) { return t && t.alive ? t.teams[t.path[t.round]] : null; }
+  // give the rewards for a finished tournament match (also used for each player of an online team)
+  function tourReward(p, cupId, round, won) {
+    const c = CUP_BY[cupId], out = { won, round, champion:false, prizes:[], dupCoins:0, keys:0 };
+    if (!c) return out;
+    if (!won) { Object.assign(out, addRewards(p, { coins:30 * (round + 1), xp:20 * (round + 1) })); return out; }
+    Object.assign(out, addRewards(p, { coins:c.coins[round], xp:c.xp[round] }));
+    if (round >= 2) {
+      out.champion = true; p.trophies = p.trophies || {}; p.trophies[c.id] = (p.trophies[c.id] || 0) + 1;
+      for (const id of c.prizes) { if (!p.owned.includes(id)) { p.owned.push(id); out.prizes.push(id); } else { p.coins += 500; out.dupCoins += 500; } }
+      p.keys = (p.keys | 0) + c.keys; out.keys = c.keys;
+    }
+    out.achievements = checkAchievements(p);
+    return out;
+  }
+  function tourResult(p, t, won, score) {
+    if (!t || !t.alive) return 'This tournament is over';
+    const sc = parseScore(score); if (!sc || won !== (sc.a > sc.b)) return 'That score isn’t a finished game';
+    const r = t.round, res = tourReward(p, t.cup, r, won);
+    if (won) { t.round++; if (t.round >= 3) { t.alive = false; t.champion = true; } } else t.alive = false;
+    t.t = Date.now();
+    return res;
+  }
+
   function applyMatch(p, key, won, score, doubles) {
     const ai = LADDER[aiIndex(key)];
     if (!ai) return 'Unknown opponent';
@@ -450,6 +541,7 @@
     if (!it) return 'That item doesn’t exist';
     if (p.owned.includes(id)) return 'You already own this';
     if (it.chest) return 'This one only comes from chests';
+    if (it.tour) return 'This one is only won in tournaments';
     if (levelInfo(p.xp).level < it.lvl) return `Reach level ${it.lvl} first`;
     if ((p.coins | 0) < it.price) return 'Not enough coins';
     p.coins -= it.price; p.owned.push(id);
@@ -476,7 +568,7 @@
     return out;
   }
 
-  const API = { VERSION: 15, PRACTICE_GAP, isPractice, matchPreview, parseScore, seasonId, seasonEnds, seasonRoll, SEASON_REWARD, CH_DAILY, CH_WEEKLY, CH_BY_ID, ensureChallenges, cleanStats, trackStats,
+  const API = { VERSION: 16, CUPS, CUP_BY, ROUND_NAME, cupUnlocked, tourNew, tourOpp, tourReward, tourResult, PRACTICE_GAP, isPractice, matchPreview, parseScore, seasonId, seasonEnds, seasonRoll, SEASON_REWARD, CH_DAILY, CH_WEEKLY, CH_BY_ID, ensureChallenges, cleanStats, trackStats,
     ACHIEVEMENTS, checkAchievements, badName, LADDER, SKILL_LEVELS, ITEMS, BY_ID, SLOTS, STARTER, DEFAULT_EQUIP, HAIR_STYLES, ALL_HAIR, HAIR_COLORS, BODY_TYPES, NATIONS,
     rarityOf, CHESTS, CHEST_POOL, DUP_REFUND, openChest,
     levelInfo, aiIndex, dupr, duprTier, xpForLevel, claimDaily, DAILY_COINS, PALETTE, matchRewards, rallyRewards, onlineRewards, elo, aiUnlocked,

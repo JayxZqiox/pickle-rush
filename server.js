@@ -32,7 +32,7 @@ const UP_URL = (process.env.UPSTASH_REDIS_REST_URL || '').replace(/\/+$/, '');
 const UP_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN || '';
 const STORAGE = UP_URL && UP_TOKEN ? 'upstash' : 'file';
 const SESSION_DAYS = 180;
-const dirtyUsers = new Set(), dirtySessions = new Set(), droppedSessions = new Set();
+const dirtyUsers = new Set(), dirtySessions = new Set(), droppedSessions = new Set(), deletedUsers = new Set();
 
 async function upstash(path, body) {
   const r = await fetch(UP_URL + path, { method: 'POST', headers: { Authorization: 'Bearer ' + UP_TOKEN, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
@@ -94,6 +94,8 @@ async function flush() {
     if (STORAGE === 'upstash') {
       const cmds = [];
       for (const k of dirtyUsers) if (db.users[k]) cmds.push(['SET', 'pr:u:' + k, JSON.stringify(db.users[k])]);
+      for (const k of deletedUsers) if (!db.users[k]) cmds.push(['DEL', 'pr:u:' + k]);
+      deletedUsers.clear();
       for (const t of dirtySessions) if (db.sessions[t]) cmds.push(['SET', 'pr:s:' + t, JSON.stringify(db.sessions[t]), 'EX', String(SESSION_DAYS * 86400)]);
       for (const t of droppedSessions) cmds.push(['DEL', 'pr:s:' + t]);
       const users = [...dirtyUsers], sess = [...dirtySessions], drops = [...droppedSessions];
@@ -136,6 +138,7 @@ function publicUser(u) {
     coins: u.coins, xp: u.xp, level: lv.level, owned: u.owned, equip: u.equip, beaten: u.beaten, keys: u.keys | 0,
     stats: u.stats || {}, ach: u.ach || [], ch: u.ch || null, season: { id: u.season, ends: CAT.seasonEnds(), peak: u.seasonPeak }, seasons: u.seasons || [],
     seasonNote: u.seasonNote || null, hasRecovery: !!u.recHash, owner: isOwner(u), openMatch: !!u.open,
+    trophies: u.trophies || {}, tour: u.tour || null, tutorialDone: !!u.tutorialDone,
   };
 }
 /* ---------- profiles + friends ---------- */
@@ -143,7 +146,7 @@ function notifyUser(key, msg) { for (const c of clients) if (c.meta && c.meta.us
 function onlineSet() { const s = new Set(); for (const c of clients) if (c.meta && c.meta.user) s.add(c.meta.user); return s; }
 function profileOf(u, online) {
   const lv = CAT.levelInfo(u.xp), d = CAT.dupr(u.mmr);
-  return { ach: (u.ach || []).length, reports: (u.reports || []).length, banned: !!u.banned, username: u.username, level: lv.level, mmr: u.mmr, peak: u.peak, dupr: +d.toFixed(3), tier: CAT.duprTier(d), wins: u.wins, losses: u.losses,
+  return { trophies: u.trophies || {}, ach: (u.ach || []).length, reports: (u.reports || []).length, banned: !!u.banned, username: u.username, level: lv.level, mmr: u.mmr, peak: u.peak, dupr: +d.toFixed(3), tier: CAT.duprTier(d), wins: u.wins, losses: u.losses,
     bestRally: u.bestRally || 0, look: wornLook(u), history: (u.history || []).slice(0, 5), created: u.created, online: online ? online.has(u.username.toLowerCase()) : false };
 }
 function applyResult(u, delta, entry) {
@@ -367,6 +370,55 @@ async function handleApi(req, res, url) {
     touchUser(u);
     return json(res, 200, { user: publicUser(u), prog });
   }
+  if (route === '/api/password') {
+    const a = Buffer.from(hashPassword(String(body.current || ''), u.salt), 'hex'), b = Buffer.from(u.pass, 'hex');
+    if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return json(res, 401, { error: 'Your current password is wrong' });
+    const pw = String(body.password || ''); if (pw.length < 4 || pw.length > 64) return json(res, 400, { error: 'Passwords need 4 to 64 characters' });
+    u.salt = crypto.randomBytes(16).toString('hex'); u.pass = hashPassword(pw, u.salt);
+    const me = u.username.toLowerCase(), keep = (req.headers.authorization || '').slice(7);
+    for (const [t, ss] of Object.entries(db.sessions)) if (ss.user === me && t !== keep) dropSession(t);    // other devices are logged out
+    touchUser(u);
+    return json(res, 200, { ok: true });
+  }
+  if (route === '/api/account/delete') {
+    if (isOwner(u)) return json(res, 400, { error: 'The owner account can’t be deleted here' });
+    const a = Buffer.from(hashPassword(String(body.password || ''), u.salt), 'hex'), b = Buffer.from(u.pass, 'hex');
+    if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return json(res, 401, { error: 'Wrong password' });
+    const me = u.username.toLowerCase();
+    for (const x of Object.values(db.users)) {
+      let changed = false;
+      for (const k of ['friends', 'reqIn', 'reqOut']) if (Array.isArray(x[k]) && x[k].includes(me)) { x[k] = x[k].filter((y) => y !== me); changed = true; }
+      if (changed) touchUser(x);
+    }
+    for (const [t, ss] of Object.entries(db.sessions)) if (ss.user === me) dropSession(t);
+    delete db.users[me]; dirtyUsers.delete(me); deletedUsers.add(me); persist();
+    return json(res, 200, { ok: true });
+  }
+  if (route === '/api/tutorial') {
+    if (u.tutorialDone) return json(res, 200, { user: publicUser(u), reward: null });
+    u.tutorialDone = true; const reward = CAT.addRewards(u, { coins: 200, xp: 50 }); u.keys = (u.keys | 0) + 1; touchUser(u);
+    return json(res, 200, { user: publicUser(u), reward });
+  }
+  if (route === '/api/tour/start') {
+    const cup = String(body.cup || '');
+    if (!CAT.CUP_BY[cup]) return json(res, 400, { error: 'Unknown tournament' });
+    if (!CAT.cupUnlocked(u, cup)) return json(res, 400, { error: 'That tournament is still locked' });
+    u.tour = CAT.tourNew(cup, null, (u.look && u.look.nation) || ''); touchUser(u);
+    return json(res, 200, { tour: u.tour, user: publicUser(u) });
+  }
+  if (route === '/api/tour/result') {
+    const t = u.tour, won = !!body.won;
+    if (!t || t.id !== body.id || !t.alive) return json(res, 400, { error: 'That tournament isn’t running' });
+    const sc = CAT.parseScore(body.score), secs = (Date.now() - t.t) / 1000;
+    if (!sc || won !== (sc.a > sc.b)) return json(res, 400, { error: 'That score isn’t a finished game' });
+    if (secs < Math.max(40, (sc.a + sc.b) * 3.5)) return json(res, 400, { error: 'That match was too short to count' });
+    const r = CAT.tourResult(u, t, won, `${sc.a}-${sc.b}`);
+    if (typeof r === 'string') return json(res, 400, { error: r });
+    const prog = CAT.trackStats(u, Object.assign({}, body.stats, { matches: 1, rankedWins: 0, online: 0, points: sc.a }));
+    touchUser(u);
+    return json(res, 200, { tour: t, res: r, prog, user: publicUser(u) });
+  }
+  if (route === '/api/tour/quit') { if (u.tour) { u.tour.alive = false; touchUser(u); } return json(res, 200, { ok: true, user: publicUser(u) }); }
   if (route === '/api/recovery/new') return json(res, 200, { recovery: (() => { const c = newRecovery(u); touchUser(u); return c; })() });
   if (route === '/api/report') {
     const key = String(body.username || '').trim().toLowerCase(), t = db.users[key], me = u.username.toLowerCase();
@@ -467,6 +519,7 @@ function serveStatic(req, res, url) {
   fs.readFile(file, (err, buf) => {
     if (err) { res.writeHead(404, { 'Content-Type': 'text/plain' }); return res.end('Not found'); }
     const ext = path.extname(file).toLowerCase();
+    if (/(privacy|terms)\.html$/.test(file) && process.env.CONTACT_EMAIL) buf = Buffer.from(String(buf).split('YOUR-EMAIL@example.com').join(String(process.env.CONTACT_EMAIL).replace(/[<>&"]/g, '')));
     res.writeHead(200, { 'Content-Type': TYPES[ext] || 'application/octet-stream', 'Cache-Control': ['.html', '.js', '.webmanifest', '.json', '.css'].includes(ext) ? 'no-cache' : 'public, max-age=3600' });
     res.end(buf);
   });
@@ -558,7 +611,7 @@ function slotOf(room, ws) { return room.slots.indexOf(ws); }
 const COURTS = CAT.ITEMS.filter((i) => i.slot === 'court').map((i) => i.id);
 function roomInfo(room) {
   return {
-    code: room.code, name: room.name, mode: room.mode, state: room.state, host: slotOf(room, room.host), court: room.court || 'random',
+    code: room.code, name: room.name, mode: room.mode, state: room.state, host: slotOf(room, room.host), court: room.court || 'random', tour: tourInfo(room), tourMode: room.tourMode || null,
     slots: room.slots.map((c) => c ? { name: c.meta.name, look: c.meta.look, account: !!c.meta.user, mmr: c.meta.user && db.users[c.meta.user] ? db.users[c.meta.user].mmr : null,
       ready: c === room.host || !!c.meta.ready, level: c.meta.user && db.users[c.meta.user] ? CAT.levelInfo(db.users[c.meta.user].xp).level : null,
       away: !!c.away, awayLeft: c.away ? Math.max(0, Math.ceil((c.until - Date.now()) / 1000)) : 0 } : null),
@@ -628,6 +681,19 @@ function cleanName(n) {
   return s && !CAT.badName(s) ? s : 'Guest' + crypto.randomInt(100, 999);
 }
 
+/* an online result only counts if it is a real finished game that took a believable time */
+function onlineResultOk(room, winTeam, score) {
+  const sc = CAT.parseScore(score), secs = (Date.now() - (room.startT || 0)) / 1000;
+  if (!sc) return 'not a finished game';
+  if ((winTeam === 1) !== (sc.a > sc.b)) return 'score and winner don’t match';
+  if (secs < Math.max(40, (sc.a + sc.b) * 3.5)) return 'too short';
+  return null;
+}
+function tourInfo(room) {
+  const t = room.tour; if (!t) return null;
+  const o = CAT.tourOpp(t);
+  return { cup: t.cup, round: t.round, alive: t.alive, champion: t.champion, opp: o ? { name: o.name, nation: o.nation, ai: o.ai } : null, teams: t.teams.map((x) => x.you ? { you: true } : { name: x.name, nation: x.nation }), path: t.path, qf: t.qf, sf: t.sf };
+}
 function rankOnline(room, winTeam, score) {
   // slots 0 and 2 are the near team (team 1), slots 1 and 3 the far team (team 2)
   const teamOf = (i) => (i % 2 === 0 ? 1 : 2);
@@ -643,6 +709,9 @@ function rankOnline(room, winTeam, score) {
   for (const m of members) {
     if (!m.u) { if (m.c) send(m.c, { t: 'mmr', ranked: false }); continue; }
     const won = m.team === winTeam;
+    m.u.recentWins = (m.u.recentWins || []).filter((t) => Date.now() - t < 3600000);
+    if (won && m.u.recentWins.length >= 20) { send(m.c, { t: 'mmr', ranked: false, msg: 'That’s a lot of wins this hour, so this one isn’t ranked.' }); continue; }
+    if (won) m.u.recentWins.push(Date.now());
     const delta = CAT.elo(m.u.mmr, before[m.team === 1 ? 2 : 1], won);
     applyResult(m.u, delta, { opp: names(m.team === 1 ? 2 : 1), mode: room.mode === '2v2' ? 'Online 2v2' : 'Online 1v1', score: String(score || '').slice(0, 9), win: won });
     const rew = CAT.addRewards(m.u, CAT.onlineRewards(won));
@@ -686,7 +755,7 @@ function onConnection(ws) {
         const r = rooms.get(String(m.code || '').toUpperCase().trim());
         if (!r) return send(ws, { t: 'error', msg: 'No room with that code.' });
         if (r.state !== 'lobby') return send(ws, { t: 'error', msg: 'That match has already started.' });
-        const free = r.slots.indexOf(null);
+        const free = r.tourMode && r.slots[2] === null ? 2 : r.slots.indexOf(null);     // a friend joining a tournament room joins team 1
         if (free < 0) return send(ws, { t: 'error', msg: 'That room is full.' });
         leaveRoom(ws);
         r.slots[free] = ws; ws.meta.room = r; ws.meta.rid = newRid(); ws.meta.ready = false;
@@ -718,6 +787,11 @@ function onConnection(ws) {
         break;
       }
       case 'leave': leaveRoom(ws); send(ws, { t: 'rooms', rooms: roomList() }); break;
+      case 'tourMode': {
+        if (!room || room.host !== ws || room.state !== 'lobby' || room.mode !== '2v2') return;
+        room.tourMode = CAT.CUP_BY[m.v] ? m.v : null; broadcastRoom(room);
+        break;
+      }
       case 'court': {
         if (!room || room.host !== ws || room.state !== 'lobby') return;
         room.court = m.v === 'random' || COURTS.includes(m.v) ? m.v : 'random'; broadcastRoom(room);
@@ -759,7 +833,17 @@ function onConnection(ws) {
         if (!room || room.host !== ws) return;
         const waiting = room.slots.filter((c) => c && c !== room.host && !c.away && !c.meta.ready).length;
         if (waiting && !m.force) return send(ws, { t: 'error', msg: `Waiting for ${waiting} player${waiting > 1 ? 's' : ''} to ready up.` });
-        room.state = 'playing';
+        // team tournament: both people play on team 1 (slots 1P and 3P), the AI teams fill team 2
+        if (m.tour && room.mode === '2v2' && !(room.tour && room.tour.alive)) {
+          const cup = String(m.tour), hostU = ws.meta.user && db.users[ws.meta.user];
+          if (!CAT.CUP_BY[cup]) return send(ws, { t: 'error', msg: 'Unknown tournament.' });
+          if (room.slots[1] || room.slots[3]) return send(ws, { t: 'error', msg: 'For a tournament, both players go on Team 1 (1P and 3P). Leave 2P and 4P empty.' });
+          if (cup !== 'cup_club' && !(hostU && CAT.cupUnlocked(hostU, cup))) return send(ws, { t: 'error', msg: 'The host needs to unlock that tournament first.' });
+          room.tour = CAT.tourNew(cup, null, '');
+        }
+        if (!m.tour && room.tour && !room.tour.alive) room.tour = null;
+        if (m.tour && room.tour && !room.tour.alive) return send(ws, { t: 'error', msg: 'That tournament is over.' });
+        room.state = 'playing'; room.startT = Date.now();
         room.matchId = (room.matchId || 0) + 1;
         const info = roomInfo(room);
         room.slots.forEach((c, i) => c && send(c, { t: 'start', room: info, you: i }));
@@ -769,6 +853,7 @@ function onConnection(ws) {
       case 'lobby': {
         if (!room || room.host !== ws) return;
         room.state = 'lobby';
+        if (room.tour && !room.tour.alive) room.tour = null;
         room.slots.forEach((c) => { if (c && c.meta) c.meta.ready = false; });
         broadcastRoom(room); broadcastRooms();
         break;
@@ -789,7 +874,22 @@ function onConnection(ws) {
       case 'result': {
         if (!room || room.host !== ws || room.state !== 'playing' || room.ranked === room.matchId) return;
         room.ranked = room.matchId;
-        rankOnline(room, m.win === 2 ? 2 : 1, m.score);
+        const winTeam = m.win === 2 ? 2 : 1, bad = onlineResultOk(room, winTeam, m.score);
+        if (bad) { room.slots.forEach((c) => c && send(c, { t: 'mmr', ranked: false, msg: `This result wasn’t counted (${bad}).` })); break; }
+        if (room.tour && room.tour.alive) {
+          // everyone on team 1 who has an account gets the tournament rewards
+          const t = room.tour, round = t.round, won = winTeam === 1;
+          if (won) { t.round++; if (t.round >= 3) { t.alive = false; t.champion = true; } } else t.alive = false;
+          room.slots.forEach((c, i) => {
+            if (!c || c.away) return;
+            const u = c.meta && c.meta.user && db.users[c.meta.user];
+            const res = u && i % 2 === 0 ? CAT.tourReward(u, t.cup, round, won) : null;
+            if (u) { CAT.trackStats(u, { matches: 1, online: 1 }); touchUser(u); }
+            send(c, { t: 'tourResult', tour: tourInfo(room), res, user: u ? publicUser(u) : null });
+          });
+          break;
+        }
+        rankOnline(room, winTeam, m.score);
         break;
       }
       case 'ping': send(ws, { t: 'pong', ts: m.ts }); break;
@@ -838,6 +938,9 @@ function ensureOwner() {
   console.log(`  Owner account ready: ${u.username} (everything unlocked)`);
 }
 async function start() {
+  // join src/*.js into public/app.js, so the server always serves the latest game code
+  try { const b = require('./build.js').build(); console.log(`  Built public/app.js from ${b.files} source files`); }
+  catch (e) { console.error('  Could not build public/app.js:', e.message); }
   for (let attempt = 1; ; attempt++) {
     try { await loadDb(); break; }
     catch (e) { console.error(`Could not load the database (attempt ${attempt}): ${e.message}. Retrying in 5 s…`); await new Promise((r) => setTimeout(r, 5000)); }

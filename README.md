@@ -26,9 +26,27 @@ Set two environment variables and the server creates (or updates) that account o
 
 Then log in with that username and password. MMR and DUPR still start at 0 / 2.000 and are earned in ranked games.
 
+## Project layout (for editing)
+
+- `public/index.html`: the page layout (screens and menus) only.
+- `public/css/style.css`: all the game's styles. `public/css/utilities.css` is generated; don't edit it by hand.
+- `src/*.js`: the game code, split by topic (characters, AI, online, shop…). Files are joined in name order.
+- `public/app.js`: **built** from `src/` by `build.js`. The server rebuilds it every time it starts, so on Render it's always current. On your PC, run `npm run build` (or just restart the server) after editing anything in `src/`.
+- `public/catalog.js`: items, opponents, cups and progression rules, shared by the game and the server.
+
+## Tournaments
+
+Club Cup, Pro Open and World Championship: 8-team brackets (Quarterfinal → Semifinal → Final) against national AI teams. Play with your AI teammate, or create a 2v2 room online in Tournament mode and team up with a friend (you two are Team 1). Winning a cup gives tournament-only prizes: champion jerseys, the Trophy Lift dance, the Golden laurel, the Champion's Cup paddle and the World Champion crown with its aura. Pro Open unlocks at a 3.5 rating or after winning the Club Cup; World Championship at 5.0 or after winning the Pro Open.
+
+## Accounts
+
+- **Change password** and **Delete my account** are on the Account page.
+- Set **`CONTACT_EMAIL`** on Render (Environment) and the Privacy and Terms pages show that address.
+- New players are offered a **1-minute tutorial** (also under How to play) that pays 200 coins and a chest key.
+
 ## Safety and fair play
 
-- **Ranked results are checked.** The server gives every ranked match a ticket when it starts, and only accepts a result for that ticket if the score is a real finished game (to 11, win by 2), the match took a believable time, and you haven't won more than 20 ranked matches in the last hour.
+- **Ranked results are checked** (against the AI and online). The server gives every ranked match a ticket when it starts, and only accepts a result for that ticket if the score is a real finished game (to 11, win by 2), the match took a believable time, and you haven't won more than 20 ranked matches in the last hour.
 - **Quitting counts as a loss.** Leaving a ranked match early (or closing the page) counts as a loss with a small extra penalty. Leaving an online match before it ends costs 15 rating. The game asks before you quit.
 - **Login protection.** 5 wrong passwords lock that account for 10 minutes; new accounts are limited per connection.
 - **Recovery codes.** Every new account gets a recovery code (shown once). *Forgot password?* on the login screen uses it to set a new password. Account → *Make a new recovery code* gives older accounts one too.
