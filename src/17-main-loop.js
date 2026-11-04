@@ -56,7 +56,9 @@ function frame(nowMs){
   if (G.netRole === 'host' && now - NW.lastSt >= .014){ NW.lastSt = now; netSend(hostSnapshot()); }
   if ((G.mode === 'online' || NW.room) && (pingTick += d) > 2){ pingTick = 0; netSend({ t:'ping', ts:performance.now() }); }
   const inPlay = screenNow === 'game' || screenNow === 'pause' || screenNow === 'result';
-  if (inPlay || now - lastRender >= 1 / 30 - .004){   // menus run at 30 fps, which saves battery
+  // menus run at 30 fps; behind the shop, locker and other big panels the background match only needs ~8 fps
+  const busyMenu = ['shop', 'char', 'ach', 'tour', 'rank', 'ctrl', 'how', 'player', 'signup'].includes(screenNow);
+  if (inPlay || now - lastRender >= (busyMenu ? 1 / 8 : 1 / 30) - .004){
     lastRender = now;
     render();
     if (inPlay) hudAutoHide(Math.min(.1, now - (G.hudLast || now))), G.hudLast = now;

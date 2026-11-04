@@ -16,8 +16,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=18">
-<link rel="stylesheet" href="css/utilities.css?v=17">
+<link rel="stylesheet" href="css/style.css?v=20">
+<link rel="stylesheet" href="css/utilities.css?v=19">
 </head>
 <body class="overflow-hidden select-none">
 <canvas id="game" aria-label="Pickleball court"></canvas>
@@ -269,6 +269,19 @@
     <div id="tourBody" class="grid gap-3 mt-3"></div>
   </div>
 </section>
+<div id="tourEntry" class="hidden chestOv" style="z-index:71">
+  <div class="glass rounded-[26px] p-6 w-full max-w-[440px]">
+    <span class="lobbyTag">TOURNAMENT TICKET</span>
+    <div id="teCup" class="font-display text-2xl mt-2">Barangay Cup</div>
+    <p id="teInfo" class="text-sm text-[var(--muted)] mt-1"></p>
+    <div id="teNameRow"><div class="text-sm font-semibold text-[var(--muted)] mt-4 mb-1.5">Your team name</div>
+      <label class="field"><input id="teName" maxlength="20" autocomplete="off" spellcheck="false" placeholder="e.g. Bohol Smashers"></label></div>
+    <div class="flex items-center justify-between mt-4 text-sm font-bold"><span class="text-[var(--muted)]">Ticket</span><span id="tePrice" style="color:#f5c542"></span></div>
+    <div class="flex items-center justify-between mt-1 text-sm font-bold"><span class="text-[var(--muted)]">Your coins</span><span id="teCoins"></span></div>
+    <div id="teErr" class="authErr"></div>
+    <div class="grid grid-cols-2 gap-2"><button data-act="teCancel" class="tile rounded-xl py-3 font-bold">Cancel</button><button id="teGo" data-act="teGo" class="primary rounded-xl py-3 font-bold">Buy ticket &amp; enter</button></div>
+  </div>
+</div>
 <div id="champOv" class="hidden chestOv" style="z-index:72">
   <div class="glass rounded-[28px] p-6 w-full max-w-[520px] text-center">
     <div style="font-size:64px; line-height:1">🏆</div><div id="champTitle" class="font-display text-3xl mt-2">Champions!</div>
@@ -461,6 +474,10 @@
         <div id="optTouch" class="seg"><button data-act="opt" data-k="touch" data-v="normal">Normal</button><button data-act="opt" data-k="touch" data-v="big">Big</button></div>
       </div>
       <div class="flex items-center justify-between gap-3 flex-wrap">
+        <div><div class="font-bold">Name tags</div><div class="text-sm text-[var(--muted)]">Auto shows them before each serve and hides them during rallies</div></div>
+        <div id="optTags" class="seg"><button data-act="opt" data-k="nameTags" data-v="auto">Auto</button><button data-act="opt" data-k="nameTags" data-v="always">Always</button><button data-act="opt" data-k="nameTags" data-v="off">Off</button></div>
+      </div>
+      <div class="flex items-center justify-between gap-3 flex-wrap">
         <div><div class="font-bold">Court in custom games</div><div class="text-sm text-[var(--muted)]">1v1, 2v2 and new online rooms can use any court</div></div>
         <div id="optCourt" class="seg flex-wrap"></div>
       </div>
@@ -627,12 +644,12 @@
     <button id="hitBtn" data-t="hit" class="tbtn rounded-full font-display primary">Hit</button>
   </div>
 </div>
-<script src="catalog.js?v=17"></script>
+<script src="catalog.js?v=19"></script>
 <script>
 /* Safety net: if catalog.js is missing or older than this page, reload once without the cache,
    then explain what to fix instead of showing a blank screen. Startup errors are shown too. */
 (function(){
-  var NEED = 17;
+  var NEED = 19;
   function box(title, msg){
     var d = document.createElement('div');
     d.style.cssText = 'position:fixed;inset:0;z-index:99;display:grid;place-items:center;padding:20px;background:#070f1f;color:#eef3fb;font:16px/1.5 system-ui,sans-serif';
@@ -659,6 +676,6 @@
   });
 })();
 </script>
-<script src="app.js?v=18"></script>
+<script src="app.js?v=21"></script>
 </body>
 </html>

@@ -22,7 +22,7 @@ function act(name, el){
     case 'onJoinCode': goFullscreen(); NW.err = ''; netSend({ t:'join', code:$('#onCode').value }); break;
     case 'onJoin': goFullscreen(); NW.err = ''; netSend({ t:'join', code:el.dataset.code }); break;
     case 'onLeave': clearRejoin(); netSend({ t:'leave' }); NW.room = null; show('s-online'); break;
-    case 'onStart': goFullscreen(); setTxt('#rmErr', ''); netSend(NW.room && NW.room.tourMode ? { t:'start', tour:NW.room.tourMode } : { t:'start' }); break;
+    case 'onStart': goFullscreen(); setTxt('#rmErr', ''); netSend(NW.room && NW.room.tourMode ? { t:'start', tour:NW.room.tourMode, teamName:NW.tourTeam || NW.room.name } : { t:'start' }); break;
     case 'onForce': goFullscreen(); setTxt('#rmErr', ''); netSend({ t:'start', force:true }); break;
     case 'onReady': { const me = NW.room && NW.room.slots[NW.you]; netSend({ t:'ready', v:!(me && me.ready) }); break; }
     case 'onQuick': goFullscreen(); NW.err = ''; netSend({ t:'quick', mode:el.dataset.v }); break;
@@ -82,13 +82,15 @@ function act(name, el){
     case 'dancePreview': previewDance(el.dataset.id); break;
     case 'chTab': chTab = el.dataset.v; renderChallenges(getAcc()); break;
     case 'tour': show('s-tour'); break;
-    case 'tourStart': tourStart(el.dataset.cup); break;
+    case 'tourStart': openEntry(el.dataset.cup, false); break;
+    case 'teCancel': $('#tourEntry').classList.add('hidden'); break;
+    case 'teGo': entryGo(); break;
     case 'tourPlay': tourPlay(); break;
     case 'tourWatch': tourWatch(el.dataset.key); break;
     case 'watchSkip': watchSkip(); break;
     case 'shopTeammates': show('s-shop'); shopTab = 'partner'; renderShop(); break;
     case 'tourForfeit': askConfirm('Forfeit this tournament?', 'You’ll be out of the tournament and keep the coins you already won.', 'Forfeit', () => tourQuit().then(renderTour), 'Stay in'); break;
-    case 'tourOnline': if (!ACC.server){ showToast('Online needs the server', ''); break; } NW.mode = '2v2'; NW.pendingTour = el.dataset.cup; show('s-online'); netConnect(); { let tries = 0; const go = () => { if (NW.open) netSend({ t:'create', mode:'2v2', name:myName() + '’s tournament' }); else if (tries++ < 30) setTimeout(go, 300); }; go(); } break;
+    case 'tourOnline': if (!ACC.server){ showToast('Online needs the server', ''); break; } if (!ACC.user){ showToast('Sign in to host a tournament', 'The host buys the ticket'); break; } openEntry(el.dataset.cup, true); break;
     case 'champClose': $('#champOv').classList.add('hidden'); break;
     case 'tutStart': tutStart(); break;
     case 'tutSkip': G.tutorial = null; renderTut(); show('s-menu'); break;

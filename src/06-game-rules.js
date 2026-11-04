@@ -78,11 +78,15 @@ function buildPlayers(mode, diff){
     case 'rally': return [H('p1', { team:1, look:myLook(), name:n1 }, true), AI('coach', { team:2 })];
     case 'watch': {
       const W2 = TOUR.watch, A = W2.teams[0], B2 = W2.teams[1], nl = n => Object.assign(randomLook(), { nation:n });
+      if (TOUR.cur && CAT.CUP_BY[TOUR.cur.cup].singles) return [AI(A.ai, { team:1, look:nl(A.nation) }, A.name), AI(B2.ai, { team:2, look:nl(B2.nation) }, B2.name)];
       return [AI(A.ai, { team:1, lane:-1, look:nl(A.nation) }), AI(A.ai, { team:1, lane:1, look:nl(A.nation) }, AIS[A.ai].name2), AI(B2.ai, { team:2, lane:1, look:nl(B2.nation) }), AI(B2.ai, { team:2, lane:-1, look:nl(B2.nation) }, AIS[B2.ai].name2)];
     }
     case 'tour': {
       const mk = (getAcc() && getAcc().equip.partner) || 'mate_ace', o = (TOUR.cur && TOUR.cur.opp) || { nation:'' }, nl = () => Object.assign(randomLook(), { nation:o.nation });
-      if (TOUR.cur && CAT.CUP_BY[TOUR.cur.cup].singles) return [H('p1', { team:1, look:myLook(), name:n1 }, true), AI(diff, { team:2, look:MATE_LOOK.mate_lando })];
+      if (TOUR.cur && CAT.CUP_BY[TOUR.cur.cup].singles){
+        const boss = CAT.CUP_BY[TOUR.cur.cup].boss, onm = TOUR.cur.opp ? TOUR.cur.opp.name : AIS[diff].name;
+        return [H('p1', { team:1, look:myLook(), name:n1 }, true), AI(diff, { team:2, look:boss ? MATE_LOOK.mate_lando : nl() }, boss ? AIS[diff].name : onm)];
+      }
       return [H('p1', { team:1, lane:-1, look:myLook(), name:n1 }, true), AI(mk, { team:1, lane:1, look:MATE_LOOK[mk] }), AI(diff, { team:2, lane:1, look:nl() }), AI(diff, { team:2, lane:-1, look:nl() }, AIS[diff].name2)];
     }
     case '2p': return [H('p1', { team:1, look:myLook(), name:n1 }, false, 0), H('p2', { team:2, look:p2Look(), name:n2 }, false, 1)];

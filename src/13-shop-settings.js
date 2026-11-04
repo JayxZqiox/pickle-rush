@@ -45,9 +45,26 @@ function fitCanvas(cv2){
   if (cv2.width !== w || cv2.height !== h){ cv2.width = w; cv2.height = h; }
   return true;
 }
+/* Previews are drawn once when they scroll into view; only the card under the pointer keeps animating.
+   (Drawing ~200 previews every frame was what made the shop lag.) */
+let FLAG_VER = 0, shopObs = null;
+function watchOne(cv2){
+  const card = cv2.closest('.rcard, .chestCard') || cv2;
+  card.addEventListener('pointerenter', () => { cv2._hot = true; }); card.addEventListener('pointerleave', () => { cv2._hot = false; cv2._drawn = false; });
+  if (!('IntersectionObserver' in window)) return;
+  if (!shopObs) shopObs = new IntersectionObserver(es => es.forEach(e => { e.target._vis = e.isIntersecting; if (e.isIntersecting) e.target._drawn = false; }), { root:null, rootMargin:'120px' });
+  shopObs.observe(cv2);
+}
 function drawShop(t){
+  const noObs = !('IntersectionObserver' in window);
   for (const cv2 of $$('.shopPv')){
     const id = cv2.dataset.id, slot = cv2.dataset.slot;
+    if (!cv2._obs){ cv2._obs = true; watchOne(cv2); }
+    if (!noObs && !cv2._vis) continue;
+    const animated = cv2._hot || slot === 'chestArt';
+    if (cv2._drawn && !animated && cv2._fv === FLAG_VER) continue;
+    cv2._drawn = true; cv2._fv = FLAG_VER;
+    if (!animated) t = .4;                           // a nice still frame
     if (['head', 'top', 'bottom', 'shoes', 'wrist', 'hairx'].includes(slot)) drawPreview(cv2, Object.assign(myLook(), { [slot]:id }), 'front', t, '');
     else if (slot === 'chestArt') drawChestArt(cv2, id, t);
     else if (slot === 'dance') drawStage(cv2, myLook(), t, { facing:'front', noCone:true, dance:{ id, t:t % 4 } });
@@ -59,6 +76,8 @@ function drawShop(t){
   }
 }
 $('#cName').addEventListener('input', saveName);
+$('#teName').addEventListener('input', () => { if (!$('#teGo').disabled) setTxt('#teErr', ''); });
+$('#teName').addEventListener('keydown', e => { if (e.key === 'Enter') entryGo(); });
 $('#rmCourt').addEventListener('change', e => netSend({ t:'court', v:e.target.value }));
 $('#rmTour').addEventListener('change', e => netSend({ t:'tourMode', v:e.target.value }));
 $('#heightIn').addEventListener('input', e => { data[editWho].height = +e.target.value; setTxt('#heightVal', `${e.target.value} cm`); save(); if (editWho === 'p1') syncLook(); });
@@ -82,6 +101,7 @@ function renderCtrl(){
   $$('#optSwing button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === data.opts.swing));
   $$('#optTouch button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === data.opts.touch));
   $('#optCourt').innerHTML = ['random', ...COURT_IDS].map(k => `<button data-act="opt" data-k="customCourt" data-v="${k}" class="${(data.opts.customCourt || 'random') === k ? 'chip-on' : ''}">${k === 'random' ? '🎲 Random' : esc(IT(k).name)}</button>`).join('');
+  $$('#optTags button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === (data.opts.nameTags || 'auto')));
   $$('#optCam button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === (data.opts.camera || 'classic')));
   $$('#optGfx button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === (data.opts.gfx || 'auto')));
   $('#optFps').classList.toggle('chip-on', !!data.opts.fps);

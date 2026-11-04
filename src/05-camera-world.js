@@ -98,12 +98,12 @@ function buildCrowd(){
 }
 const THEMES = {
   court_stadium:{ night:true, city:['#0b1a33', '#ffd98a'], sky:['#081227', '#122a4e', '#0d1d36'], stands:'rgba(20,34,62,.95)', surround:'#1d4a73', court:'#2a5fae', kitchen:'#26a65b', line:'#f4f8ff', board:'#0f2340', boardText:'#e8ff3d', light:'255,244,210', crowd:1 },
-  court_beach:  { sky:['#ff8f5c', '#ffb48a', '#ffe0b0'], stands:'rgba(120,70,40,.55)', surround:'#e8cf9b', court:'#1f8fb3', kitchen:'#2fb36a', line:'#ffffff', board:'#1a6f8a', boardText:'#fff3c4', light:'255,226,170', crowd:.75, sun:true },
-  court_clay:   { night:true, city:['#1a2638', '#ffcf8a'], sky:['#1b2c44', '#34506e', '#5d7a92'], stands:'rgba(58,42,34,.95)', surround:'#b5552f', court:'#c8653a', kitchen:'#2e9e5a', line:'#fff5e6', board:'#3a2016', boardText:'#ffd9a8', light:'255,230,200', crowd:1 },
+  court_beach:  { sky:['#b8573a', '#d27a55', '#e3a77c'], stands:'rgba(92,54,34,.7)', surround:'#b99a6a', court:'#1a6f8c', kitchen:'#278a55', line:'#eef2f6', board:'#1a6f8a', boardText:'#fff3c4', light:'255,226,170', crowd:.75, sun:true },
+  court_clay:   { night:true, city:['#1a2638', '#ffcf8a'], sky:['#1b2c44', '#34506e', '#5d7a92'], stands:'rgba(58,42,34,.95)', surround:'#93462a', court:'#a85434', kitchen:'#27864d', line:'#f3e9dc', board:'#3a2016', boardText:'#ffd9a8', light:'255,230,200', crowd:1 },
   court_neon:   { night:true, city:['#12062b', '#ff4fd8', '#5ff4ff'], sky:['#05010f', '#1a0938', '#0b0420'], stands:'rgba(18,7,38,.95)', surround:'#1b0f3a', court:'#2b1a6b', kitchen:'#14b86a', line:'#5ff4ff', board:'#09031a', boardText:'#ff4fd8', light:'255,79,216', crowd:1, neon:true },
-  court_park:   { sky:['#6fbaf0', '#a8dcff', '#d9f0ff'], stands:'rgba(40,90,40,.9)', surround:'#4f9a45', court:'#2f74c0', kitchen:'#27a65b', line:'#ffffff', board:'#2d5e2a', boardText:'#ffffff', light:'255,255,255', crowd:.55, trees:true },
+  court_park:   { sky:['#4d86b5', '#79a9cf', '#a7c8e0'], stands:'rgba(34,74,34,.92)', surround:'#3e7a37', court:'#2a64a6', kitchen:'#22894d', line:'#eef2f6', board:'#2d5e2a', boardText:'#ffffff', light:'255,255,255', crowd:.55, trees:true },
   court_lansangan:{ night:true, street:true, city:['#141018', '#ffd28a'], sky:['#120d1c', '#2a1d33', '#3d2a3a'], stands:'rgba(28,24,30,.95)', surround:'#3a3b40', court:'#56595f', kitchen:'#4f6b55', line:'#f1e3a1', board:'#26221f', boardText:'#ffcc66', light:'255,214,150', crowd:.08 },
-  court_barangay: { covered:true, sky:['#3b4250', '#545d6d', '#6b7383'], stands:'rgba(48,52,60,.95)', surround:'#8f9187', court:'#2f6b4f', kitchen:'#b5483a', line:'#ffffff', board:'#1f3b2c', boardText:'#fcd116', light:'255,250,235', crowd:.3 },
+  court_barangay: { covered:true, sky:['#30363f', '#454c58', '#575f6b'], stands:'rgba(42,46,54,.95)', surround:'#6f7169', court:'#2a5e46', kitchen:'#9c4034', line:'#eef2f6', board:'#1f3b2c', boardText:'#fcd116', light:'255,250,235', crowd:.3 },
   court_royal:  { night:true, city:['#1d0d33', '#f5c542'], sky:['#1a0d2e', '#3b1d5c', '#24113f'], stands:'rgba(42,19,63,.95)', surround:'#5b1d3a', court:'#2a3d8f', kitchen:'#1f9e5e', line:'#f5c542', board:'#1a0b28', boardText:'#f5c542', light:'245,197,66', crowd:1 },
 };
 const theme = () => THEMES[G.court] || THEMES.court_stadium;

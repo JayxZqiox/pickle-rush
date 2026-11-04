@@ -1,6 +1,6 @@
 /* ---------- tournaments ---------- */
 const TOUR = { cur:null };
-const CUP_ICON = { cup_club:'🥉', cup_open:'🥈', cup_world:'🥇', cup_brgy:'🥉', cup_visayas:'🥈', cup_phnats:'🥇', cup_street:'🔥' };
+const CUP_ICON = { cup_s1:'🥉', cup_s2:'🥈', cup_s3:'🥇', cup_club:'🥉', cup_open:'🥈', cup_world:'🥇', cup_brgy:'🥉', cup_visayas:'🥈', cup_phnats:'🥇', cup_street:'🔥' };
 function streetCard(a, c){
   const owned = a.owned.includes('mate_lando'), beat = (a.trophies || {})[c.id] || 0;
   return `<div class="cupCard streetCard"><div class="flex gap-4 items-center flex-wrap"><canvas class="landoStage" data-lando="1"></canvas>
@@ -8,7 +8,7 @@ function streetCard(a, c){
       <div class="font-display text-2xl mt-1">${flagHTML('PH', 18)} Kuya Lando</div>
       <p class="text-sm text-[var(--muted)] mt-1">Worn-out shirt, tsinelas and a taped-up paddle. On the lansangan he has never lost. Beat him 1v1 at the Lansangan Street Court and he joins your team. Rating 7.8.</p>
       <div class="text-sm font-bold mt-2" style="color:#f5c542">${owned ? '✓ Kuya Lando is on your team' : 'Three ways to get him: beat him here · win the Philippine Nationals · buy him for 20,000 coins'}</div>
-      <div class="flex gap-2 flex-wrap mt-3"><button data-act="tourStart" data-cup="cup_street" class="primary rounded-xl px-4 py-2.5 font-bold">${beat ? 'Challenge him again' : 'Challenge Kuya Lando'}</button>${owned ? '' : `<button data-act="shopTeammates" class="tile rounded-xl px-4 py-2.5 font-bold">Buy him · ${COIN_SVG} 20,000</button>`}</div></div></div></div>`;
+      <div class="flex gap-2 flex-wrap mt-3"><button data-act="tourStart" data-cup="cup_street" class="primary rounded-xl px-4 py-2.5 font-bold">${beat ? 'Challenge him again' : 'Challenge Kuya Lando'} · ${COIN_SVG} ${c.ticket}</button>${owned ? '' : `<button data-act="shopTeammates" class="tile rounded-xl px-4 py-2.5 font-bold">Buy him · ${COIN_SVG} 20,000</button>`}</div></div></div></div>`;
 }
 const mateName = () => { const a = getAcc(); return IT((a && a.equip.partner) || 'mate_ace').name.split(' · ')[0]; };
 function cupCard(a, c){
@@ -19,7 +19,7 @@ function cupCard(a, c){
     <div class="min-w-0 flex-1"><div class="font-display text-2xl">${esc(c.name)} <span class="lobbyTag" style="vertical-align:middle">${esc(c.tier.toUpperCase())}</span></div><div class="text-sm text-[var(--muted)]">${c.venue ? 'At the ' + esc(IT(c.venue).name) + ' · ' : ''}Opponents ${c.lo.toFixed(1)}–${c.hi.toFixed(1)} rating · 3 rounds · each win pays ${c.coins.join(' / ')} coins · champions get ${c.keys} 🔑</div></div>
     ${won ? `<span class="lobbyTag" style="color:#f5c542; border-color:rgba(245,197,66,.5)">🏆 × ${won}</span>` : ''}</div>
     <div class="prizeRow">${c.prizes.map(id => `<div class="prize r-${CAT.rarityOf(IT(id))}"><canvas data-id="${id}"></canvas><span>${esc(IT(id).name)}</span>${a.owned.includes(id) ? '<em>OWNED</em>' : ''}</div>`).join('')}<div class="prizeNote">🏆 Only won here</div></div>
-    ${open ? `<div class="flex gap-2 flex-wrap mt-3"><button data-act="tourStart" data-cup="${c.id}" class="primary rounded-xl px-4 py-2.5 font-bold">Enter with ${esc(mateName())}</button><button data-act="tourOnline" data-cup="${c.id}" class="tile rounded-xl px-4 py-2.5 font-bold">Team up with a friend online</button></div>`
+    ${open ? `<div class="flex gap-2 flex-wrap mt-3"><button data-act="tourStart" data-cup="${c.id}" class="primary rounded-xl px-4 py-2.5 font-bold">${c.singles ? 'Enter solo' : 'Enter with ' + esc(mateName())} · ${COIN_SVG} ${c.ticket}</button>${c.singles ? '' : `<button data-act="tourOnline" data-cup="${c.id}" class="tile rounded-xl px-4 py-2.5 font-bold">Team up with a friend online</button>`}</div>`
       : `<div class="text-sm font-bold mt-3 text-[var(--muted)]">🔒 ${lock}</div>`}</div>`;
 }
 function bracketHTML(t, youName, youNation){
@@ -47,26 +47,52 @@ function renderTour(){
   if (t && t.alive){
     const c = CAT.CUP_BY[t.cup], o = CAT.tourOpp(t), ai = AIS[o.ai];
     setTxt('#tourTitle', `${CUP_ICON[t.cup]} ${c.name}`);
-    const single = c.rounds === 1;
+    const single = c.rounds === 1, solo = !!c.singles;
     $('#tourBody').innerHTML = `<div class="nextCard"><div class="min-w-0"><span class="lobbyTag">${single ? '1v1 STREET CHALLENGE' : CAT.ROUND_NAME[t.round].toUpperCase()}</span>
-      <div class="font-display text-2xl mt-1">${single ? 'You' : 'You &amp; ' + esc(mateName())} <span class="text-[var(--muted)]">vs</span> ${flagHTML(o.nation, 18)} ${esc(o.name)}</div>
-      <div class="text-sm text-[var(--muted)]">${single ? '' : esc(ai.name) + ' &amp; ' + esc(ai.name2) + ' · '}${ai.dupr.toFixed(2)} rating · ${c.venue ? esc(IT(c.venue).name) + ' · ' : ''}a win pays ${c.coins[t.round]} coins</div></div>
+      <div class="font-display text-2xl mt-1">${solo ? 'You' : esc(t.teams[0].name || 'You & ' + mateName())} <span class="text-[var(--muted)]">vs</span> ${flagHTML(o.nation, 18)} ${esc(o.name)}</div>
+      <div class="text-sm text-[var(--muted)]">${solo ? '' : esc(ai.name) + ' &amp; ' + esc(ai.name2) + ' · '}${ai.dupr.toFixed(2)} rating · ${c.venue ? esc(IT(c.venue).name) + ' · ' : ''}a win pays ${c.coins[t.round]} coins</div></div>
       <div class="flex gap-2"><button data-act="tourPlay" class="primary rounded-2xl px-6 py-3 font-display text-lg">${single ? 'Play the challenge' : 'Play ' + CAT.ROUND_NAME[t.round]}</button><button data-act="tourForfeit" class="tile rounded-2xl px-4 py-3 font-bold text-[var(--muted)]">Forfeit</button></div></div>
-      ${single ? '' : bracketHTML(t, 'You & ' + mateName(), myLook().nation)}`;
+      ${single ? '' : bracketHTML(t, solo ? 'You' : (t.teams[0].name || 'You & ' + mateName()), myLook().nation)}`;
     return;
   }
   setTxt('#tourTitle', 'Pick a tournament');
   const group = (rg, title) => `<div class="tourGroup"><span>${title}</span></div>` + CAT.CUPS.filter(c => c.region === rg).map(c => cupCard(a, c)).join('');
-  const lc = t && CAT.CUP_BY[t.cup], last = t && !t.alive ? `<div class="nextCard" style="border-color:${t.champion ? 'rgba(245,197,66,.6)' : 'var(--line)'}"><div><span class="lobbyTag">LAST TOURNAMENT</span><div class="font-display text-xl mt-1">${t.champion ? (lc.rounds === 1 ? '🔥 You beat ' : '🏆 Champions of the ') : (lc.rounds === 1 ? 'Lost the ' : 'Out in the ' + CAT.ROUND_NAME[t.round] + ' of the ')}${esc(lc.rounds === 1 ? 'Street Challenge' : lc.name)}</div></div></div>${lc.rounds === 1 ? '' : bracketHTML(t, 'You & ' + mateName(), myLook().nation)}` : '';
-  $('#tourBody').innerHTML = last + group('PH', `${flagHTML('PH', 16)} Philippine Tour`) + group('WORLD', '🌍 World Tour');
+  const lc = t && CAT.CUP_BY[t.cup], last = t && !t.alive ? `<div class="nextCard" style="border-color:${t.champion ? 'rgba(245,197,66,.6)' : 'var(--line)'}"><div><span class="lobbyTag">LAST TOURNAMENT</span><div class="font-display text-xl mt-1">${t.champion ? (lc.rounds === 1 ? '🔥 You beat ' : '🏆 Champions of the ') : (lc.rounds === 1 ? 'Lost the ' : 'Out in the ' + CAT.ROUND_NAME[t.round] + ' of the ')}${esc(lc.rounds === 1 ? 'Street Challenge' : lc.name)}</div></div></div>${lc.rounds === 1 ? '' : bracketHTML(t, lc.singles ? 'You' : (t.teams[0].name || 'You & ' + mateName()), myLook().nation)}` : '';
+  $('#tourBody').innerHTML = last + group('SOLO', '🎾 Singles Tour') + group('PH', `${flagHTML('PH', 16)} Philippine Tour`) + group('WORLD', '🌍 World Tour');
   requestAnimationFrame(() => $$('#tourBody canvas[data-id]').forEach(cv2 => thumbOf(cv2, cv2.dataset.id)));
 }
-async function tourStart(cup){
+// entering costs a ticket; doubles teams pick a name first
+let ENTRY = { cup:null, online:false };
+function openEntry(cup, online){
+  const a = getAcc() || ensureLocal(), c = CAT.CUP_BY[cup]; ENTRY = { cup, online };
+  setTxt('#teCup', `${CUP_ICON[cup] || '🏆'} ${c.name}`);
+  setTxt('#teInfo', c.boss ? '1v1 against Kuya Lando at the Lansangan Street Court.' : `${c.singles ? 'Solo' : online ? 'You and a friend online' : 'You and ' + mateName()} · 3 rounds · the Final is the toughest match.`);
+  $('#teNameRow').classList.toggle('hidden', !!c.singles);
+  if (!$('#teName').value) $('#teName').value = `${myName()}’s Team`.slice(0, 20);
+  $('#tePrice').innerHTML = `${COIN_SVG} ${c.ticket}`; $('#teCoins').textContent = String(a.coins | 0);
+  $('#teGo').disabled = (a.coins | 0) < c.ticket; setTxt('#teErr', (a.coins | 0) < c.ticket ? `You need ${c.ticket - (a.coins | 0)} more coins.` : '');
+  setTxt('#teGo', online ? 'Make the room' : 'Buy ticket & enter');
+  $('#tourEntry').classList.remove('hidden');
+  if (!c.singles) setTimeout(() => $('#teName').select(), 50);
+}
+async function entryGo(){
+  const c = CAT.CUP_BY[ENTRY.cup], nm = CAT.cleanTeamName($('#teName').value);
+  if (!c.singles){ const err = CAT.teamNameError(nm); if (err){ setTxt('#teErr', err); return; } }
+  if (ENTRY.online){
+    $('#tourEntry').classList.add('hidden');
+    NW.mode = '2v2'; NW.pendingTour = ENTRY.cup; NW.tourTeam = nm; show('s-online'); netConnect();
+    let tries = 0; const go = () => { if (NW.open) netSend({ t:'create', mode:'2v2', name:nm }); else if (tries++ < 30) setTimeout(go, 300); }; go();
+    showToast('Room made for your team', 'The ticket is paid when the host starts'); return;
+  }
+  const ok = await tourStart(ENTRY.cup, nm);
+  if (ok){ $('#tourEntry').classList.add('hidden'); showToast(`Ticket bought: −${c.ticket} coins`, c.singles ? 'Good luck!' : `Good luck, ${nm}!`); }
+}
+async function tourStart(cup, teamName){
   try {
-    if (isServerAcc()){ const j = await api('api/tour/start', { cup }); ACC.user = j.user; }
-    else { const a = ensureLocal(); if (!CAT.cupUnlocked(a, cup)) throw new Error('That tournament is still locked'); a.tour = CAT.tourNew(cup, null, myLook().nation || ''); save(); }
-    renderTour();
-  } catch (e){ showToast('Couldn’t start the tournament', e.message); }
+    if (isServerAcc()){ const j = await api('api/tour/start', { cup, teamName }); ACC.user = j.user; }
+    else { const a = ensureLocal(); const t = CAT.tourEnter(a, cup, teamName, myLook().nation || ''); if (typeof t === 'string') throw new Error(t); save(); }
+    renderTour(); return true;
+  } catch (e){ setTxt('#teErr', e.message); return false; }
 }
 function tourPlay(){
   const a = getAcc(), t = a && a.tour; if (!t || !t.alive) return;
@@ -307,6 +333,7 @@ function netMsg(m){
       break;
     }
     case 'emote': showEmote(m.s, m.e); break;
+    case 'me': if (m.user){ ACC.user = m.user; showToast('Tournament ticket bought', `${ACC.user.coins} coins left`); } break;
     case 'tourResult': {
       NW.lastRes = { m, t:Date.now() };
       if (NW.room) NW.room.tour = m.tour; if (m.user) ACC.user = m.user;

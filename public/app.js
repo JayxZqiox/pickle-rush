@@ -60,7 +60,7 @@ function flagHTML(code, h = 13){ const svg = code && flagSVG(code); return svg ?
 const FLAG_IMG = {};
 function flagImg(code){
   if (!code || !FLAG[code]) return null;
-  if (!FLAG_IMG[code]){ const im = new Image(); im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(flagSVG(code)); FLAG_IMG[code] = im; }
+  if (!FLAG_IMG[code]){ const im = new Image(); im.onload = () => { if (typeof FLAG_VER === 'number') FLAG_VER++; }; im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(flagSVG(code)); FLAG_IMG[code] = im; }
   return FLAG_IMG[code].complete ? FLAG_IMG[code] : null;
 }
 const BALL_IDS = itemsOf('ball').map(i => i.id), COURT_IDS = itemsOf('court').map(i => i.id);
@@ -597,12 +597,12 @@ function buildCrowd(){
 }
 const THEMES = {
   court_stadium:{ night:true, city:['#0b1a33', '#ffd98a'], sky:['#081227', '#122a4e', '#0d1d36'], stands:'rgba(20,34,62,.95)', surround:'#1d4a73', court:'#2a5fae', kitchen:'#26a65b', line:'#f4f8ff', board:'#0f2340', boardText:'#e8ff3d', light:'255,244,210', crowd:1 },
-  court_beach:  { sky:['#ff8f5c', '#ffb48a', '#ffe0b0'], stands:'rgba(120,70,40,.55)', surround:'#e8cf9b', court:'#1f8fb3', kitchen:'#2fb36a', line:'#ffffff', board:'#1a6f8a', boardText:'#fff3c4', light:'255,226,170', crowd:.75, sun:true },
-  court_clay:   { night:true, city:['#1a2638', '#ffcf8a'], sky:['#1b2c44', '#34506e', '#5d7a92'], stands:'rgba(58,42,34,.95)', surround:'#b5552f', court:'#c8653a', kitchen:'#2e9e5a', line:'#fff5e6', board:'#3a2016', boardText:'#ffd9a8', light:'255,230,200', crowd:1 },
+  court_beach:  { sky:['#b8573a', '#d27a55', '#e3a77c'], stands:'rgba(92,54,34,.7)', surround:'#b99a6a', court:'#1a6f8c', kitchen:'#278a55', line:'#eef2f6', board:'#1a6f8a', boardText:'#fff3c4', light:'255,226,170', crowd:.75, sun:true },
+  court_clay:   { night:true, city:['#1a2638', '#ffcf8a'], sky:['#1b2c44', '#34506e', '#5d7a92'], stands:'rgba(58,42,34,.95)', surround:'#93462a', court:'#a85434', kitchen:'#27864d', line:'#f3e9dc', board:'#3a2016', boardText:'#ffd9a8', light:'255,230,200', crowd:1 },
   court_neon:   { night:true, city:['#12062b', '#ff4fd8', '#5ff4ff'], sky:['#05010f', '#1a0938', '#0b0420'], stands:'rgba(18,7,38,.95)', surround:'#1b0f3a', court:'#2b1a6b', kitchen:'#14b86a', line:'#5ff4ff', board:'#09031a', boardText:'#ff4fd8', light:'255,79,216', crowd:1, neon:true },
-  court_park:   { sky:['#6fbaf0', '#a8dcff', '#d9f0ff'], stands:'rgba(40,90,40,.9)', surround:'#4f9a45', court:'#2f74c0', kitchen:'#27a65b', line:'#ffffff', board:'#2d5e2a', boardText:'#ffffff', light:'255,255,255', crowd:.55, trees:true },
+  court_park:   { sky:['#4d86b5', '#79a9cf', '#a7c8e0'], stands:'rgba(34,74,34,.92)', surround:'#3e7a37', court:'#2a64a6', kitchen:'#22894d', line:'#eef2f6', board:'#2d5e2a', boardText:'#ffffff', light:'255,255,255', crowd:.55, trees:true },
   court_lansangan:{ night:true, street:true, city:['#141018', '#ffd28a'], sky:['#120d1c', '#2a1d33', '#3d2a3a'], stands:'rgba(28,24,30,.95)', surround:'#3a3b40', court:'#56595f', kitchen:'#4f6b55', line:'#f1e3a1', board:'#26221f', boardText:'#ffcc66', light:'255,214,150', crowd:.08 },
-  court_barangay: { covered:true, sky:['#3b4250', '#545d6d', '#6b7383'], stands:'rgba(48,52,60,.95)', surround:'#8f9187', court:'#2f6b4f', kitchen:'#b5483a', line:'#ffffff', board:'#1f3b2c', boardText:'#fcd116', light:'255,250,235', crowd:.3 },
+  court_barangay: { covered:true, sky:['#30363f', '#454c58', '#575f6b'], stands:'rgba(42,46,54,.95)', surround:'#6f7169', court:'#2a5e46', kitchen:'#9c4034', line:'#eef2f6', board:'#1f3b2c', boardText:'#fcd116', light:'255,250,235', crowd:.3 },
   court_royal:  { night:true, city:['#1d0d33', '#f5c542'], sky:['#1a0d2e', '#3b1d5c', '#24113f'], stands:'rgba(42,19,63,.95)', surround:'#5b1d3a', court:'#2a3d8f', kitchen:'#1f9e5e', line:'#f5c542', board:'#1a0b28', boardText:'#f5c542', light:'245,197,66', crowd:1 },
 };
 const theme = () => THEMES[G.court] || THEMES.court_stadium;
@@ -871,11 +871,15 @@ function buildPlayers(mode, diff){
     case 'rally': return [H('p1', { team:1, look:myLook(), name:n1 }, true), AI('coach', { team:2 })];
     case 'watch': {
       const W2 = TOUR.watch, A = W2.teams[0], B2 = W2.teams[1], nl = n => Object.assign(randomLook(), { nation:n });
+      if (TOUR.cur && CAT.CUP_BY[TOUR.cur.cup].singles) return [AI(A.ai, { team:1, look:nl(A.nation) }, A.name), AI(B2.ai, { team:2, look:nl(B2.nation) }, B2.name)];
       return [AI(A.ai, { team:1, lane:-1, look:nl(A.nation) }), AI(A.ai, { team:1, lane:1, look:nl(A.nation) }, AIS[A.ai].name2), AI(B2.ai, { team:2, lane:1, look:nl(B2.nation) }), AI(B2.ai, { team:2, lane:-1, look:nl(B2.nation) }, AIS[B2.ai].name2)];
     }
     case 'tour': {
       const mk = (getAcc() && getAcc().equip.partner) || 'mate_ace', o = (TOUR.cur && TOUR.cur.opp) || { nation:'' }, nl = () => Object.assign(randomLook(), { nation:o.nation });
-      if (TOUR.cur && CAT.CUP_BY[TOUR.cur.cup].singles) return [H('p1', { team:1, look:myLook(), name:n1 }, true), AI(diff, { team:2, look:MATE_LOOK.mate_lando })];
+      if (TOUR.cur && CAT.CUP_BY[TOUR.cur.cup].singles){
+        const boss = CAT.CUP_BY[TOUR.cur.cup].boss, onm = TOUR.cur.opp ? TOUR.cur.opp.name : AIS[diff].name;
+        return [H('p1', { team:1, look:myLook(), name:n1 }, true), AI(diff, { team:2, look:boss ? MATE_LOOK.mate_lando : nl() }, boss ? AIS[diff].name : onm)];
+      }
       return [H('p1', { team:1, lane:-1, look:myLook(), name:n1 }, true), AI(mk, { team:1, lane:1, look:MATE_LOOK[mk] }), AI(diff, { team:2, lane:1, look:nl() }), AI(diff, { team:2, lane:-1, look:nl() }, AIS[diff].name2)];
     }
     case '2p': return [H('p1', { team:1, look:myLook(), name:n1 }, false, 0), H('p2', { team:2, look:p2Look(), name:n2 }, false, 1)];
@@ -1519,13 +1523,16 @@ function update(dt){
   tickEffects(dt);
 }
 function ballParticles(b, dt){
-  const fx = IT(b.skin).fx; if (!fx || fx === 'none' || fx === 'lightning' || fx === 'rainbow') return;
-  const rate = { fire:70, ice:35, galaxy:30, gold:35 }[fx] || 0;
+  const fx = IT(b.skin).fx; if (!fx || ['none', 'lightning', 'rainbow', 'melon', 'sun', 'neon'].includes(fx)) return;
+  const rate = { fire:30, ice:30, galaxy:24, gold:30, leaf:10, petal:12, bubble:12 }[fx] || 0;
   G.bfxAcc = (G.bfxAcc || 0) + dt * rate;
   while (G.bfxAcc >= 1 && G.bfx.length < (GFX.low ? 50 : 160)){
     G.bfxAcc -= 1;
     const P = { x:b.x + rand(-.04, .04), y:b.y + rand(-.04, .04), z:b.z + rand(-.03, .03), vx:rand(-.3, .3), vy:rand(-.3, .3), vz:rand(.1, .6), life:rand(.25, .5), max:.5, fx };
-    if (fx === 'fire'){ P.c = ['#ff3b1f', '#ff7a1a', '#ffb020', '#ffe066'][(Math.random() * 4) | 0]; P.r = rand(.03, .065); P.vz = rand(.4, 1.1); }
+    if (fx === 'fire'){ P.c = ['#e8704a', '#ff9a52', '#ffc76a'][(Math.random() * 3) | 0]; P.r = rand(.02, .04); P.vz = rand(.3, .8); }
+    else if (fx === 'leaf'){ P.c = Math.random() < .5 ? '#4ade80' : '#a3e635'; P.r = rand(.02, .035); P.vz = rand(-.4, -.1); P.life = P.max = rand(.7, 1.1); P.shape = 'leaf'; }
+    else if (fx === 'petal'){ P.c = Math.random() < .6 ? '#f9a8d4' : '#fce7f3'; P.r = rand(.02, .032); P.vz = rand(-.35, -.1); P.life = P.max = rand(.7, 1.1); P.shape = 'leaf'; }
+    else if (fx === 'bubble'){ P.c = '#bae6fd'; P.r = rand(.015, .03); P.vz = rand(.2, .5); P.life = P.max = rand(.6, 1); P.shape = 'bubble'; }
     else if (fx === 'ice'){ P.c = Math.random() < .5 ? '#e0f7ff' : '#8fd8ff'; P.r = rand(.015, .03); P.vz = rand(-.2, .2); P.life = P.max = rand(.4, .7); }
     else if (fx === 'galaxy'){ P.c = ['#ffffff', '#c4b5fd', '#8b5cf6', '#f0abfc'][(Math.random() * 4) | 0]; P.r = rand(.01, .025); P.vz = 0; P.life = P.max = rand(.5, .9); }
     else { P.c = Math.random() < .6 ? '#f5c542' : '#fff4c2'; P.r = rand(.012, .025); P.vz = rand(-.1, .3); }
@@ -1533,6 +1540,7 @@ function ballParticles(b, dt){
   }
 }
 function tickEffects(dt){
+  updateTagAlpha(dt);
   const b = G.ball;
   for (const p of G.players){
     if (p.jumpT > 0) p.jumpT = Math.max(0, p.jumpT - dt);
@@ -1890,6 +1898,9 @@ function drawCharacter(c, x, y, s, look, facing, swing, run, moving, t, tag, fx)
   if (tst === 'tank'){ c.fillStyle = skin; ell(c, -B.sh + .02, -1.4, .06, .055); ell(c, B.sh - .02, -1.4, .06, .055); c.strokeStyle = t2; seg(c, -B.sh + .06, -1.44, -B.sh + .03, -1.2); seg(c, B.sh - .06, -1.44, B.sh - .03, -1.2); }
   if (tst === 'jersey'){ c.fillStyle = t2; c.fillRect(-B.sh - .02, -1.42, .065, .44); c.fillRect(B.sh - .045, -1.42, .065, .44); }
   if (tst === 'kit' && !top.deco){ c.strokeStyle = t2; c.lineWidth = .045; seg(c, -B.sh, -1.42, B.sh, -1.0); }
+  // flag shirts: the whole front and back; national jerseys: a small chest patch
+  if (top.flagBig){ const fi = flagImg(top.flag); if (fi) c.drawImage(fi, -B.sh * 1.15, -1.47, B.sh * 2.3, .46); }
+  else if (top.flag && front){ const fi = flagImg(top.flag); if (fi){ c.fillStyle = 'rgba(255,255,255,.85)'; c.fillRect(.028, -1.395, .094, .064); c.drawImage(fi, .032, -1.391, .086, .056); } }
   // shirt designs: stripes, hoops, sash, halves, side panels, numbers
   const dz = top.deco, t3 = top.c3 || t2;
   if (dz === 'stripes'){ c.fillStyle = t2; for (let x2 = -B.sh - .02; x2 < B.sh + .02; x2 += .075) c.fillRect(x2, -1.5, .03, .56); }
@@ -2090,11 +2101,14 @@ function render(){
         const bob = Math.sin(G.time * 6) * 4, y = q[1] - 14 + bob;
         c.fillStyle = '#e8ff3d'; c.beginPath(); c.moveTo(q[0] - 8, y - 10); c.lineTo(q[0] + 8, y - 10); c.lineTo(q[0], y); c.closePath(); c.fill();
       }
-      if (G.doubles || G.mode === 'online'){
-        c.font = `700 ${Math.round(clamp(.22 * q[2], 10, 14))}px Barlow, system-ui, sans-serif`; c.textAlign = 'center'; c.textBaseline = 'alphabetic';
+      if ((G.doubles || G.mode === 'online') && tagAlpha > .02){
+        const nm = String(p.name || '').split(' · ')[0];         // the flag already shows the country
+        c.font = `700 ${Math.round(clamp(.18 * q[2], 9, 12))}px Barlow, system-ui, sans-serif`; c.textAlign = 'center'; c.textBaseline = 'alphabetic';
         const hidden = HUD_RECT && q[1] - 24 < HUD_RECT.b + 6 && q[0] > HUD_RECT.l && q[0] < HUD_RECT.r && !$('#hud').classList.contains('sb-dim');
-        const fi = !hidden && flagImg(p.look && p.look.nation); if (fi){ const tw = c.measureText(p.name).width; c.drawImage(fi, q[0] - tw / 2 - 20, q[1] - 35, 16, 11); }
-        if (!hidden){ c.lineWidth = 3; c.strokeStyle = 'rgba(5,10,25,.75)'; c.strokeText(p.name, q[0], q[1] - 24); c.fillStyle = p.human ? p.human.color : '#dbe4f3'; c.fillText(p.name, q[0], q[1] - 24); }
+        c.globalAlpha = tagAlpha * .9;
+        const fi = !hidden && flagImg(p.look && p.look.nation); if (fi){ const tw = c.measureText(nm).width; c.drawImage(fi, q[0] - tw / 2 - 17, q[1] - 31, 13, 9); }
+        if (!hidden){ c.lineWidth = 2.5; c.strokeStyle = 'rgba(5,10,25,.6)'; c.strokeText(nm, q[0], q[1] - 22); c.fillStyle = p.human ? p.human.color : '#cbd5e1'; c.fillText(nm, q[0], q[1] - 22); }
+        c.globalAlpha = 1;
       }
       if (p.human) drawMeter(p);
       if (p.human && (p.stamina ?? 100) < 99.5){
@@ -2106,8 +2120,10 @@ function render(){
   }
   for (const f of G.bfx){
     const q = proj(f.x, f.y, f.z), k = Math.max(0, f.life / f.max), r = Math.max(1, f.r * q[2] * (f.fx === 'fire' ? .6 + k * .6 : 1));
-    c.globalAlpha = f.fx === 'galaxy' ? k * (.5 + .5 * Math.sin(G.time * 20 + f.x * 40)) : k; c.fillStyle = f.c;
-    if (f.fx === 'ice' || f.fx === 'gold' || f.fx === 'galaxy'){ c.beginPath(); c.moveTo(q[0], q[1] - r * 1.8); c.lineTo(q[0] + r * .6, q[1]); c.lineTo(q[0], q[1] + r * 1.8); c.lineTo(q[0] - r * .6, q[1]); c.closePath(); c.fill(); }
+    c.globalAlpha = f.fx === 'galaxy' ? k * (.6 + .3 * Math.sin(G.time * 5 + f.x * 40)) : f.fx === 'fire' ? k * .7 : k; c.fillStyle = f.c;
+    if (f.shape === 'leaf'){ c.beginPath(); c.ellipse(q[0], q[1], r * 1.6, r * .8, f.x * 9 + G.time, 0, TAU); c.fill(); }
+    else if (f.shape === 'bubble'){ c.strokeStyle = f.c; c.lineWidth = 1; c.beginPath(); c.arc(q[0], q[1], r, 0, TAU); c.stroke(); }
+    else if (f.fx === 'ice' || f.fx === 'gold' || f.fx === 'galaxy'){ c.beginPath(); c.moveTo(q[0], q[1] - r * 1.8); c.lineTo(q[0] + r * .6, q[1]); c.lineTo(q[0], q[1] + r * 1.8); c.lineTo(q[0] - r * .6, q[1]); c.closePath(); c.fill(); }
     else { c.beginPath(); c.arc(q[0], q[1], r, 0, TAU); c.fill(); }
   }
   c.globalAlpha = 1;
@@ -2145,6 +2161,13 @@ function playerFx(p, q){
   return { lean:p._lean, crouch:p._crouch, jump, cheer, sad, sprint:!!(p.sprinting && p.moving) };
 }
 /* speed streaks trailing behind a sprinting player */
+/* name tags: "auto" shows them before the serve and between points, then fades them out during the rally */
+let tagAlpha = 1;
+function updateTagAlpha(dt){
+  const mode = data.opts.nameTags || 'auto';
+  const want = mode === 'off' ? 0 : mode === 'always' ? 1 : (G.state === 'play' || G.state === 'replay' ? 0 : 1);
+  tagAlpha += (want - tagAlpha) * Math.min(1, dt * (want > tagAlpha ? 4 : 2.5));
+}
 function drawStreaks(c, p, q){
   const vx = p._svx || 0, vy = p._svy || 0, v = Math.hypot(vx, vy); if (v < 40) return;
   const ux = -vx / v, uy = -vy / v, s = q[2], len = clamp(v * .12, s * .35, s * .9);
@@ -2219,24 +2242,29 @@ function drawBall(){
     for (let i = 1; i < n; i++){
       const A = G.trail[i - 1], B = G.trail[i], a = proj(A.x, A.y, A.z), z = proj(B.x, B.y, B.z), k = i / n;
       let col = shotCol, alpha = special ? .65 : .25, w = Math.max(1.5, .07 * z[2] * k);
-      if (L2.fx === 'fire'){ col = k > .6 ? '#ffd23f' : k > .3 ? '#ff7a1a' : '#ff3b1f'; alpha = .75 * k; w *= 1.9; }
+      if (L2.fx === 'fire'){ col = k > .6 ? '#ffc76a' : k > .3 ? '#ff9a52' : '#e8704a'; alpha = .45 * k; w *= 1.3; }
+      else if (L2.fx === 'leaf'){ col = '#86efac'; alpha = .35 * k; w *= 1.2; }
+      else if (L2.fx === 'petal'){ col = '#fbcfe8'; alpha = .4 * k; w *= 1.2; }
+      else if (L2.fx === 'bubble'){ col = '#7dd3fc'; alpha = .35 * k; w *= 1.2; }
+      else if (L2.fx === 'sun'){ col = '#fcd116'; alpha = .4 * k; w *= 1.3; }
+      else if (L2.fx === 'neon'){ col = L2.c1; alpha = .35 * k; w *= 1.4; }
       else if (L2.fx === 'ice'){ col = '#bfefff'; alpha = .6 * k; w *= 1.5; }
       else if (L2.fx === 'rainbow'){ col = `hsl(${(G.time * 360 + i * 32) % 360},95%,60%)`; alpha = .85 * k; w *= 1.7; }
       else if (L2.fx === 'galaxy'){ col = k > .5 ? '#c4b5fd' : '#6d28d9'; alpha = .6 * k; w *= 1.6; }
       else if (L2.fx === 'gold'){ col = '#f5c542'; alpha = .55 * k; w *= 1.4; }
-      else if (L2.fx === 'lightning'){ col = '#fff27a'; alpha = .35 * k; }
+      else if (L2.fx === 'lightning'){ col = '#f8e98a'; alpha = .25 * k; }
       c.globalAlpha = alpha; c.strokeStyle = col; c.lineWidth = w; seg(c, a[0], a[1], z[0], z[1]);
     }
-    if (L2.fx === 'lightning'){
-      c.strokeStyle = '#fffbe0'; c.lineWidth = 2; c.globalAlpha = .9; c.beginPath();
-      for (let i = 0; i < n; i++){ const P = G.trail[i], q = proj(P.x, P.y, P.z), j = (Math.random() - .5) * q[2] * .12; i ? c.lineTo(q[0] + j, q[1] + j) : c.moveTo(q[0], q[1]); }
-      c.stroke(); c.strokeStyle = '#7dd3fc'; c.lineWidth = 1; c.stroke();
+    if (L2.fx === 'lightning'){   // a slow, smooth zigzag instead of a strobing flicker
+      c.strokeStyle = '#fdf6c8'; c.lineWidth = 1.4; c.globalAlpha = .5; c.beginPath();
+      for (let i = 0; i < n; i++){ const P = G.trail[i], q = proj(P.x, P.y, P.z), j = Math.sin(i * 1.7 + G.time * 3) * q[2] * .045; i ? c.lineTo(q[0] + j, q[1] + j) : c.moveTo(q[0], q[1]); }
+      c.stroke(); c.strokeStyle = '#7dd3fc'; c.lineWidth = .8; c.globalAlpha = .35; c.stroke();
     }
     c.globalAlpha = 1;
   }
   const q = proj(b.x, b.y, b.z), r = Math.max(2.8, .058 * q[2]);
   const glowCol = L2.fx === 'none' ? shotCol : L2.c1;
-  if ((special || L2.fx !== 'none') && b.live){ const gg = c.createRadialGradient(q[0], q[1], 0, q[0], q[1], r * 3.4); gg.addColorStop(0, glowCol + 'aa'); gg.addColorStop(1, glowCol + '00'); c.fillStyle = gg; c.beginPath(); c.arc(q[0], q[1], r * 3.4, 0, TAU); c.fill(); }
+  if ((special || (L2.fx !== 'none' && L2.fx !== 'melon')) && b.live){ const gr = r * (L2.fx === 'fire' || L2.fx === 'lightning' ? 2.4 : 3), gg = c.createRadialGradient(q[0], q[1], 0, q[0], q[1], gr); gg.addColorStop(0, glowCol + '66'); gg.addColorStop(1, glowCol + '00'); c.fillStyle = gg; c.beginPath(); c.arc(q[0], q[1], gr, 0, TAU); c.fill(); }
   let st = 1, sa = 0;
   if (b.live && G.trail.length > 1){
     const A = G.trail[G.trail.length - 2], Z = G.trail[G.trail.length - 1], pa = proj(A.x, A.y, A.z), pz = proj(Z.x, Z.y, Z.z);
@@ -2244,11 +2272,15 @@ function drawBall(){
   }
   c.save(); c.translate(q[0], q[1]); c.rotate(sa); c.scale(st, 1 / Math.sqrt(st)); c.rotate(-sa); c.translate(-q[0], -q[1]);
   if (L2.fx === 'rainbow'){ const rg = c.createLinearGradient(q[0] - r, q[1] - r, q[0] + r, q[1] + r); rg.addColorStop(0, '#ff5c5c'); rg.addColorStop(.33, '#ffe14d'); rg.addColorStop(.66, '#4dd2ff'); rg.addColorStop(1, '#c084fc'); c.fillStyle = rg; }
-  else if (L2.fx === 'fire'){ const fg = c.createRadialGradient(q[0], q[1], 0, q[0], q[1], r); fg.addColorStop(0, '#fff3b0'); fg.addColorStop(.5, '#ffb020'); fg.addColorStop(1, '#ff4d1a'); c.fillStyle = fg; }
+  else if (L2.fx === 'fire'){ const fg = c.createRadialGradient(q[0], q[1], 0, q[0], q[1], r); fg.addColorStop(0, '#ffe6a8'); fg.addColorStop(.55, '#ffb04a'); fg.addColorStop(1, '#e8704a'); c.fillStyle = fg; }
+  else if (L2.fx === 'sun'){ const sg3 = c.createRadialGradient(q[0], q[1], 0, q[0], q[1], r); sg3.addColorStop(0, '#fff6c2'); sg3.addColorStop(1, '#f5b800'); c.fillStyle = sg3; }
   else if (L2.fx === 'galaxy'){ const gg2 = c.createRadialGradient(q[0] - r * .3, q[1] - r * .3, 0, q[0], q[1], r); gg2.addColorStop(0, '#c4b5fd'); gg2.addColorStop(1, '#3b0764'); c.fillStyle = gg2; }
   else c.fillStyle = L2.c1;
   c.beginPath(); c.arc(q[0], q[1], r, 0, TAU); c.fill();
   c.strokeStyle = 'rgba(0,0,0,.35)'; c.lineWidth = Math.max(.8, r * .12); c.stroke();
+  if (L2.fx === 'melon' && r > 3){ c.save(); c.beginPath(); c.arc(q[0], q[1], r, 0, TAU); c.clip(); c.strokeStyle = L2.c2; c.lineWidth = r * .28; for (let k = -2; k <= 2; k++){ c.beginPath(); c.ellipse(q[0] + k * r * .55 + Math.sin(G.spin) * r * .2, q[1], r * .18, r * 1.1, 0, 0, TAU); c.stroke(); } c.restore(); }
+  if (L2.fx === 'sun' && r > 3){ c.strokeStyle = 'rgba(180,120,0,.55)'; c.lineWidth = Math.max(.8, r * .12); for (let k = 0; k < 8; k++){ const an = G.spin + k * TAU / 8; seg(c, q[0] + Math.cos(an) * r * .45, q[1] + Math.sin(an) * r * .45, q[0] + Math.cos(an) * r * .85, q[1] + Math.sin(an) * r * .85); } }
+  if (L2.fx === 'neon'){ c.strokeStyle = L2.c1; c.globalAlpha = .55 + Math.sin(G.time * 2) * .2; c.lineWidth = Math.max(1, r * .28); c.beginPath(); c.arc(q[0], q[1], r * 1.25, 0, TAU); c.stroke(); c.globalAlpha = 1; }
   if (r > 4 && (L2.fx === 'none' || L2.fx === 'gold' || L2.fx === 'ice')){ c.fillStyle = 'rgba(0,0,0,.25)'; for (let i = 0; i < 4; i++){ const an = G.spin + i * TAU / 4; c.beginPath(); c.arc(q[0] + Math.cos(an) * r * .5, q[1] + Math.sin(an) * r * .5, r * .17, 0, TAU); c.fill(); } }
   c.fillStyle = 'rgba(255,255,255,.7)'; c.beginPath(); c.arc(q[0] - r * .35, q[1] - r * .35, r * .25, 0, TAU); c.fill();
   c.restore();
@@ -2260,22 +2292,23 @@ function previewBall(cv2, id, t){
   const pos = k => [w / 2 + Math.cos(t * 2.4 - k) * w * .32, h / 2 + Math.sin(t * 2.4 - k) * h * .22];
   for (let i = 18; i > 0; i--){
     const [x1, y1] = pos(i * .16), [x2, y2] = pos((i - 1) * .16), k = 1 - i / 19;
-    let col = '#e8ff3d';
-    if (L2.fx === 'fire') col = k > .6 ? '#ffd23f' : k > .3 ? '#ff7a1a' : '#ff3b1f';
+    let col = L2.fx === 'none' ? '#e8ff3d' : (L2.c1 || '#e8ff3d');
+    if (L2.fx === 'fire') col = k > .6 ? '#ffc76a' : k > .3 ? '#ff9a52' : '#e8704a';
     else if (L2.fx === 'ice') col = '#bfefff'; else if (L2.fx === 'galaxy') col = '#a78bfa'; else if (L2.fx === 'gold') col = '#f5c542';
-    else if (L2.fx === 'lightning') col = '#fff27a'; else if (L2.fx === 'rainbow') col = `hsl(${(t * 300 + i * 30) % 360},95%,60%)`;
+    else if (L2.fx === 'lightning') col = '#f8e98a'; else if (L2.fx === 'rainbow') col = `hsl(${(t * 300 + i * 30) % 360},95%,60%)`;
     c.globalAlpha = L2.fx === 'none' ? k * .25 : k * .85; c.strokeStyle = col; c.lineCap = 'round'; c.lineWidth = 3 + k * 6; seg(c, x1, y1, x2, y2);
   }
   c.globalAlpha = 1;
   if (L2.fx !== 'none' && L2.fx !== 'rainbow'){
-    const cols = { fire:['#ff3b1f', '#ffb020', '#ffe066'], ice:['#e0f7ff', '#8fd8ff'], galaxy:['#ffffff', '#c4b5fd', '#f0abfc'], gold:['#f5c542', '#fff4c2'], lightning:['#fffbe0', '#7dd3fc'] }[L2.fx];
+    const cols = { fire:['#e8704a', '#ff9a52', '#ffc76a'], ice:['#e0f7ff', '#8fd8ff'], galaxy:['#ffffff', '#c4b5fd', '#f0abfc'], gold:['#f5c542', '#fff4c2'], lightning:['#fdf6c8', '#7dd3fc'],
+      leaf:['#4ade80', '#a3e635'], petal:['#f9a8d4', '#fce7f3'], bubble:['#bae6fd', '#e0f2fe'], sun:['#fcd116', '#fff6c2'], neon:[L2.c1, '#ffffff'], melon:['#3fae4a', '#ef4444'] }[L2.fx] || [L2.c1 || '#ffffff'];
     for (let i = 0; i < 14; i++){
       const k = ((t * 1.7 + i * .37) % 1), [px, py] = pos(k * 2.2);
       c.globalAlpha = 1 - k; c.fillStyle = cols[i % cols.length];
       const j = Math.sin(i * 12.9 + t * 3) * 6;
       c.beginPath(); c.arc(px + j, py - (L2.fx === 'fire' ? k * 14 : j * .6), L2.fx === 'fire' ? 3.2 - k * 2 : 1.8, 0, TAU); c.fill();
     }
-    if (L2.fx === 'lightning'){ c.globalAlpha = .9; c.strokeStyle = '#fffbe0'; c.lineWidth = 1.6; c.beginPath(); for (let i = 0; i < 10; i++){ const [px, py] = pos(i * .2); const j = (Math.random() - .5) * 8; i ? c.lineTo(px + j, py + j) : c.moveTo(px, py); } c.stroke(); }
+    if (L2.fx === 'lightning'){ c.globalAlpha = .5; c.strokeStyle = '#fdf6c8'; c.lineWidth = 1.2; c.beginPath(); for (let i = 0; i < 10; i++){ const [px, py] = pos(i * .2); const j = Math.sin(i * 1.7 + t * 3) * 3; i ? c.lineTo(px + j, py + j) : c.moveTo(px, py); } c.stroke(); }
     c.globalAlpha = 1;
   }
   const [bx, by] = pos(0), r = 9;
@@ -2704,9 +2737,26 @@ function fitCanvas(cv2){
   if (cv2.width !== w || cv2.height !== h){ cv2.width = w; cv2.height = h; }
   return true;
 }
+/* Previews are drawn once when they scroll into view; only the card under the pointer keeps animating.
+   (Drawing ~200 previews every frame was what made the shop lag.) */
+let FLAG_VER = 0, shopObs = null;
+function watchOne(cv2){
+  const card = cv2.closest('.rcard, .chestCard') || cv2;
+  card.addEventListener('pointerenter', () => { cv2._hot = true; }); card.addEventListener('pointerleave', () => { cv2._hot = false; cv2._drawn = false; });
+  if (!('IntersectionObserver' in window)) return;
+  if (!shopObs) shopObs = new IntersectionObserver(es => es.forEach(e => { e.target._vis = e.isIntersecting; if (e.isIntersecting) e.target._drawn = false; }), { root:null, rootMargin:'120px' });
+  shopObs.observe(cv2);
+}
 function drawShop(t){
+  const noObs = !('IntersectionObserver' in window);
   for (const cv2 of $$('.shopPv')){
     const id = cv2.dataset.id, slot = cv2.dataset.slot;
+    if (!cv2._obs){ cv2._obs = true; watchOne(cv2); }
+    if (!noObs && !cv2._vis) continue;
+    const animated = cv2._hot || slot === 'chestArt';
+    if (cv2._drawn && !animated && cv2._fv === FLAG_VER) continue;
+    cv2._drawn = true; cv2._fv = FLAG_VER;
+    if (!animated) t = .4;                           // a nice still frame
     if (['head', 'top', 'bottom', 'shoes', 'wrist', 'hairx'].includes(slot)) drawPreview(cv2, Object.assign(myLook(), { [slot]:id }), 'front', t, '');
     else if (slot === 'chestArt') drawChestArt(cv2, id, t);
     else if (slot === 'dance') drawStage(cv2, myLook(), t, { facing:'front', noCone:true, dance:{ id, t:t % 4 } });
@@ -2718,6 +2768,8 @@ function drawShop(t){
   }
 }
 $('#cName').addEventListener('input', saveName);
+$('#teName').addEventListener('input', () => { if (!$('#teGo').disabled) setTxt('#teErr', ''); });
+$('#teName').addEventListener('keydown', e => { if (e.key === 'Enter') entryGo(); });
 $('#rmCourt').addEventListener('change', e => netSend({ t:'court', v:e.target.value }));
 $('#rmTour').addEventListener('change', e => netSend({ t:'tourMode', v:e.target.value }));
 $('#heightIn').addEventListener('input', e => { data[editWho].height = +e.target.value; setTxt('#heightVal', `${e.target.value} cm`); save(); if (editWho === 'p1') syncLook(); });
@@ -2741,6 +2793,7 @@ function renderCtrl(){
   $$('#optSwing button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === data.opts.swing));
   $$('#optTouch button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === data.opts.touch));
   $('#optCourt').innerHTML = ['random', ...COURT_IDS].map(k => `<button data-act="opt" data-k="customCourt" data-v="${k}" class="${(data.opts.customCourt || 'random') === k ? 'chip-on' : ''}">${k === 'random' ? '🎲 Random' : esc(IT(k).name)}</button>`).join('');
+  $$('#optTags button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === (data.opts.nameTags || 'auto')));
   $$('#optCam button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === (data.opts.camera || 'classic')));
   $$('#optGfx button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === (data.opts.gfx || 'auto')));
   $('#optFps').classList.toggle('chip-on', !!data.opts.fps);
@@ -2794,7 +2847,7 @@ function act(name, el){
     case 'onJoinCode': goFullscreen(); NW.err = ''; netSend({ t:'join', code:$('#onCode').value }); break;
     case 'onJoin': goFullscreen(); NW.err = ''; netSend({ t:'join', code:el.dataset.code }); break;
     case 'onLeave': clearRejoin(); netSend({ t:'leave' }); NW.room = null; show('s-online'); break;
-    case 'onStart': goFullscreen(); setTxt('#rmErr', ''); netSend(NW.room && NW.room.tourMode ? { t:'start', tour:NW.room.tourMode } : { t:'start' }); break;
+    case 'onStart': goFullscreen(); setTxt('#rmErr', ''); netSend(NW.room && NW.room.tourMode ? { t:'start', tour:NW.room.tourMode, teamName:NW.tourTeam || NW.room.name } : { t:'start' }); break;
     case 'onForce': goFullscreen(); setTxt('#rmErr', ''); netSend({ t:'start', force:true }); break;
     case 'onReady': { const me = NW.room && NW.room.slots[NW.you]; netSend({ t:'ready', v:!(me && me.ready) }); break; }
     case 'onQuick': goFullscreen(); NW.err = ''; netSend({ t:'quick', mode:el.dataset.v }); break;
@@ -2854,13 +2907,15 @@ function act(name, el){
     case 'dancePreview': previewDance(el.dataset.id); break;
     case 'chTab': chTab = el.dataset.v; renderChallenges(getAcc()); break;
     case 'tour': show('s-tour'); break;
-    case 'tourStart': tourStart(el.dataset.cup); break;
+    case 'tourStart': openEntry(el.dataset.cup, false); break;
+    case 'teCancel': $('#tourEntry').classList.add('hidden'); break;
+    case 'teGo': entryGo(); break;
     case 'tourPlay': tourPlay(); break;
     case 'tourWatch': tourWatch(el.dataset.key); break;
     case 'watchSkip': watchSkip(); break;
     case 'shopTeammates': show('s-shop'); shopTab = 'partner'; renderShop(); break;
     case 'tourForfeit': askConfirm('Forfeit this tournament?', 'You’ll be out of the tournament and keep the coins you already won.', 'Forfeit', () => tourQuit().then(renderTour), 'Stay in'); break;
-    case 'tourOnline': if (!ACC.server){ showToast('Online needs the server', ''); break; } NW.mode = '2v2'; NW.pendingTour = el.dataset.cup; show('s-online'); netConnect(); { let tries = 0; const go = () => { if (NW.open) netSend({ t:'create', mode:'2v2', name:myName() + '’s tournament' }); else if (tries++ < 30) setTimeout(go, 300); }; go(); } break;
+    case 'tourOnline': if (!ACC.server){ showToast('Online needs the server', ''); break; } if (!ACC.user){ showToast('Sign in to host a tournament', 'The host buys the ticket'); break; } openEntry(el.dataset.cup, true); break;
     case 'champClose': $('#champOv').classList.add('hidden'); break;
     case 'tutStart': tutStart(); break;
     case 'tutSkip': G.tutorial = null; renderTut(); show('s-menu'); break;
@@ -3181,7 +3236,7 @@ function askConfirm(title, text, yes, cb, no, yesStyle){ setTxt('#cfTitle', titl
   CONFIRM.cb = cb; $('#confirmOv').classList.remove('hidden'); }
 /* ---------- tournaments ---------- */
 const TOUR = { cur:null };
-const CUP_ICON = { cup_club:'🥉', cup_open:'🥈', cup_world:'🥇', cup_brgy:'🥉', cup_visayas:'🥈', cup_phnats:'🥇', cup_street:'🔥' };
+const CUP_ICON = { cup_s1:'🥉', cup_s2:'🥈', cup_s3:'🥇', cup_club:'🥉', cup_open:'🥈', cup_world:'🥇', cup_brgy:'🥉', cup_visayas:'🥈', cup_phnats:'🥇', cup_street:'🔥' };
 function streetCard(a, c){
   const owned = a.owned.includes('mate_lando'), beat = (a.trophies || {})[c.id] || 0;
   return `<div class="cupCard streetCard"><div class="flex gap-4 items-center flex-wrap"><canvas class="landoStage" data-lando="1"></canvas>
@@ -3189,7 +3244,7 @@ function streetCard(a, c){
       <div class="font-display text-2xl mt-1">${flagHTML('PH', 18)} Kuya Lando</div>
       <p class="text-sm text-[var(--muted)] mt-1">Worn-out shirt, tsinelas and a taped-up paddle. On the lansangan he has never lost. Beat him 1v1 at the Lansangan Street Court and he joins your team. Rating 7.8.</p>
       <div class="text-sm font-bold mt-2" style="color:#f5c542">${owned ? '✓ Kuya Lando is on your team' : 'Three ways to get him: beat him here · win the Philippine Nationals · buy him for 20,000 coins'}</div>
-      <div class="flex gap-2 flex-wrap mt-3"><button data-act="tourStart" data-cup="cup_street" class="primary rounded-xl px-4 py-2.5 font-bold">${beat ? 'Challenge him again' : 'Challenge Kuya Lando'}</button>${owned ? '' : `<button data-act="shopTeammates" class="tile rounded-xl px-4 py-2.5 font-bold">Buy him · ${COIN_SVG} 20,000</button>`}</div></div></div></div>`;
+      <div class="flex gap-2 flex-wrap mt-3"><button data-act="tourStart" data-cup="cup_street" class="primary rounded-xl px-4 py-2.5 font-bold">${beat ? 'Challenge him again' : 'Challenge Kuya Lando'} · ${COIN_SVG} ${c.ticket}</button>${owned ? '' : `<button data-act="shopTeammates" class="tile rounded-xl px-4 py-2.5 font-bold">Buy him · ${COIN_SVG} 20,000</button>`}</div></div></div></div>`;
 }
 const mateName = () => { const a = getAcc(); return IT((a && a.equip.partner) || 'mate_ace').name.split(' · ')[0]; };
 function cupCard(a, c){
@@ -3200,7 +3255,7 @@ function cupCard(a, c){
     <div class="min-w-0 flex-1"><div class="font-display text-2xl">${esc(c.name)} <span class="lobbyTag" style="vertical-align:middle">${esc(c.tier.toUpperCase())}</span></div><div class="text-sm text-[var(--muted)]">${c.venue ? 'At the ' + esc(IT(c.venue).name) + ' · ' : ''}Opponents ${c.lo.toFixed(1)}–${c.hi.toFixed(1)} rating · 3 rounds · each win pays ${c.coins.join(' / ')} coins · champions get ${c.keys} 🔑</div></div>
     ${won ? `<span class="lobbyTag" style="color:#f5c542; border-color:rgba(245,197,66,.5)">🏆 × ${won}</span>` : ''}</div>
     <div class="prizeRow">${c.prizes.map(id => `<div class="prize r-${CAT.rarityOf(IT(id))}"><canvas data-id="${id}"></canvas><span>${esc(IT(id).name)}</span>${a.owned.includes(id) ? '<em>OWNED</em>' : ''}</div>`).join('')}<div class="prizeNote">🏆 Only won here</div></div>
-    ${open ? `<div class="flex gap-2 flex-wrap mt-3"><button data-act="tourStart" data-cup="${c.id}" class="primary rounded-xl px-4 py-2.5 font-bold">Enter with ${esc(mateName())}</button><button data-act="tourOnline" data-cup="${c.id}" class="tile rounded-xl px-4 py-2.5 font-bold">Team up with a friend online</button></div>`
+    ${open ? `<div class="flex gap-2 flex-wrap mt-3"><button data-act="tourStart" data-cup="${c.id}" class="primary rounded-xl px-4 py-2.5 font-bold">${c.singles ? 'Enter solo' : 'Enter with ' + esc(mateName())} · ${COIN_SVG} ${c.ticket}</button>${c.singles ? '' : `<button data-act="tourOnline" data-cup="${c.id}" class="tile rounded-xl px-4 py-2.5 font-bold">Team up with a friend online</button>`}</div>`
       : `<div class="text-sm font-bold mt-3 text-[var(--muted)]">🔒 ${lock}</div>`}</div>`;
 }
 function bracketHTML(t, youName, youNation){
@@ -3228,26 +3283,52 @@ function renderTour(){
   if (t && t.alive){
     const c = CAT.CUP_BY[t.cup], o = CAT.tourOpp(t), ai = AIS[o.ai];
     setTxt('#tourTitle', `${CUP_ICON[t.cup]} ${c.name}`);
-    const single = c.rounds === 1;
+    const single = c.rounds === 1, solo = !!c.singles;
     $('#tourBody').innerHTML = `<div class="nextCard"><div class="min-w-0"><span class="lobbyTag">${single ? '1v1 STREET CHALLENGE' : CAT.ROUND_NAME[t.round].toUpperCase()}</span>
-      <div class="font-display text-2xl mt-1">${single ? 'You' : 'You &amp; ' + esc(mateName())} <span class="text-[var(--muted)]">vs</span> ${flagHTML(o.nation, 18)} ${esc(o.name)}</div>
-      <div class="text-sm text-[var(--muted)]">${single ? '' : esc(ai.name) + ' &amp; ' + esc(ai.name2) + ' · '}${ai.dupr.toFixed(2)} rating · ${c.venue ? esc(IT(c.venue).name) + ' · ' : ''}a win pays ${c.coins[t.round]} coins</div></div>
+      <div class="font-display text-2xl mt-1">${solo ? 'You' : esc(t.teams[0].name || 'You & ' + mateName())} <span class="text-[var(--muted)]">vs</span> ${flagHTML(o.nation, 18)} ${esc(o.name)}</div>
+      <div class="text-sm text-[var(--muted)]">${solo ? '' : esc(ai.name) + ' &amp; ' + esc(ai.name2) + ' · '}${ai.dupr.toFixed(2)} rating · ${c.venue ? esc(IT(c.venue).name) + ' · ' : ''}a win pays ${c.coins[t.round]} coins</div></div>
       <div class="flex gap-2"><button data-act="tourPlay" class="primary rounded-2xl px-6 py-3 font-display text-lg">${single ? 'Play the challenge' : 'Play ' + CAT.ROUND_NAME[t.round]}</button><button data-act="tourForfeit" class="tile rounded-2xl px-4 py-3 font-bold text-[var(--muted)]">Forfeit</button></div></div>
-      ${single ? '' : bracketHTML(t, 'You & ' + mateName(), myLook().nation)}`;
+      ${single ? '' : bracketHTML(t, solo ? 'You' : (t.teams[0].name || 'You & ' + mateName()), myLook().nation)}`;
     return;
   }
   setTxt('#tourTitle', 'Pick a tournament');
   const group = (rg, title) => `<div class="tourGroup"><span>${title}</span></div>` + CAT.CUPS.filter(c => c.region === rg).map(c => cupCard(a, c)).join('');
-  const lc = t && CAT.CUP_BY[t.cup], last = t && !t.alive ? `<div class="nextCard" style="border-color:${t.champion ? 'rgba(245,197,66,.6)' : 'var(--line)'}"><div><span class="lobbyTag">LAST TOURNAMENT</span><div class="font-display text-xl mt-1">${t.champion ? (lc.rounds === 1 ? '🔥 You beat ' : '🏆 Champions of the ') : (lc.rounds === 1 ? 'Lost the ' : 'Out in the ' + CAT.ROUND_NAME[t.round] + ' of the ')}${esc(lc.rounds === 1 ? 'Street Challenge' : lc.name)}</div></div></div>${lc.rounds === 1 ? '' : bracketHTML(t, 'You & ' + mateName(), myLook().nation)}` : '';
-  $('#tourBody').innerHTML = last + group('PH', `${flagHTML('PH', 16)} Philippine Tour`) + group('WORLD', '🌍 World Tour');
+  const lc = t && CAT.CUP_BY[t.cup], last = t && !t.alive ? `<div class="nextCard" style="border-color:${t.champion ? 'rgba(245,197,66,.6)' : 'var(--line)'}"><div><span class="lobbyTag">LAST TOURNAMENT</span><div class="font-display text-xl mt-1">${t.champion ? (lc.rounds === 1 ? '🔥 You beat ' : '🏆 Champions of the ') : (lc.rounds === 1 ? 'Lost the ' : 'Out in the ' + CAT.ROUND_NAME[t.round] + ' of the ')}${esc(lc.rounds === 1 ? 'Street Challenge' : lc.name)}</div></div></div>${lc.rounds === 1 ? '' : bracketHTML(t, lc.singles ? 'You' : (t.teams[0].name || 'You & ' + mateName()), myLook().nation)}` : '';
+  $('#tourBody').innerHTML = last + group('SOLO', '🎾 Singles Tour') + group('PH', `${flagHTML('PH', 16)} Philippine Tour`) + group('WORLD', '🌍 World Tour');
   requestAnimationFrame(() => $$('#tourBody canvas[data-id]').forEach(cv2 => thumbOf(cv2, cv2.dataset.id)));
 }
-async function tourStart(cup){
+// entering costs a ticket; doubles teams pick a name first
+let ENTRY = { cup:null, online:false };
+function openEntry(cup, online){
+  const a = getAcc() || ensureLocal(), c = CAT.CUP_BY[cup]; ENTRY = { cup, online };
+  setTxt('#teCup', `${CUP_ICON[cup] || '🏆'} ${c.name}`);
+  setTxt('#teInfo', c.boss ? '1v1 against Kuya Lando at the Lansangan Street Court.' : `${c.singles ? 'Solo' : online ? 'You and a friend online' : 'You and ' + mateName()} · 3 rounds · the Final is the toughest match.`);
+  $('#teNameRow').classList.toggle('hidden', !!c.singles);
+  if (!$('#teName').value) $('#teName').value = `${myName()}’s Team`.slice(0, 20);
+  $('#tePrice').innerHTML = `${COIN_SVG} ${c.ticket}`; $('#teCoins').textContent = String(a.coins | 0);
+  $('#teGo').disabled = (a.coins | 0) < c.ticket; setTxt('#teErr', (a.coins | 0) < c.ticket ? `You need ${c.ticket - (a.coins | 0)} more coins.` : '');
+  setTxt('#teGo', online ? 'Make the room' : 'Buy ticket & enter');
+  $('#tourEntry').classList.remove('hidden');
+  if (!c.singles) setTimeout(() => $('#teName').select(), 50);
+}
+async function entryGo(){
+  const c = CAT.CUP_BY[ENTRY.cup], nm = CAT.cleanTeamName($('#teName').value);
+  if (!c.singles){ const err = CAT.teamNameError(nm); if (err){ setTxt('#teErr', err); return; } }
+  if (ENTRY.online){
+    $('#tourEntry').classList.add('hidden');
+    NW.mode = '2v2'; NW.pendingTour = ENTRY.cup; NW.tourTeam = nm; show('s-online'); netConnect();
+    let tries = 0; const go = () => { if (NW.open) netSend({ t:'create', mode:'2v2', name:nm }); else if (tries++ < 30) setTimeout(go, 300); }; go();
+    showToast('Room made for your team', 'The ticket is paid when the host starts'); return;
+  }
+  const ok = await tourStart(ENTRY.cup, nm);
+  if (ok){ $('#tourEntry').classList.add('hidden'); showToast(`Ticket bought: −${c.ticket} coins`, c.singles ? 'Good luck!' : `Good luck, ${nm}!`); }
+}
+async function tourStart(cup, teamName){
   try {
-    if (isServerAcc()){ const j = await api('api/tour/start', { cup }); ACC.user = j.user; }
-    else { const a = ensureLocal(); if (!CAT.cupUnlocked(a, cup)) throw new Error('That tournament is still locked'); a.tour = CAT.tourNew(cup, null, myLook().nation || ''); save(); }
-    renderTour();
-  } catch (e){ showToast('Couldn’t start the tournament', e.message); }
+    if (isServerAcc()){ const j = await api('api/tour/start', { cup, teamName }); ACC.user = j.user; }
+    else { const a = ensureLocal(); const t = CAT.tourEnter(a, cup, teamName, myLook().nation || ''); if (typeof t === 'string') throw new Error(t); save(); }
+    renderTour(); return true;
+  } catch (e){ setTxt('#teErr', e.message); return false; }
 }
 function tourPlay(){
   const a = getAcc(), t = a && a.tour; if (!t || !t.alive) return;
@@ -3488,6 +3569,7 @@ function netMsg(m){
       break;
     }
     case 'emote': showEmote(m.s, m.e); break;
+    case 'me': if (m.user){ ACC.user = m.user; showToast('Tournament ticket bought', `${ACC.user.coins} coins left`); } break;
     case 'tourResult': {
       NW.lastRes = { m, t:Date.now() };
       if (NW.room) NW.room.tour = m.tour; if (m.user) ACC.user = m.user;
@@ -3807,7 +3889,9 @@ function frame(nowMs){
   if (G.netRole === 'host' && now - NW.lastSt >= .014){ NW.lastSt = now; netSend(hostSnapshot()); }
   if ((G.mode === 'online' || NW.room) && (pingTick += d) > 2){ pingTick = 0; netSend({ t:'ping', ts:performance.now() }); }
   const inPlay = screenNow === 'game' || screenNow === 'pause' || screenNow === 'result';
-  if (inPlay || now - lastRender >= 1 / 30 - .004){   // menus run at 30 fps, which saves battery
+  // menus run at 30 fps; behind the shop, locker and other big panels the background match only needs ~8 fps
+  const busyMenu = ['shop', 'char', 'ach', 'tour', 'rank', 'ctrl', 'how', 'player', 'signup'].includes(screenNow);
+  if (inPlay || now - lastRender >= (busyMenu ? 1 / 8 : 1 / 30) - .004){
     lastRender = now;
     render();
     if (inPlay) hudAutoHide(Math.min(.1, now - (G.hudLast || now))), G.hudLast = now;

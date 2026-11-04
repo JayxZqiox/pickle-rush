@@ -240,6 +240,9 @@ function drawCharacter(c, x, y, s, look, facing, swing, run, moving, t, tag, fx)
   if (tst === 'tank'){ c.fillStyle = skin; ell(c, -B.sh + .02, -1.4, .06, .055); ell(c, B.sh - .02, -1.4, .06, .055); c.strokeStyle = t2; seg(c, -B.sh + .06, -1.44, -B.sh + .03, -1.2); seg(c, B.sh - .06, -1.44, B.sh - .03, -1.2); }
   if (tst === 'jersey'){ c.fillStyle = t2; c.fillRect(-B.sh - .02, -1.42, .065, .44); c.fillRect(B.sh - .045, -1.42, .065, .44); }
   if (tst === 'kit' && !top.deco){ c.strokeStyle = t2; c.lineWidth = .045; seg(c, -B.sh, -1.42, B.sh, -1.0); }
+  // flag shirts: the whole front and back; national jerseys: a small chest patch
+  if (top.flagBig){ const fi = flagImg(top.flag); if (fi) c.drawImage(fi, -B.sh * 1.15, -1.47, B.sh * 2.3, .46); }
+  else if (top.flag && front){ const fi = flagImg(top.flag); if (fi){ c.fillStyle = 'rgba(255,255,255,.85)'; c.fillRect(.028, -1.395, .094, .064); c.drawImage(fi, .032, -1.391, .086, .056); } }
   // shirt designs: stripes, hoops, sash, halves, side panels, numbers
   const dz = top.deco, t3 = top.c3 || t2;
   if (dz === 'stripes'){ c.fillStyle = t2; for (let x2 = -B.sh - .02; x2 < B.sh + .02; x2 += .075) c.fillRect(x2, -1.5, .03, .56); }

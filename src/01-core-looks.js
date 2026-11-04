@@ -59,7 +59,7 @@ function flagHTML(code, h = 13){ const svg = code && flagSVG(code); return svg ?
 const FLAG_IMG = {};
 function flagImg(code){
   if (!code || !FLAG[code]) return null;
-  if (!FLAG_IMG[code]){ const im = new Image(); im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(flagSVG(code)); FLAG_IMG[code] = im; }
+  if (!FLAG_IMG[code]){ const im = new Image(); im.onload = () => { if (typeof FLAG_VER === 'number') FLAG_VER++; }; im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(flagSVG(code)); FLAG_IMG[code] = im; }
   return FLAG_IMG[code].complete ? FLAG_IMG[code] : null;
 }
 const BALL_IDS = itemsOf('ball').map(i => i.id), COURT_IDS = itemsOf('court').map(i => i.id);

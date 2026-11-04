@@ -157,13 +157,16 @@ function update(dt){
   tickEffects(dt);
 }
 function ballParticles(b, dt){
-  const fx = IT(b.skin).fx; if (!fx || fx === 'none' || fx === 'lightning' || fx === 'rainbow') return;
-  const rate = { fire:70, ice:35, galaxy:30, gold:35 }[fx] || 0;
+  const fx = IT(b.skin).fx; if (!fx || ['none', 'lightning', 'rainbow', 'melon', 'sun', 'neon'].includes(fx)) return;
+  const rate = { fire:30, ice:30, galaxy:24, gold:30, leaf:10, petal:12, bubble:12 }[fx] || 0;
   G.bfxAcc = (G.bfxAcc || 0) + dt * rate;
   while (G.bfxAcc >= 1 && G.bfx.length < (GFX.low ? 50 : 160)){
     G.bfxAcc -= 1;
     const P = { x:b.x + rand(-.04, .04), y:b.y + rand(-.04, .04), z:b.z + rand(-.03, .03), vx:rand(-.3, .3), vy:rand(-.3, .3), vz:rand(.1, .6), life:rand(.25, .5), max:.5, fx };
-    if (fx === 'fire'){ P.c = ['#ff3b1f', '#ff7a1a', '#ffb020', '#ffe066'][(Math.random() * 4) | 0]; P.r = rand(.03, .065); P.vz = rand(.4, 1.1); }
+    if (fx === 'fire'){ P.c = ['#e8704a', '#ff9a52', '#ffc76a'][(Math.random() * 3) | 0]; P.r = rand(.02, .04); P.vz = rand(.3, .8); }
+    else if (fx === 'leaf'){ P.c = Math.random() < .5 ? '#4ade80' : '#a3e635'; P.r = rand(.02, .035); P.vz = rand(-.4, -.1); P.life = P.max = rand(.7, 1.1); P.shape = 'leaf'; }
+    else if (fx === 'petal'){ P.c = Math.random() < .6 ? '#f9a8d4' : '#fce7f3'; P.r = rand(.02, .032); P.vz = rand(-.35, -.1); P.life = P.max = rand(.7, 1.1); P.shape = 'leaf'; }
+    else if (fx === 'bubble'){ P.c = '#bae6fd'; P.r = rand(.015, .03); P.vz = rand(.2, .5); P.life = P.max = rand(.6, 1); P.shape = 'bubble'; }
     else if (fx === 'ice'){ P.c = Math.random() < .5 ? '#e0f7ff' : '#8fd8ff'; P.r = rand(.015, .03); P.vz = rand(-.2, .2); P.life = P.max = rand(.4, .7); }
     else if (fx === 'galaxy'){ P.c = ['#ffffff', '#c4b5fd', '#8b5cf6', '#f0abfc'][(Math.random() * 4) | 0]; P.r = rand(.01, .025); P.vz = 0; P.life = P.max = rand(.5, .9); }
     else { P.c = Math.random() < .6 ? '#f5c542' : '#fff4c2'; P.r = rand(.012, .025); P.vz = rand(-.1, .3); }
@@ -171,6 +174,7 @@ function ballParticles(b, dt){
   }
 }
 function tickEffects(dt){
+  updateTagAlpha(dt);
   const b = G.ball;
   for (const p of G.players){
     if (p.jumpT > 0) p.jumpT = Math.max(0, p.jumpT - dt);

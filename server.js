@@ -402,8 +402,9 @@ async function handleApi(req, res, url) {
   if (route === '/api/tour/start') {
     const cup = String(body.cup || '');
     if (!CAT.CUP_BY[cup]) return json(res, 400, { error: 'Unknown tournament' });
-    if (!CAT.cupUnlocked(u, cup)) return json(res, 400, { error: 'That tournament is still locked' });
-    u.tour = CAT.tourNew(cup, null, (u.look && u.look.nation) || ''); touchUser(u);
+    const t = CAT.tourEnter(u, cup, body.teamName, (u.look && u.look.nation) || '');     // pays the ticket
+    if (typeof t === 'string') return json(res, 400, { error: t });
+    touchUser(u);
     return json(res, 200, { tour: u.tour, user: publicUser(u) });
   }
   if (route === '/api/tour/result') {
@@ -848,8 +849,12 @@ function onConnection(ws) {
           if (!CAT.CUP_BY[cup]) return send(ws, { t: 'error', msg: 'Unknown tournament.' });
           if (room.slots[1] || room.slots[3]) return send(ws, { t: 'error', msg: 'For a tournament, both players go on Team 1 (1P and 3P). Leave 2P and 4P empty.' });
           if (CAT.CUP_BY[cup].singles) return send(ws, { t: 'error', msg: 'That challenge is solo only.' });
-          if (CAT.CUP_BY[cup].need && !(hostU && CAT.cupUnlocked(hostU, cup))) return send(ws, { t: 'error', msg: 'The host needs to unlock that tournament first.' });
+          if (!hostU) return send(ws, { t: 'error', msg: 'Sign in to host a tournament (the host buys the ticket).' });
+          if (!CAT.cupUnlocked(hostU, cup)) return send(ws, { t: 'error', msg: 'The host needs to unlock that tournament first.' });
+          const c = CAT.CUP_BY[cup]; if ((hostU.coins | 0) < c.ticket) return send(ws, { t: 'error', msg: `The ticket costs ${c.ticket} coins.` });
+          hostU.coins -= c.ticket; touchUser(hostU); send(ws, { t: 'me', user: publicUser(hostU) });
           room.tour = CAT.tourNew(cup, null, '');
+          room.tour.teams[0].name = CAT.cleanTeamName(m.teamName) || room.name;
         }
         if (!m.tour && room.tour && !room.tour.alive) room.tour = null;
         if (m.tour && room.tour && !room.tour.alive) return send(ws, { t: 'error', msg: 'That tournament is over.' });

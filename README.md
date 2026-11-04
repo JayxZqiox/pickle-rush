@@ -38,6 +38,14 @@ Then log in with that username and password. MMR and DUPR still start at 0 / 2.0
 
 Club Cup, Pro Open and World Championship: 8-team brackets (Quarterfinal → Semifinal → Final) against national AI teams. Play with your AI teammate, or create a 2v2 room online in Tournament mode and team up with a friend (you two are Team 1). Winning a cup gives tournament-only prizes: champion jerseys, the Trophy Lift dance, the Golden laurel, the Champion's Cup paddle and the World Champion crown with its aura. Pro Open unlocks at a 3.5 rating or after winning the Club Cup; World Championship at 5.0 or after winning the Pro Open.
 
+## Tournament tickets and difficulty
+
+Every tournament costs an entry ticket (150 to 1,200 coins; the host pays for online team tournaments) and doubles teams type a team name. Opponents get tougher each round and the Final is the hardest match: beginner cups start around 400 MMR (2.65 rating); the World Championship goes 5.65 → 6.15 → 7.15.
+
+## Singles Tour
+
+Solo tournaments (8-player brackets): **Singles Open** (Beginner), **Singles Masters** (Intermediate) and **Singles Grand Slam** (Pro). Prizes: Singles Open jersey, Champion sweatbands, Singles Masters kit, Masters comet ball, Grand Slam paddle and Grand Slam headband.
+
 ## Philippine Tour and Kuya Lando
 
 - **Barangay Cup** (Beginner), **Visayas Open** (Intermediate) and **Philippine Nationals** (Pro): teams are Philippine cities and provinces. Prizes include the Lansangan Street Court, the Barangay Cup sando, the Visayas Open jersey, Sinulog Steps and the Nationals jersey.

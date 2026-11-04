@@ -93,6 +93,12 @@
     { id:'ball_pink',      slot:'ball', name:'Bubblegum',       price:100,  lvl:1, chest:true, rarity:'common', fx:'none', c1:'#ff8fc6' },
     { id:'ball_white',     slot:'ball', name:'Tournament white',price:100,  lvl:1, chest:true, rarity:'common', fx:'none', c1:'#f5f7fb' },
     { id:'ball_mint',      slot:'ball', name:'Mint',            price:100,  lvl:1, chest:true, rarity:'common', fx:'none', c1:'#7df2c6' },
+    { id:'ball_melon',     slot:'ball', name:'Watermelon',      price:100,  lvl:1, chest:true, rarity:'common', fx:'melon', c1:'#3fae4a', c2:'#1f6f2a' },
+    { id:'ball_leaf',      slot:'ball', name:'Leaf drift',      price:300,  lvl:1, chest:true, rarity:'rare', fx:'leaf', c1:'#86efac' },
+    { id:'ball_sakura',    slot:'ball', name:'Sakura',          price:300,  lvl:1, chest:true, rarity:'rare', fx:'petal', c1:'#fbcfe8' },
+    { id:'ball_ocean',     slot:'ball', name:'Ocean bubble',    price:500,  lvl:1, chest:true, rarity:'epic', fx:'bubble', c1:'#7dd3fc' },
+    { id:'ball_araw',      slot:'ball', name:'Araw',            price:700,  lvl:1, chest:true, rarity:'epic', fx:'sun', c1:'#fcd116' },
+    { id:'ball_neon',      slot:'ball', name:'Soft neon',       price:1200, lvl:1, chest:true, rarity:'legendary', fx:'neon', c1:'#5ff4ff' },
     // anime-style paddles (original designs)
     { id:'pad_kawaii',     slot:'paddle', name:'Kawaii Pop',     price:350,  lvl:2, c1:'#fde68a', c2:'#f472b6', power:0, control:1, spin:0, deco:'kawaii' },
     { id:'pad_neko',       slot:'paddle', name:'Neko Paw',       price:400,  lvl:2, c1:'#fbcfe8', c2:'#1f2937', power:0, control:1, spin:1, deco:'neko' },
@@ -132,21 +138,39 @@
     { id:'jersey_hoops',  slot:'top', name:'Hooped jersey',        price:300, lvl:2, style:'jersey', c1:'#15803d', c2:'#ffffff', deco:'hoops' },
     { id:'tee_seven',     slot:'top', name:'Lucky 7 tee',          price:180, lvl:1, style:'tee',    c1:'#0ea5e9', c2:'#ffffff', deco:'number', num:'7' },
     // national team jerseys
-    { id:'jer_ph', slot:'top', name:'Philippines jersey', price:450, lvl:2, style:'jersey', c1:'#0038a8', c2:'#ce1126', c3:'#fcd116', deco:'halves', nation:'PH' },
-    { id:'jer_us', slot:'top', name:'USA jersey',         price:450, lvl:2, style:'jersey', c1:'#1e3a8a', c2:'#dc2626', c3:'#ffffff', deco:'sash',   nation:'US' },
-    { id:'jer_au', slot:'top', name:'Australia jersey',   price:450, lvl:2, style:'jersey', c1:'#047857', c2:'#fbbf24', deco:'hoops',  nation:'AU' },
-    { id:'jer_jp', slot:'top', name:'Japan jersey',       price:450, lvl:2, style:'jersey', c1:'#1d3d8f', c2:'#ffffff', c3:'#bc002d', deco:'sides',  nation:'JP' },
-    { id:'jer_cn', slot:'top', name:'China jersey',       price:450, lvl:2, style:'jersey', c1:'#de2910', c2:'#ffde00', c3:'#ffde00', deco:'sash',   nation:'CN' },
-    { id:'jer_kr', slot:'top', name:'Korea jersey',       price:450, lvl:2, style:'jersey', c1:'#ffffff', c2:'#cd2e3a', c3:'#0047a0', deco:'sides',  nation:'KR' },
-    { id:'jer_br', slot:'top', name:'Brazil jersey',      price:450, lvl:2, style:'jersey', c1:'#ffdf00', c2:'#009c3b', c3:'#002776', deco:'sides',  nation:'BR' },
-    { id:'jer_es', slot:'top', name:'Spain jersey',       price:450, lvl:2, style:'jersey', c1:'#aa151b', c2:'#f1bf00', deco:'hoops',  nation:'ES' },
-    { id:'jer_in', slot:'top', name:'India jersey',       price:450, lvl:2, style:'jersey', c1:'#1e40af', c2:'#ff9933', c3:'#138808', deco:'sash',   nation:'IN' },
-    { id:'jer_gb', slot:'top', name:'UK jersey',          price:450, lvl:2, style:'jersey', c1:'#ffffff', c2:'#012169', c3:'#c8102e', deco:'sash',   nation:'GB' },
+    { id:'jer_ph', slot:'top', name:'Philippines jersey', price:450, lvl:2, style:'jersey', c1:'#0038a8', c2:'#ce1126', c3:'#fcd116', deco:'halves', nation:'PH', flag:'PH' },
+    { id:'jer_us', slot:'top', name:'USA jersey',         price:450, lvl:2, style:'jersey', c1:'#1e3a8a', c2:'#dc2626', c3:'#ffffff', deco:'sash',   nation:'US', flag:'US' },
+    { id:'jer_au', slot:'top', name:'Australia jersey',   price:450, lvl:2, style:'jersey', c1:'#047857', c2:'#fbbf24', deco:'hoops',  nation:'AU', flag:'AU' },
+    { id:'jer_jp', slot:'top', name:'Japan jersey',       price:450, lvl:2, style:'jersey', c1:'#1d3d8f', c2:'#ffffff', c3:'#bc002d', deco:'sides',  nation:'JP', flag:'JP' },
+    { id:'jer_cn', slot:'top', name:'China jersey',       price:450, lvl:2, style:'jersey', c1:'#de2910', c2:'#ffde00', c3:'#ffde00', deco:'sash',   nation:'CN', flag:'CN' },
+    { id:'jer_kr', slot:'top', name:'Korea jersey',       price:450, lvl:2, style:'jersey', c1:'#ffffff', c2:'#cd2e3a', c3:'#0047a0', deco:'sides',  nation:'KR', flag:'KR' },
+    { id:'jer_br', slot:'top', name:'Brazil jersey',      price:450, lvl:2, style:'jersey', c1:'#ffdf00', c2:'#009c3b', c3:'#002776', deco:'sides',  nation:'BR', flag:'BR' },
+    { id:'jer_es', slot:'top', name:'Spain jersey',       price:450, lvl:2, style:'jersey', c1:'#aa151b', c2:'#f1bf00', deco:'hoops',  nation:'ES', flag:'ES' },
+    { id:'jer_in', slot:'top', name:'India jersey',       price:450, lvl:2, style:'jersey', c1:'#1e40af', c2:'#ff9933', c3:'#138808', deco:'sash',   nation:'IN', flag:'IN' },
+    { id:'jer_gb', slot:'top', name:'UK jersey',          price:450, lvl:2, style:'jersey', c1:'#ffffff', c2:'#012169', c3:'#c8102e', deco:'sash',   nation:'GB', flag:'GB' },
     // street style (Kuya Lando's look) — in the shop
     { id:'tee_worn',       slot:'top',    name:'Street legend tee',   price:300, lvl:1, style:'tee',     c1:'#cfc8b8', c2:'#8a8274', deco:'worn' },
     { id:'bot_worn',       slot:'bottom', name:'Faded cargo shorts',  price:160, lvl:1, style:'long',    c1:'#6b6658', c2:'#4d4a40' },
     { id:'shoes_tsinelas', slot:'shoes',  name:'Tsinelas',            price:120, lvl:1, style:'slipper', c1:'#2563eb', c2:'#f1f5f9' },
     { id:'pad_tape',       slot:'paddle', name:'Taped-up paddle',     price:450, lvl:2, c1:'#a0714a', c2:'#e5e7eb', power:1, control:1, spin:1, deco:'tape' },
+    // flag shirts
+    { id:'flagtee_ph', slot:'top', name:'Philippines flag shirt', price:260, lvl:1, style:'tee', c1:'#ffffff', c2:'#0038a8', flag:'PH', flagBig:true },
+    { id:'flagtee_us', slot:'top', name:'USA flag shirt',         price:260, lvl:1, style:'tee', c1:'#ffffff', c2:'#1e3a8a', flag:'US', flagBig:true },
+    { id:'flagtee_jp', slot:'top', name:'Japan flag shirt',       price:260, lvl:1, style:'tee', c1:'#ffffff', c2:'#bc002d', flag:'JP', flagBig:true },
+    { id:'flagtee_kr', slot:'top', name:'Korea flag shirt',       price:260, lvl:1, style:'tee', c1:'#ffffff', c2:'#0047a0', flag:'KR', flagBig:true },
+    { id:'flagtee_br', slot:'top', name:'Brazil flag shirt',      price:260, lvl:1, style:'tee', c1:'#ffffff', c2:'#009c3b', flag:'BR', flagBig:true },
+    { id:'flagtee_au', slot:'top', name:'Australia flag shirt',   price:260, lvl:1, style:'tee', c1:'#ffffff', c2:'#012169', flag:'AU', flagBig:true },
+    { id:'flagtee_es', slot:'top', name:'Spain flag shirt',       price:260, lvl:1, style:'tee', c1:'#ffffff', c2:'#aa151b', flag:'ES', flagBig:true },
+    { id:'flagtee_gb', slot:'top', name:'UK flag shirt',          price:260, lvl:1, style:'tee', c1:'#ffffff', c2:'#012169', flag:'GB', flagBig:true },
+    { id:'flagtee_cn', slot:'top', name:'China flag shirt',       price:260, lvl:1, style:'tee', c1:'#ffffff', c2:'#de2910', flag:'CN', flagBig:true },
+    { id:'flagtee_in', slot:'top', name:'India flag shirt',       price:260, lvl:1, style:'tee', c1:'#ffffff', c2:'#ff9933', flag:'IN', flagBig:true },
+    // singles tour prizes
+    { id:'jer_singles',  slot:'top',    name:'Singles Open jersey',   price:700,  lvl:1, tour:'cup_s1', rarity:'epic',      style:'jersey', c1:'#1e293b', c2:'#38bdf8', deco:'stripes' },
+    { id:'wrist_champ',  slot:'wrist',  name:'Champion sweatbands',   price:500,  lvl:1, tour:'cup_s1', rarity:'rare',      c1:'#111827', c2:'#f5c542' },
+    { id:'top_masters',  slot:'top',    name:'Singles Masters kit',   price:1100, lvl:1, tour:'cup_s2', rarity:'epic',      style:'kit',    c1:'#14532d', c2:'#a3e635', c3:'#f5c542', deco:'sides' },
+    { id:'ball_masters', slot:'ball',   name:'Masters comet',         price:1500, lvl:1, tour:'cup_s2', rarity:'legendary', fx:'neon', c1:'#a3e635' },
+    { id:'pad_slam',     slot:'paddle', name:'Grand Slam paddle',     price:2400, lvl:1, tour:'cup_s3', rarity:'legendary', c1:'#111827', c2:'#f5c542', power:2, control:1, spin:2, deco:'stripe' },
+    { id:'head_slam',    slot:'head',   name:'Grand Slam headband',   price:2000, lvl:1, tour:'cup_s3', rarity:'legendary', style:'band', c1:'#f5c542' },
     // tournament-only prizes (can't be bought or found in chests)
     { id:'sando_brgy',   slot:'top',    name:'Barangay Cup champion sando', price:400,  lvl:1, tour:'cup_brgy',    rarity:'rare',      style:'tank',   c1:'#fcd116', c2:'#0038a8', deco:'number', num:'1' },
     { id:'jer_visayas',  slot:'top',    name:'Visayas Open jersey',         price:800,  lvl:1, tour:'cup_visayas', rarity:'epic',      style:'jersey', c1:'#0ea5e9', c2:'#facc15', c3:'#ffffff', deco:'sash' },
@@ -477,15 +501,37 @@
 
   /* ---------- tournaments: 8-team knockout (Quarterfinal, Semifinal, Final) ---------- */
   const CUPS = [
-    { id:'cup_brgy',    region:'PH', tier:'Beginner',     name:'Barangay Cup',         lo:2.0, hi:2.9, need:0,   prev:null,          coins:[70, 110, 250],   xp:[50, 70, 120],   keys:1, prizes:['court_lansangan', 'sando_brgy'], venue:'court_barangay' },
-    { id:'cup_visayas', region:'PH', tier:'Intermediate', name:'Visayas Open',         lo:3.0, hi:4.3, need:2.8, prev:'cup_brgy',    coins:[140, 200, 500],  xp:[80, 110, 200],  keys:2, prizes:['jer_visayas', 'dance_sinulog'], venue:'court_beach' },
-    { id:'cup_phnats',  region:'PH', tier:'Pro',          name:'Philippine Nationals', lo:4.5, hi:6.7, need:4.3, prev:'cup_visayas', coins:[260, 380, 1000], xp:[120, 170, 330], keys:3, prizes:['top_phnats', 'mate_lando'], venue:'court_stadium' },
-    { id:'cup_street',  region:'PH', tier:'Legend',       name:'Street Challenge: Kuya Lando', lo:7.8, hi:7.8, need:0, prev:null, rounds:1, singles:true, coins:[500], xp:[200], keys:2, prizes:['mate_lando'], venue:'court_lansangan', boss:'lando' },
-    { id:'cup_club',    region:'WORLD', tier:'Beginner',  name:'Club Cup',             lo:2.3, hi:3.8, need:0,   prev:null,          coins:[100, 150, 350],  xp:[60, 80, 150],   keys:1, prizes:['top_cup_club', 'dance_trophy'] },
-    { id:'cup_open',    region:'WORLD', tier:'Intermediate', name:'Pro Open',          lo:3.8, hi:5.4, need:3.5, prev:'cup_club',    coins:[180, 260, 700],  xp:[90, 120, 250],  keys:2, prizes:['top_cup_open', 'head_laurel'] },
-    { id:'cup_world',   region:'WORLD', tier:'Pro',       name:'World Championship',   lo:5.6, hi:8.0, need:5.0, prev:'cup_open',    coins:[320, 480, 1400], xp:[140, 200, 400], keys:3, prizes:['pad_cup', 'head_wc'] },
+    { id:'cup_brgy', opp:['club','pro','veteran'], ticket:150,    region:'PH', tier:'Beginner',     name:'Barangay Cup',         lo:2.0, hi:2.9, need:0,   prev:null,          coins:[70, 110, 250],   xp:[50, 70, 120],   keys:1, prizes:['court_lansangan', 'sando_brgy'], venue:'court_barangay' },
+    { id:'cup_visayas', opp:['elite','legend','champion'], ticket:400, region:'PH', tier:'Intermediate', name:'Visayas Open',         lo:3.0, hi:4.3, need:2.8, prev:'cup_brgy',    coins:[140, 200, 500],  xp:[80, 110, 200],  keys:2, prizes:['jer_visayas', 'dance_sinulog'], venue:'court_beach' },
+    { id:'cup_phnats', opp:['grandmaster','semi2','tour1'], ticket:900,  region:'PH', tier:'Pro',          name:'Philippine Nationals', lo:4.5, hi:6.7, need:4.3, prev:'cup_visayas', coins:[260, 380, 1000], xp:[120, 170, 330], keys:3, prizes:['top_phnats', 'mate_lando'], venue:'court_stadium' },
+    { id:'cup_street', opp:['lando'], ticket:300,  region:'PH', tier:'Legend',       name:'Street Challenge: Kuya Lando', lo:7.8, hi:7.8, need:0, prev:null, rounds:1, singles:true, coins:[500], xp:[200], keys:2, prizes:['mate_lando'], venue:'court_lansangan', boss:'lando' },
+    { id:'cup_s1', opp:['club','pro','veteran'], ticket:150, region:'SOLO', tier:'Beginner',     name:'Singles Open',       lo:2.0, hi:3.0, need:0,   prev:null,     singles:true, coins:[90, 130, 300],  xp:[50, 75, 140],  keys:1, prizes:['jer_singles', 'wrist_champ'], venue:'court_park' },
+    { id:'cup_s2', opp:['elite','champion','grandmaster'], ticket:400, region:'SOLO', tier:'Intermediate', name:'Singles Masters',    lo:3.4, hi:5.0, need:3.2, prev:'cup_s1', singles:true, coins:[170, 240, 650], xp:[90, 120, 230], keys:2, prizes:['top_masters', 'ball_masters'], venue:'court_clay' },
+    { id:'cup_s3', opp:['semi1','semi2','tour2'], ticket:900, region:'SOLO', tier:'Pro',          name:'Singles Grand Slam', lo:5.4, hi:7.6, need:5.0, prev:'cup_s2', singles:true, coins:[300, 450, 1300], xp:[140, 200, 380], keys:3, prizes:['pad_slam', 'head_slam'], venue:'court_royal' },
+    { id:'cup_club', opp:['pro','veteran','legend'], ticket:200,    region:'WORLD', tier:'Beginner',  name:'Club Cup',             lo:2.3, hi:3.8, need:0,   prev:null,          coins:[100, 150, 350],  xp:[60, 80, 150],   keys:1, prizes:['top_cup_club', 'dance_trophy'] },
+    { id:'cup_open', opp:['champion','grandmaster','semi2'], ticket:500,    region:'WORLD', tier:'Intermediate', name:'Pro Open',          lo:3.8, hi:5.4, need:3.5, prev:'cup_club',    coins:[180, 260, 700],  xp:[90, 120, 250],  keys:2, prizes:['top_cup_open', 'head_laurel'] },
+    { id:'cup_world', opp:['semi2','tour1','nightmare'], ticket:1200,   region:'WORLD', tier:'Pro',       name:'World Championship',   lo:5.6, hi:8.0, need:5.0, prev:'cup_open',    coins:[320, 480, 1400], xp:[140, 200, 400], keys:3, prizes:['pad_cup', 'head_wc'] },
   ];
   CUPS.forEach(c => { c.rounds = c.rounds || 3; });
+  // shown ranges follow the real opponents
+  CUPS.forEach(c => { if (c.boss) return; const d = c.opp.map(k => LADDER[aiIndex(k)].dupr); c.lo = Math.min(...d); c.hi = Math.max(...d); });
+  const TEAM_NAMES = ['Dink Dynasty', 'Net Ninjas', 'Kitchen Kings', 'Spin Doctors', 'Paddle Panthers', 'Lob Legends', 'Baseline Bandits', 'Volley Vipers', 'Rally Rebels',
+    'Drop Shot Squad', 'Erne Express', 'Pickle Pirates', 'Sweet Spot Crew', 'Smash Society', 'Third Shot Thunder', 'Topspin Titans', 'Court Crushers', 'Ace Avengers'];
+  const PH_TEAM_NAMES = ['Tsinelas Titans', 'Adobo Aces', 'Kalamansi Kings', 'Barako Ballers', 'Halo-Halo Heroes', 'Jeepney Jammers', 'Sinigang Smashers', 'Bayanihan Blitz',
+    'Mabuhay Mavericks', 'Lechon Lobbers', 'Bagyo Blasters', 'Kampeon Crew', 'Sampaguita Spinners', 'Kalabaw Kings', 'Banig Bashers', 'Tabo Titans'];
+  function cleanTeamName(n) { return String(n || '').replace(/[^\w \-'’.&]/g, '').replace(/\s+/g, ' ').trim().slice(0, 20); }
+  function teamNameError(n) { if (n.length < 3) return 'Team names need at least 3 characters'; if (badName(n.replace(/[^A-Za-z0-9]/g, '_'))) return 'Please pick a different team name'; return null; }
+  // pay for the ticket and get a fresh bracket
+  function tourEnter(p, cupId, teamName, myNation, rnd) {
+    const c = CUP_BY[cupId]; if (!c) return 'Unknown tournament';
+    if (!cupUnlocked(p, cupId)) return 'That tournament is still locked';
+    let nm = '';
+    if (!c.singles) { nm = cleanTeamName(teamName); const err = teamNameError(nm); if (err) return err; }
+    if ((p.coins | 0) < c.ticket) return `The ticket costs ${c.ticket} coins`;
+    p.coins -= c.ticket;
+    const t = tourNew(cupId, rnd, myNation); if (nm) t.teams[0].name = nm;
+    p.tour = t; return t;
+  }
   const PH_PLACES = ['Cebu', 'Bohol', 'Davao', 'Manila', 'Iloilo', 'Baguio', 'Pampanga', 'Bacolod', 'Cagayan de Oro', 'Leyte', 'Palawan', 'Zamboanga', 'Batangas', 'Laguna', 'Ilocos', 'Bicol'];
   const CUP_BY = {}; CUPS.forEach(c => { CUP_BY[c.id] = c; });
   const ROUND_NAME = ['Quarterfinal', 'Semifinal', 'Final'];
@@ -494,17 +540,20 @@
     rnd = rnd || Math.random;
     const c = CUP_BY[cupId];
     if (c.boss) return { id:Math.floor(rnd() * 1e9).toString(36), cup:cupId, round:0, alive:true, champion:false, teams:[{ you:true }, { nation:'PH', name:'Kuya Lando', ai:c.boss }], path:[1], qf:[], sf:[], dec:{}, t:Date.now() };
-    const pool = LADDER.filter(a => a.dupr >= c.lo && a.dupr <= c.hi);
-    const opp = [pool[0], pool[Math.floor(pool.length / 2)], pool[pool.length - 1]].map(a => a.key);
-    const ph = c.region === 'PH', nat = ph ? PH_PLACES.slice() : Object.keys(NATIONS).filter(k => k !== myNation);
-    for (let i = nat.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [nat[i], nat[j]] = [nat[j], nat[i]]; }
+    const opp = c.opp.slice(), lo = c.lo, hi = c.hi, pool = LADDER.filter(a => a.dupr >= lo && a.dupr <= hi);
+    const ph = c.region === 'PH', nat = ph ? PH_PLACES.slice() : Object.keys(NATIONS).filter(k => k !== myNation), names = (ph ? PH_TEAM_NAMES : TEAM_NAMES).slice();
+    for (const arr of [nat, names]) for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; }
     const any = () => pool[Math.floor(rnd() * pool.length)].key;
     // seats: 0 = you; your path is seat 1 (QF), then the winner of 2v3 (SF), then the winner of 4–7 (F)
     const teams = [{ you:true }];
-    for (let i = 1; i < 8; i++) teams.push(ph ? { nation:'PH', name:'Team ' + nat[i - 1], ai:any() } : { nation:nat[i - 1], name:'Team ' + NATIONS[nat[i - 1]], ai:any() });
+    for (let i = 1; i < 8; i++) teams.push({ nation:ph ? 'PH' : nat[i - 1], name:names[i - 1], ai:any() });
     teams[1].ai = opp[0];
     const sfSeat = 2 + Math.floor(rnd() * 2); teams[sfSeat].ai = opp[1];
     const fSeat = 4 + Math.floor(rnd() * 4); teams[fSeat].ai = opp[2];
+    if (c.singles){   // singles: each seat is one player, every name used once
+      const used = new Set();
+      teams.forEach((x, i) => { if (x.you) return; const a = LADDER[aiIndex(x.ai)]; let nm = i % 2 ? a.name : a.name2; if (used.has(nm)) nm = nm === a.name ? a.name2 : a.name; if (used.has(nm)) nm += ' Jr.'; used.add(nm); x.name = nm; });
+    }
     const other = (a, b, keep) => keep === a ? a : keep === b ? b : (rnd() < .5 ? a : b);
     const qf = [0, other(2, 3, sfSeat), other(4, 5, fSeat), other(6, 7, fSeat)];
     const sf = [0, fSeat < 6 ? qf[2] : qf[3]];
@@ -636,7 +685,7 @@
     return out;
   }
 
-  const API = { VERSION: 17, CUPS, CUP_BY, ROUND_NAME, cupUnlocked, tourNew, tourOpp, tourReward, tourResult, tourWinner, tourParts, tourWatchable, tourDecide, tourAdvance, PH_PLACES, PRACTICE_GAP, isPractice, matchPreview, parseScore, seasonId, seasonEnds, seasonRoll, SEASON_REWARD, CH_DAILY, CH_WEEKLY, CH_BY_ID, ensureChallenges, cleanStats, trackStats,
+  const API = { VERSION: 19, tourEnter, cleanTeamName, teamNameError, TEAM_NAMES, PH_TEAM_NAMES, CUPS, CUP_BY, ROUND_NAME, cupUnlocked, tourNew, tourOpp, tourReward, tourResult, tourWinner, tourParts, tourWatchable, tourDecide, tourAdvance, PH_PLACES, PRACTICE_GAP, isPractice, matchPreview, parseScore, seasonId, seasonEnds, seasonRoll, SEASON_REWARD, CH_DAILY, CH_WEEKLY, CH_BY_ID, ensureChallenges, cleanStats, trackStats,
     ACHIEVEMENTS, checkAchievements, badName, LADDER, SKILL_LEVELS, ITEMS, BY_ID, SLOTS, STARTER, DEFAULT_EQUIP, HAIR_STYLES, ALL_HAIR, HAIR_COLORS, BODY_TYPES, NATIONS,
     rarityOf, CHESTS, CHEST_POOL, DUP_REFUND, openChest,
     levelInfo, aiIndex, dupr, duprTier, xpForLevel, claimDaily, DAILY_COINS, PALETTE, matchRewards, rallyRewards, onlineRewards, elo, aiUnlocked,
