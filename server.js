@@ -134,6 +134,8 @@ function publicUser(u) {
     username: u.username, mmr: u.mmr, peak: u.peak, wins: u.wins, losses: u.losses,
     bestRally: u.bestRally || 0, history: (u.history || []).slice(0, 20), look: u.look, created: u.created,
     coins: u.coins, xp: u.xp, level: lv.level, owned: u.owned, equip: u.equip, beaten: u.beaten, keys: u.keys | 0,
+    stats: u.stats || {}, ach: u.ach || [], ch: u.ch || null, season: { id: u.season, ends: CAT.seasonEnds(), peak: u.seasonPeak }, seasons: u.seasons || [],
+    seasonNote: u.seasonNote || null, hasRecovery: !!u.recHash, owner: isOwner(u), openMatch: !!u.open,
   };
 }
 /* ---------- profiles + friends ---------- */
@@ -141,7 +143,7 @@ function notifyUser(key, msg) { for (const c of clients) if (c.meta && c.meta.us
 function onlineSet() { const s = new Set(); for (const c of clients) if (c.meta && c.meta.user) s.add(c.meta.user); return s; }
 function profileOf(u, online) {
   const lv = CAT.levelInfo(u.xp), d = CAT.dupr(u.mmr);
-  return { username: u.username, level: lv.level, mmr: u.mmr, peak: u.peak, dupr: +d.toFixed(3), tier: CAT.duprTier(d), wins: u.wins, losses: u.losses,
+  return { ach: (u.ach || []).length, reports: (u.reports || []).length, banned: !!u.banned, username: u.username, level: lv.level, mmr: u.mmr, peak: u.peak, dupr: +d.toFixed(3), tier: CAT.duprTier(d), wins: u.wins, losses: u.losses,
     bestRally: u.bestRally || 0, look: wornLook(u), history: (u.history || []).slice(0, 5), created: u.created, online: online ? online.has(u.username.toLowerCase()) : false };
 }
 function applyResult(u, delta, entry) {
@@ -179,9 +181,43 @@ function readBody(req) {
     req.on('error', () => resolve(null));
   });
 }
+/* ---------- rate limits (in memory) ---------- */
+const LIMITS = new Map();
+function ipOf(req) { return String(req.headers['x-forwarded-for'] || (req.socket && req.socket.remoteAddress) || '').split(',')[0].trim(); }
+function limitHit(key, max, windowMs) {      // count one event; true when over the limit
+  const now = Date.now(); let r = LIMITS.get(key);
+  if (!r || now - r.first > windowMs) { r = { n: 0, first: now, win: windowMs }; LIMITS.set(key, r); }
+  r.n++; return r.n > max;
+}
+function limitLeft(key, max) { const r = LIMITS.get(key); if (!r || Date.now() - r.first > r.win || r.n < max) return 0; return Math.ceil((r.first + r.win - Date.now()) / 60000); }
+setInterval(() => { const now = Date.now(); for (const [k, r] of LIMITS) if (now - r.first > r.win) LIMITS.delete(k); }, 60000).unref();
+/* ---------- recovery codes: shown once at signup, stored only as a hash ---------- */
+const REC_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+function newRecovery(u) {
+  let code = ''; for (let i = 0; i < 12; i++) code += REC_ABC[crypto.randomInt(REC_ABC.length)];
+  code = code.match(/.{4}/g).join('-');
+  u.recSalt = crypto.randomBytes(12).toString('hex'); u.recHash = hashPassword(code.replace(/-/g, ''), u.recSalt);
+  return code;
+}
+const OWNER = String(process.env.OWNER_USERNAME || '').trim().toLowerCase();
+const isOwner = (u) => !!u && !!OWNER && u.username.toLowerCase() === OWNER;
+function rollSeason(u) { const r = CAT.seasonRoll(u); if (r) { u.seasonNote = r; touchUser(u); } CAT.ensureChallenges(u); return r; }
+// a ranked match that was started but never finished counts as a loss (quitting)
+function settleAbandoned(u, maxAgeMs) {
+  if (!u.open || Date.now() - u.open.t < (maxAgeMs || 0)) return null;
+  const o = u.open; u.open = null;
+  const r = CAT.applyMatch(u, o.ai, false, 'Quit', o.mode === 'doubles');
+  if (typeof r === 'string') return null;
+  u.mmr = Math.max(0, u.mmr - 10);                 // extra penalty for leaving
+  if (u.history && u.history[0]) { u.history[0].delta -= 10; u.history[0].mmr = u.mmr; u.history[0].score = 'Quit'; }
+  touchUser(u);
+  return { delta: r.delta - 10 };
+}
 function authUser(req) {
   const h = req.headers.authorization || '';
-  return userFromToken(h.startsWith('Bearer ') ? h.slice(7) : '');
+  const u = userFromToken(h.startsWith('Bearer ') ? h.slice(7) : '');
+  if (u && u.banned) return null;
+  return u;
 }
 function newSession(u) {
   const token = crypto.randomBytes(24).toString('hex');
@@ -195,7 +231,8 @@ async function handleApi(req, res, url) {
   if (route === '/api/health') return json(res, 200, { ok: true, game: 'pickle-rush', players: Object.keys(db.users).length, storage: STORAGE, temporary: STORAGE === 'file' && !!process.env.RENDER });
 
   if (route === '/api/leaderboard' && req.method === 'GET') {
-    const rows = Object.values(db.users)
+    for (const x of Object.values(db.users)) rollSeason(x);
+    const rows = Object.values(db.users).filter((x) => !x.banned && !x.flagged)
       .sort((a, b) => b.mmr - a.mmr || b.wins - a.wins)
       .slice(0, 100)
       .map((u) => ({ username: u.username, mmr: u.mmr, wins: u.wins, losses: u.losses, peak: u.peak, level: CAT.levelInfo(u.xp).level, dupr: +CAT.dupr(u.mmr).toFixed(3), nation: (u.look && u.look.nation) || '' }));
@@ -219,34 +256,61 @@ async function handleApi(req, res, url) {
   }
   if (route === '/api/me' && req.method === 'GET') {
     const u = authUser(req);
-    return u ? json(res, 200, { user: publicUser(u) }) : json(res, 401, { error: 'Not signed in' });
+    if (!u) return json(res, 401, { error: 'Not signed in' });
+    rollSeason(u); settleAbandoned(u, 30 * 60000);
+    const out = publicUser(u); if (u.seasonNote) { u.seasonNote = null; touchUser(u); }
+    return json(res, 200, { user: out });
   }
 
   if (req.method !== 'POST') return json(res, 404, { error: 'Not found' });
   const body = await readBody(req);
   if (!body) return json(res, 413, { error: 'Request too large' });
 
+  if (route === '/api/clientError') {
+    if (!limitHit('err:' + ipOf(req), 20, 3600000)) console.log('[client error]', JSON.stringify({ msg: String(body.msg || '').slice(0, 300), at: String(body.at || '').slice(0, 300), ua: String(body.ua || '').slice(0, 160), page: String(body.page || '').slice(0, 60) }));
+    return json(res, 200, { ok: true });
+  }
   if (route === '/api/signup') {
     const name = String(body.username || '').trim();
     const pw = String(body.password || '');
     if (!USER_RE.test(name)) return json(res, 400, { error: 'Usernames are 3–14 letters, numbers or _' });
+    if (CAT.badName(name)) return json(res, 400, { error: 'Please pick a different username' });
     if (pw.length < 4 || pw.length > 64) return json(res, 400, { error: 'Passwords need 4 to 64 characters' });
+    if (limitHit('signup:' + ipOf(req), 6, 3600000)) return json(res, 429, { error: 'Too many new accounts from this connection. Try again later.' });
     const key = name.toLowerCase();
     if (db.users[key]) return json(res, 409, { error: 'That username is taken' });
     const salt = crypto.randomBytes(16).toString('hex');
     const u = Object.assign({ username: name, salt, pass: hashPassword(pw, salt), look: baseLook(body.look), created: Date.now() }, CAT.newProgress());
+    const recovery = newRecovery(u); CAT.ensureChallenges(u); u.season = CAT.seasonId(); u.seasonPeak = 0;
     db.users[key] = u; touchUser(u);
     const token = newSession(u);
-    return json(res, 200, { token, user: publicUser(u) });
+    return json(res, 200, { token, user: publicUser(u), recovery });
+  }
+  if (route === '/api/recover') {
+    const key = String(body.username || '').trim().toLowerCase(), u = db.users[key];
+    const code = String(body.code || '').toUpperCase().replace(/[^A-Z0-9]/g, ''), pw = String(body.password || '');
+    if (limitHit('recover:' + ipOf(req), 10, 3600000)) return json(res, 429, { error: 'Too many tries. Try again in an hour.' });
+    if (pw.length < 4 || pw.length > 64) return json(res, 400, { error: 'Passwords need 4 to 64 characters' });
+    if (!u || !u.recHash || hashPassword(code, u.recSalt) !== u.recHash) return json(res, 401, { error: 'That username and recovery code don’t match' });
+    if (u.banned) return json(res, 403, { error: 'This account is banned' });
+    u.salt = crypto.randomBytes(16).toString('hex'); u.pass = hashPassword(pw, u.salt);
+    for (const [t, ss] of Object.entries(db.sessions)) if (ss.user === key) dropSession(t);      // log out everywhere else
+    const recovery = newRecovery(u); touchUser(u); LIMITS.delete('login:' + key);
+    return json(res, 200, { token: newSession(u), user: publicUser(u), recovery });
   }
 
   if (route === '/api/login') {
-    const key = String(body.username || '').trim().toLowerCase();
+    const key = String(body.username || '').trim().toLowerCase(), ip = ipOf(req);
+    const wait = Math.max(limitLeft('login:' + key, 5), limitLeft('loginip:' + ip, 30));
+    if (wait) return json(res, 429, { error: `Too many wrong passwords. Try again in ${wait} minute${wait > 1 ? 's' : ''}, or use your recovery code.` });
     const u = db.users[key];
-    if (!u) return json(res, 401, { error: 'Wrong username or password' });
+    const fail = () => { limitHit('login:' + key, 5, 600000); limitHit('loginip:' + ip, 30, 600000); return json(res, 401, { error: 'Wrong username or password' }); };
+    if (!u) return fail();
     const a = Buffer.from(hashPassword(body.password || '', u.salt), 'hex');
     const b = Buffer.from(u.pass, 'hex');
-    if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return json(res, 401, { error: 'Wrong username or password' });
+    if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return fail();
+    if (u.banned) return json(res, 403, { error: 'This account is banned' });
+    LIMITS.delete('login:' + key); rollSeason(u);
     const token = newSession(u);
     return json(res, 200, { token, user: publicUser(u) });
   }
@@ -263,17 +327,75 @@ async function handleApi(req, res, url) {
     u.look = baseLook(body.look); touchUser(u);
     return json(res, 200, { user: publicUser(u) });
   }
-  if (route === '/api/ranked') {
-    const r = CAT.applyMatch(u, String(body.ai || ''), !!body.won, body.score, body.mode === 'doubles');
-    if (typeof r === 'string') return json(res, 400, { error: r });
+  if (route === '/api/ranked/start') {
+    const ai = String(body.ai || '');
+    if (!CAT.aiUnlocked(u.beaten, ai)) return json(res, 400, { error: 'That opponent is still locked' });
+    const quit = settleAbandoned(u, 0);            // an unfinished earlier match counts as a loss
+    u.open = { id: crypto.randomBytes(8).toString('hex'), ai, mode: body.mode === 'doubles' ? 'doubles' : 'singles', t: Date.now() };
     touchUser(u);
-    return json(res, 200, { user: publicUser(u), result: r, delta: r.delta });
+    return json(res, 200, { matchId: u.open.id, quit, user: publicUser(u) });
+  }
+  if (route === '/api/ranked/abandon') {
+    if (!u.open || u.open.id !== body.matchId) return json(res, 200, { ok: true, delta: 0 });
+    const q = settleAbandoned(u, 0);
+    return json(res, 200, { ok: true, delta: q ? q.delta : 0, user: publicUser(u) });
+  }
+  if (route === '/api/ranked') {
+    // the result must belong to a match the server saw start, take a believable time and have a real final score
+    const o = u.open, ai = String(body.ai || ''), won = !!body.won;
+    if (!o || o.id !== body.matchId || o.ai !== ai) return json(res, 400, { error: 'This match wasn’t started properly, so it doesn’t count.' });
+    const sc = CAT.parseScore(body.score), secs = (Date.now() - o.t) / 1000;
+    if (!sc || (won !== (sc.a > sc.b))) { u.open = null; touchUser(u); return json(res, 400, { error: 'That score isn’t a finished game.' }); }
+    if (secs < Math.max(40, (sc.a + sc.b) * 3.5)) { u.open = null; touchUser(u); return json(res, 400, { error: 'That match was too short to count.' }); }
+    u.recentWins = (u.recentWins || []).filter((t) => Date.now() - t < 3600000);
+    if (won && u.recentWins.length >= 20) return json(res, 429, { error: 'That’s a lot of wins this hour! Take a break and try again soon.' });
+    u.open = null;
+    const r = CAT.applyMatch(u, ai, won, `${sc.a}–${sc.b}`, o.mode === 'doubles');
+    if (typeof r === 'string') return json(res, 400, { error: r });
+    if (won) u.recentWins.push(Date.now());
+    const prog = CAT.trackStats(u, Object.assign({}, body.stats, { matches: 1, rankedWins: won ? 1 : 0, online: 0, points: sc.a }));
+    touchUser(u);
+    return json(res, 200, { user: publicUser(u), result: r, delta: r.delta, prog });
+  }
+  if (route === '/api/progress') {
+    // stats from unranked matches (local, rally, online) for challenges and achievements
+    const now = Date.now();
+    if (now - (u.lastProg || 0) < 30000) return json(res, 200, { user: publicUser(u), prog: null });
+    u.lastProg = now;
+    const prog = CAT.trackStats(u, Object.assign({}, body.stats, { rankedWins: 0, online: 0, matches: body.match ? 1 : 0 }));
+    touchUser(u);
+    return json(res, 200, { user: publicUser(u), prog });
+  }
+  if (route === '/api/recovery/new') return json(res, 200, { recovery: (() => { const c = newRecovery(u); touchUser(u); return c; })() });
+  if (route === '/api/report') {
+    const key = String(body.username || '').trim().toLowerCase(), t = db.users[key], me = u.username.toLowerCase();
+    if (!t || key === me) return json(res, 400, { error: 'Can’t report that player' });
+    if (limitHit('report:' + me, 10, 3600000)) return json(res, 429, { error: 'Too many reports. Try again later.' });
+    t.reports = (t.reports || []).filter((r) => r.by !== me).concat([{ by: me, reason: String(body.reason || 'name').slice(0, 40), t: Date.now() }]).slice(-50);
+    if (new Set(t.reports.map((r) => r.by)).size >= 3 && !t.cleared) t.flagged = true;   // hidden from the leaderboard until reviewed
+    touchUser(t);
+    return json(res, 200, { ok: true });
+  }
+  if (route === '/api/mod/list') {
+    if (!isOwner(u)) return json(res, 403, { error: 'Owner only' });
+    const list = Object.values(db.users).filter((x) => (x.reports || []).length || x.banned).map((x) => ({ username: x.username, reports: (x.reports || []).length, reasons: [...new Set((x.reports || []).map((r) => r.reason))], flagged: !!x.flagged, banned: !!x.banned }));
+    return json(res, 200, { list });
+  }
+  if (route === '/api/mod/action') {
+    if (!isOwner(u)) return json(res, 403, { error: 'Owner only' });
+    const t = db.users[String(body.username || '').toLowerCase()];
+    if (!t || isOwner(t)) return json(res, 400, { error: 'Can’t do that' });
+    if (body.action === 'ban'){ t.banned = true; for (const [k, ss] of Object.entries(db.sessions)) if (ss.user === t.username.toLowerCase()) dropSession(k); }
+    if (body.action === 'unban') t.banned = false;
+    if (body.action === 'clear'){ t.reports = []; t.flagged = false; t.cleared = true; }
+    touchUser(t);
+    return json(res, 200, { ok: true });
   }
   if (route === '/api/rally') {
     const n = Math.max(0, Math.min(500, body.returns | 0));
     const now = Date.now();
     let rew = null;
-    if (now - (u.lastRally || 0) > 8000 && n > 0) { u.lastRally = now; rew = CAT.addRewards(u, CAT.rallyRewards(n)); }
+    if (now - (u.lastRally || 0) > 8000 && n > 0) { u.lastRally = now; rew = CAT.addRewards(u, CAT.rallyRewards(n)); CAT.trackStats(u, { longRally: Math.min(n, 200) }); }
     if (n > (u.bestRally || 0)) u.bestRally = n;
     touchUser(u);
     return json(res, 200, { user: publicUser(u), result: rew });
@@ -305,12 +427,14 @@ async function handleApi(req, res, url) {
       case 'cancel': drop(u.reqOut, key); drop(f.reqIn, me); status = 'none'; notifyUser(key, { t: 'notify', kind: 'update' }); break;
       case 'remove': drop(u.friends, key); drop(f.friends, me); status = 'none'; notifyUser(key, { t: 'notify', kind: 'update' }); break;
     }
+    CAT.checkAchievements(u); CAT.checkAchievements(f);
     touchUser(u); touchUser(f);
     return json(res, 200, { ok: true, status });
   }
   if (route === '/api/chest') {
     const r = CAT.openChest(u, String(body.id || ''), !!body.key);
     if (typeof r === 'string') return json(res, 400, { error: r });
+    r.achievements = CAT.checkAchievements(u);
     touchUser(u);
     return json(res, 200, { user: publicUser(u), result: r });
   }
@@ -457,6 +581,7 @@ function markAway(ws) {
 function expireAway(room, ph) {
   const i = room.slots.indexOf(ph);
   if (i < 0) return;
+  quitPenalty(room, ph.meta);
   room.slots[i] = null;
   if (room.host === ph) {
     room.slots.forEach((c) => { if (c && !c.away) { c.meta.room = null; send(c, { t: 'closed', reason: 'The host didn’t reconnect in time.' }); } else if (c) clearTimeout(c.timer); });
@@ -476,9 +601,16 @@ function broadcastRoom(room) {
   const info = roomInfo(room);
   room.slots.forEach((c, i) => { if (c && !c.away) send(c, { t: 'room', room: info, you: i, rid: c.meta.rid }); });
 }
+function quitPenalty(room, meta) {
+  if (!room || room.state !== 'playing' || room.ranked === room.matchId || !meta || !meta.user) return;
+  const u = db.users[meta.user]; if (!u) return;
+  applyResult(u, -15, { opp: 'Left an online match', mode: room.mode === '2v2' ? 'Online 2v2' : 'Online 1v1', score: 'Quit', win: false });
+  touchUser(u);
+}
 function leaveRoom(ws, notice) {
   const room = ws.meta.room;
   if (!room) return;
+  quitPenalty(room, ws.meta);
   ws.meta.room = null;
   const i = slotOf(room, ws);
   if (i >= 0) room.slots[i] = null;
@@ -492,7 +624,7 @@ function leaveRoom(ws, notice) {
 }
 function cleanName(n) {
   const s = String(n || '').replace(/[^\w \-]/g, '').trim().slice(0, 14);
-  return s || 'Guest' + crypto.randomInt(100, 999);
+  return s && !CAT.badName(s) ? s : 'Guest' + crypto.randomInt(100, 999);
 }
 
 function rankOnline(room, winTeam, score) {
@@ -513,6 +645,7 @@ function rankOnline(room, winTeam, score) {
     const delta = CAT.elo(m.u.mmr, before[m.team === 1 ? 2 : 1], won);
     applyResult(m.u, delta, { opp: names(m.team === 1 ? 2 : 1), mode: room.mode === '2v2' ? 'Online 2v2' : 'Online 1v1', score: String(score || '').slice(0, 9), win: won });
     const rew = CAT.addRewards(m.u, CAT.onlineRewards(won));
+    rew.prog = CAT.trackStats(m.u, { matches: 1, online: 1 });
     send(m.c, { t: 'mmr', ranked: true, delta, user: publicUser(m.u), result: rew });
     touchUser(m.u);
   }
@@ -659,6 +792,13 @@ function onConnection(ws) {
         break;
       }
       case 'ping': send(ws, { t: 'pong', ts: m.ts }); break;
+      case 'emote': {
+        if (!room || Date.now() - (ws.meta.emoteT || 0) < 1500) return;
+        ws.meta.emoteT = Date.now();
+        const i = slotOf(room, ws), e = Math.max(0, Math.min(7, m.e | 0));
+        room.slots.forEach((c) => c && c !== ws && send(c, { t: 'emote', s: i, e }));
+        break;
+      }
     }
   });
 

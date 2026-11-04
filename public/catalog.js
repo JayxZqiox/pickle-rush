@@ -190,6 +190,7 @@
     const pool = CHEST_POOL.filter(i => rarityOf(i) === rarity);
     const item = pool[Math.floor(rnd() * pool.length)];
     const dup = p.owned.includes(item.id);
+    p.stats = p.stats || {}; p.stats.chests = (p.stats.chests || 0) + 1;
     let refund = 0;
     if (dup) { refund = DUP_REFUND[rarity]; p.coins += refund; } else p.owned.push(item.id);
     return { id: item.id, rarity, dup, refund };
@@ -273,6 +274,7 @@
     p.equip = Object.assign({}, DEFAULT_EQUIP, p.equip || {});
     for (const s of SLOTS) { const it = BY_ID[p.equip[s]]; if (!it || it.slot !== s || !p.owned.includes(it.id)) p.equip[s] = DEFAULT_EQUIP[s]; }
     p.beaten = (p.beaten || []).filter(k => aiIndex(k) >= 0);
+    if (!p.stats) p.stats = {}; if (!p.ach) p.ach = [];
     return p;
   }
   function addRewards(p, r) {
@@ -286,13 +288,129 @@
     return { coins: r.coins | 0, xp: r.xp | 0, levelBefore: before, level: after, skills, newItems: items, keys: Math.max(0, after - before) };
   }
   // ranked match against the AI ladder. Returns an error string or the result summary.
+  /* ---------- score sanity (pickleball: to 11, win by 2) ---------- */
+  function parseScore(score) {
+    const m = String(score || '').match(/(\d{1,2})\s*[-–:]\s*(\d{1,2})/);
+    if (!m) return null;
+    const a = +m[1], b = +m[2], w = Math.max(a, b), l = Math.min(a, b);
+    if (w < 11 || w - l < 2 || (w > 11 && w - l !== 2) || w > 40) return null;
+    return { a, b, w, l };
+  }
+  /* ---------- seasons: one per calendar month (UTC) ---------- */
+  function seasonId(d) { d = d || new Date(); return d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0'); }
+  function seasonEnds(d) { d = d || new Date(); return Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1); }
+  const SEASON_REWARD = { Beginner:{ coins:200, keys:0 }, Intermediate:{ coins:350, keys:1 }, 'Advanced intermediate':{ coins:500, keys:1 }, Advanced:{ coins:800, keys:2 },
+    'Semi-professional':{ coins:1200, keys:2 }, Professional:{ coins:2000, keys:3 }, 'World-best':{ coins:3000, keys:4 } };
+  function seasonRoll(p) {
+    const cur = seasonId();
+    if (!p.season) { p.season = cur; p.seasonPeak = p.mmr; return null; }
+    if (p.season === cur) return null;
+    const tier = duprTier(dupr(p.seasonPeak == null ? p.mmr : p.seasonPeak)), r = SEASON_REWARD[tier];
+    p.coins = (p.coins | 0) + r.coins; p.keys = (p.keys | 0) + r.keys;
+    p.seasons = (p.seasons || []).concat([{ id:p.season, peak:p.seasonPeak == null ? p.mmr : p.seasonPeak, final:p.mmr, tier }]).slice(-12);
+    const from = p.season;
+    p.season = cur; p.mmr = Math.round(p.mmr * .75); p.seasonPeak = p.mmr;      // soft reset: keep 75% of your rating
+    return { from, tier, coins:r.coins, keys:r.keys };
+  }
+  /* ---------- daily + weekly challenges ---------- */
+  const CH_DAILY = [
+    { id:'d_play3', text:'Play 3 matches', stat:'matches', n:3, coins:150 },
+    { id:'d_win2', text:'Win 2 ranked matches', stat:'rankedWins', n:2, coins:250 },
+    { id:'d_dink15', text:'Hit 15 dinks', stat:'dinks', n:15, coins:150 },
+    { id:'d_smash5', text:'Hit 5 smashes or spikes', stat:'smashes', n:5, coins:200 },
+    { id:'d_perfect10', text:'Hit 10 Perfect shots', stat:'perfects', n:10, coins:200 },
+    { id:'d_points20', text:'Score 20 points', stat:'points', n:20, coins:150 },
+    { id:'d_online1', text:'Play an online match', stat:'online', n:1, coins:250 },
+    { id:'d_rally10', text:'Reach a 10-shot rally', stat:'longRally', n:10, max:true, coins:200 },
+  ];
+  const CH_WEEKLY = [
+    { id:'w_win10', text:'Win 10 ranked matches', stat:'rankedWins', n:10, coins:800, keys:1 },
+    { id:'w_play20', text:'Play 20 matches', stat:'matches', n:20, coins:600, keys:1 },
+    { id:'w_smash40', text:'Hit 40 smashes or spikes', stat:'smashes', n:40, coins:700, keys:1 },
+    { id:'w_dink120', text:'Hit 120 dinks', stat:'dinks', n:120, coins:700, keys:1 },
+    { id:'w_online5', text:'Play 5 online matches', stat:'online', n:5, coins:900, keys:1 },
+    { id:'w_perfect60', text:'Hit 60 Perfect shots', stat:'perfects', n:60, coins:800, keys:1 },
+  ];
+  const CH_BY_ID = {}; CH_DAILY.concat(CH_WEEKLY).forEach(c => { CH_BY_ID[c.id] = c; });
+  const dayId = d => (d || new Date()).toISOString().slice(0, 10);
+  function weekId(d) { d = d || new Date(); const t = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())); t.setUTCDate(t.getUTCDate() - (t.getUTCDay() + 6) % 7); return 'W' + t.toISOString().slice(0, 10); }
+  function pickN(pool, n, key) {
+    let h = 9; for (const ch of key) h = (h * 33 + ch.charCodeAt(0)) >>> 0;
+    const a = pool.slice(); for (let i = a.length - 1; i > 0; i--) { h = (h * 1103515245 + 12345) >>> 0; const j = h % (i + 1); [a[i], a[j]] = [a[j], a[i]]; }
+    return a.slice(0, n);
+  }
+  function ensureChallenges(p) {
+    const d = dayId(), w = weekId(); p.ch = p.ch || {};
+    if (p.ch.day !== d) { p.ch.day = d; p.ch.d = pickN(CH_DAILY, 3, d).map(c => ({ id:c.id, prog:0, done:false })); }
+    if (p.ch.week !== w) { p.ch.week = w; p.ch.w = pickN(CH_WEEKLY, 3, w).map(c => ({ id:c.id, prog:0, done:false })); }
+    return p.ch;
+  }
+  // per-match limits, so a tampered report can't finish everything at once
+  const STAT_CAP = { matches:1, rankedWins:1, online:1, dinks:80, smashes:40, perfects:80, points:30, longRally:200 };
+  function cleanStats(s) { const o = {}; for (const k in STAT_CAP) o[k] = Math.max(0, Math.min(STAT_CAP[k], Math.floor(+((s || {})[k]) || 0))); return o; }
+  /* ---------- achievements ---------- */
+  const st = (p, k) => (p.stats && p.stats[k]) || 0;
+  const ACHIEVEMENTS = [
+    { id:'a_first',   icon:'🏆', name:'First Win',          desc:'Win a ranked match',               test:p => p.wins >= 1, coins:100 },
+    { id:'a_w10',     icon:'🔥', name:'On a Roll',          desc:'Win 10 ranked matches',            test:p => p.wins >= 10, coins:300 },
+    { id:'a_w50',     icon:'⭐', name:'Veteran',            desc:'Win 50 ranked matches',            test:p => p.wins >= 50, coins:800, keys:1 },
+    { id:'a_w100',    icon:'💯', name:'Centurion',          desc:'Win 100 ranked matches',           test:p => p.wins >= 100, coins:1500, keys:2 },
+    { id:'a_ladder',  icon:'🪜', name:'Ladder Climber',     desc:'Beat 8 different opponents',       test:p => (p.beaten || []).length >= 8, coins:600, keys:1 },
+    { id:'a_king',    icon:'👑', name:'Long Live the King', desc:'Beat The Pickle King',             test:p => (p.beaten || []).includes('king'), coins:3000, keys:3 },
+    { id:'a_adv',     icon:'📈', name:'Advanced',           desc:'Reach a 4.0 rating',               test:p => dupr(p.peak || p.mmr) >= 4, coins:500, keys:1 },
+    { id:'a_semi',    icon:'🥉', name:'Semi-Pro',           desc:'Reach a 5.0 rating',               test:p => dupr(p.peak || p.mmr) >= 5, coins:800, keys:1 },
+    { id:'a_pro',     icon:'🥈', name:'Pro',                desc:'Reach a 6.0 rating',               test:p => dupr(p.peak || p.mmr) >= 6, coins:1200, keys:2 },
+    { id:'a_world',   icon:'🥇', name:'World-Best',         desc:'Reach a 7.0 rating',               test:p => dupr(p.peak || p.mmr) >= 7, coins:2000, keys:3 },
+    { id:'a_smash',   icon:'💥', name:'Smash Bros',         desc:'Hit 100 smashes or spikes',        test:p => st(p, 'smashes') >= 100, coins:500 },
+    { id:'a_dink',    icon:'🥒', name:'Kitchen Master',     desc:'Hit 300 dinks',                    test:p => st(p, 'dinks') >= 300, coins:500 },
+    { id:'a_perfect', icon:'🎯', name:'Perfectionist',      desc:'Hit 200 Perfect shots',            test:p => st(p, 'perfects') >= 200, coins:600 },
+    { id:'a_rally',   icon:'♾️', name:'Marathon Rally',     desc:'Reach a 30-shot rally',            test:p => st(p, 'longRally') >= 30 || (p.bestRally || 0) >= 30, coins:400 },
+    { id:'a_online',  icon:'🌐', name:'Online Debut',       desc:'Play an online match',             test:p => st(p, 'online') >= 1, coins:200 },
+    { id:'a_online25',icon:'✈️', name:'Globetrotter',       desc:'Play 25 online matches',           test:p => st(p, 'online') >= 25, coins:800, keys:1 },
+    { id:'a_chest',   icon:'🎁', name:'Treasure Hunter',    desc:'Open your first chest',            test:p => st(p, 'chests') >= 1, coins:100 },
+    { id:'a_collect', icon:'💎', name:'Collector',          desc:'Own 15 chest items',               test:p => CHEST_POOL.filter(i => p.owned.includes(i.id)).length >= 15, coins:1000, keys:1 },
+    { id:'a_friend',  icon:'🤝', name:'Better Together',    desc:'Make a friend',                    test:p => (p.friends || []).length >= 1, coins:150 },
+    { id:'a_grind',   icon:'📅', name:'Daily Grinder',      desc:'Complete 20 challenges',           test:p => st(p, 'challenges') >= 20, coins:600, keys:1 },
+    { id:'a_season',  icon:'🗓️', name:'Season Veteran',     desc:'Finish a season',                  test:p => (p.seasons || []).length >= 1, coins:300 },
+  ];
+  function checkAchievements(p) {
+    p.ach = p.ach || []; const got = [];
+    for (const a of ACHIEVEMENTS) if (!p.ach.includes(a.id) && a.test(p)) { p.ach.push(a.id); p.coins = (p.coins | 0) + (a.coins || 0); p.keys = (p.keys | 0) + (a.keys || 0); got.push(a.id); }
+    return got;
+  }
+  // add one match's stats: challenges, lifetime stats and achievements
+  function trackStats(p, raw) {
+    const s = cleanStats(raw), ch = ensureChallenges(p), out = { challenges:[], achievements:[], coins:0, keys:0 };
+    p.stats = p.stats || {};
+    for (const k in s) { if (k === 'longRally') p.stats.longRally = Math.max(p.stats.longRally || 0, s[k]); else p.stats[k] = (p.stats[k] || 0) + s[k]; }
+    for (const c of ch.d.concat(ch.w)) {
+      const def = CH_BY_ID[c.id]; if (!def || c.done) continue;
+      c.prog = def.max ? Math.max(c.prog, s[def.stat] || 0) : c.prog + (s[def.stat] || 0);
+      if (c.prog >= def.n) { c.done = true; c.prog = def.n; p.coins = (p.coins | 0) + def.coins; p.keys = (p.keys | 0) + (def.keys || 0); p.stats.challenges = (p.stats.challenges || 0) + 1; out.challenges.push(c.id); out.coins += def.coins; out.keys += def.keys || 0; }
+    }
+    out.achievements = checkAchievements(p);
+    return out;
+  }
+  /* ---------- names: block offensive words (also common leetspeak) ---------- */
+  const BAD_SUB = ['fuck', 'shit', 'bitch', 'cunt', 'asshole', 'nigg', 'fagg', 'retard', 'whore', 'slut', 'rapist', 'nazi', 'hitler', 'porn', 'penis', 'vagina', 'pussy',
+    'putang', 'tangina', 'tarantado', 'pakyu', 'pokpok', 'kantot', 'hindot', 'burat', 'kupal', 'ulol', 'gago', 'putragis', 'pucha', 'bilat', 'jakol'];
+  const BAD_WORD = ['sex', 'dick', 'cock', 'cum', 'tits', 'puta', 'tanga', 'bobo', 'titi', 'tite', 'puke', 'leche', 'shet', 'kkk', 'fck', 'fuk', 'btch', 'pota', 'tae', 'bayag'];
+  function badName(name) {
+    const raw = String(name || '').toLowerCase();
+    const leet = raw.replace(/0/g, 'o').replace(/1/g, 'i').replace(/3/g, 'e').replace(/4/g, 'a').replace(/5/g, 's').replace(/7/g, 't').replace(/8/g, 'b').replace(/@/g, 'a').replace(/\$/g, 's');
+    const flat = leet.replace(/[^a-z]/g, '');
+    if (BAD_SUB.some(w => flat.includes(w))) return true;
+    const tokens = raw.replace(/[0-9]/g, '_').split(/[_\s]+/).concat(leet.split(/[_\s]+/), [flat]);
+    return tokens.some(t => BAD_WORD.includes(t));
+  }
+
   function applyMatch(p, key, won, score, doubles) {
     const ai = LADDER[aiIndex(key)];
     if (!ai) return 'Unknown opponent';
     if (!aiUnlocked(p.beaten, key)) return 'That opponent is still locked';
     const delta = elo(p.mmr, ai.mmr, won);
     p.mmr = Math.max(0, p.mmr + delta);
-    p.peak = Math.max(p.peak || 0, p.mmr);
+    p.peak = Math.max(p.peak || 0, p.mmr); p.seasonPeak = Math.max(p.seasonPeak || 0, p.mmr);
     if (won) p.wins++; else p.losses++;
     let unlockedAi = null;
     if (won && !p.beaten.includes(key)) {
@@ -336,7 +454,8 @@
     return out;
   }
 
-  const API = { VERSION: 13, LADDER, SKILL_LEVELS, ITEMS, BY_ID, SLOTS, STARTER, DEFAULT_EQUIP, HAIR_STYLES, ALL_HAIR, HAIR_COLORS, BODY_TYPES, NATIONS,
+  const API = { VERSION: 14, parseScore, seasonId, seasonEnds, seasonRoll, SEASON_REWARD, CH_DAILY, CH_WEEKLY, CH_BY_ID, ensureChallenges, cleanStats, trackStats,
+    ACHIEVEMENTS, checkAchievements, badName, LADDER, SKILL_LEVELS, ITEMS, BY_ID, SLOTS, STARTER, DEFAULT_EQUIP, HAIR_STYLES, ALL_HAIR, HAIR_COLORS, BODY_TYPES, NATIONS,
     rarityOf, CHESTS, CHEST_POOL, DUP_REFUND, openChest,
     levelInfo, aiIndex, dupr, duprTier, xpForLevel, claimDaily, DAILY_COINS, PALETTE, matchRewards, rallyRewards, onlineRewards, elo, aiUnlocked,
     newProgress, normalize, addRewards, applyMatch, buy, equip, cleanLook };

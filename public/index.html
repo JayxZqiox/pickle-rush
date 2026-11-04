@@ -174,6 +174,36 @@ input{font-size:16px;} /* stops iOS zooming into inputs */
 .chestRes{min-height:58px; text-align:center; margin-top:14px;}
 .chestRes b{display:block; font-family:"Russo One",Impact,sans-serif; font-size:26px; font-weight:400;}
 #bodyRow{flex-wrap:wrap;} #bodyRow > button{padding:7px 8px; font-size:13px; min-width:0;}
+/* challenges + achievements */
+.chPanel{border-radius:24px; padding:16px 18px; animation:fadeUp .5s var(--ease) both;}
+.chRow{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:4px 12px; align-items:center; padding:10px 12px; border-radius:14px; background:rgba(0,0,0,.22); border:1px solid var(--line);}
+.chRow.done{border-color:rgba(166,242,61,.45); background:rgba(166,242,61,.07);}
+.chBar{grid-column:1 / -1; height:6px; border-radius:99px; background:rgba(255,255,255,.08); overflow:hidden;} .chBar i{display:block; height:100%; border-radius:99px; background:linear-gradient(90deg, var(--accent), #d9ff7a); transition:width .8s var(--ease);}
+.achGrid{display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:10px;}
+.achCard{display:flex; gap:12px; align-items:center; padding:12px; border-radius:16px; border:1px solid var(--line); background:linear-gradient(180deg, var(--panel2), var(--panel)); animation:fadeUp .4s var(--ease) both;}
+.achCard .ai{width:46px; height:46px; flex:none; border-radius:14px; display:grid; place-items:center; font-size:24px; background:rgba(0,0,0,.3);}
+.achCard.off{opacity:.5; filter:grayscale(.9);} .achCard.on{border-color:rgba(245,197,66,.55); box-shadow:0 10px 26px -18px rgba(245,197,66,.9);} .achCard.on .ai{background:rgba(245,197,66,.16);}
+/* sign-in */
+.authWrap{display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr); gap:16px; width:min(1060px, 100%);}
+.authHero{position:relative; border-radius:30px; overflow:hidden; min-height:470px; display:flex; flex-direction:column; animation:cardIn .45s var(--ease) both;
+  background:radial-gradient(70% 70% at 30% 40%, rgba(166,242,61,.18), transparent 60%), radial-gradient(60% 70% at 100% 0%, rgba(255,122,61,.2), transparent 60%), linear-gradient(160deg, #13284d, #0a1428 70%);}
+.authStage{display:block; width:100%; flex:1; min-height:250px;}
+.authHeroTxt{position:relative; padding:24px 26px 26px;}
+.featRow{display:flex; gap:6px; flex-wrap:wrap; margin-top:12px;} .featRow span{font-size:12px; font-weight:800; padding:6px 10px; border-radius:99px; background:rgba(0,0,0,.3); border:1px solid var(--line);}
+.authCard{border-radius:30px; padding:22px; display:flex; flex-direction:column; animation:cardIn .5s var(--ease) both;}
+.authTabs{margin-bottom:18px;} .authPane{animation:fadeUp .3s var(--ease) both;}
+.field{display:flex; align-items:center; gap:10px; padding:0 12px; border-radius:14px; background:rgba(0,0,0,.28); border:1px solid var(--line); transition:border-color .15s, box-shadow .15s;}
+.field:focus-within{border-color:rgba(166,242,61,.7); box-shadow:0 0 0 3px rgba(166,242,61,.15);}
+.field input{flex:1; min-width:0; background:transparent; border:0; outline:0; padding:13px 0; font-weight:600; color:var(--text);}
+.fIco{width:18px; height:18px; color:var(--muted); flex:none;} .eyeBtn{color:var(--muted); padding:6px; border-radius:8px;} .eyeBtn.on{color:var(--accent);}
+.pwMeter{display:flex; align-items:center; gap:10px; margin-top:8px;} .pwMeter i{flex:1; height:6px; border-radius:99px; background:rgba(255,255,255,.08); position:relative; overflow:hidden;}
+.pwMeter i::after{content:""; position:absolute; inset:0 auto 0 0; width:var(--w, 0%); background:var(--c, #f87171); border-radius:99px; transition:width .3s, background .3s;} .pwMeter span{font-size:12px; font-weight:800; min-width:70px; text-align:right;}
+.agree{display:flex; gap:8px; align-items:flex-start; margin-top:12px; font-size:13px; color:var(--muted);} .agree input{margin-top:3px; accent-color:var(--accent);} .agree a, .authLinks a{color:var(--text); text-decoration:underline; text-underline-offset:3px;}
+.authErr{min-height:22px; margin:10px 0 6px; font-size:13px; font-weight:700; color:var(--bad);}
+.authOr{display:flex; align-items:center; gap:10px; margin:14px 0; color:var(--muted); font-size:12px; font-weight:700;} .authOr::before, .authOr::after{content:""; flex:1; height:1px; background:var(--line);}
+.authLinks{display:flex; gap:8px; justify-content:center; margin-top:auto; padding-top:14px; font-size:12px; color:var(--muted);}
+.recCode{margin-top:16px; padding:14px; border-radius:16px; background:rgba(0,0,0,.35); border:1px dashed rgba(245,197,66,.6); font-family:"Russo One",Impact,monospace; font-size:28px; letter-spacing:.12em; color:#f5c542;}
+@media (max-width:820px){ .authWrap{grid-template-columns:minmax(0,1fr);} .authHero{min-height:0;} .authStage{flex:none; height:190px; min-height:0;} .authHeroTxt{padding-top:6px;} }
 /* notifications */
 .bellCount{position:absolute; top:-3px; right:-3px; min-width:20px; height:20px; padding:0 5px; border-radius:99px; background:#ef4444; color:#fff; font-size:11px; font-weight:800; display:grid; place-items:center; box-shadow:0 0 0 2px var(--bg);}
 #bellBtn.ring{animation:bellShake .7s ease 2;}
@@ -406,6 +436,7 @@ input::placeholder{opacity:1;color:#8492a6}
 .max-w-\[340px\]{max-width:340px}
 .max-w-\[380px\]{max-width:380px}
 .max-w-\[420px\]{max-width:420px}
+.max-w-\[440px\]{max-width:440px}
 .max-w-\[460px\]{max-width:460px}
 .max-w-\[480px\]{max-width:480px}
 .max-w-\[540px\]{max-width:540px}
@@ -414,6 +445,7 @@ input::placeholder{opacity:1;color:#8492a6}
 .max-w-\[820px\]{max-width:820px}
 .max-w-\[860px\]{max-width:860px}
 .max-w-\[880px\]{max-width:880px}
+.max-w-\[900px\]{max-width:900px}
 .mb-1{margin-bottom:0.25rem}
 .mb-1\.5{margin-bottom:0.375rem}
 .mb-2{margin-bottom:0.5rem}
@@ -423,15 +455,16 @@ input::placeholder{opacity:1;color:#8492a6}
 .mt-1{margin-top:0.25rem}
 .mt-1\.5{margin-top:0.375rem}
 .mt-2{margin-top:0.5rem}
+.mt-2\.5{margin-top:0.625rem}
 .mt-3{margin-top:0.75rem}
 .mt-4{margin-top:1rem}
 .mt-5{margin-top:1.25rem}
-.mt-6{margin-top:1.5rem}
 .mt-auto{margin-top:auto}
 .opacity-60{opacity:0.6}
 .opacity-80{opacity:0.8}
 .overflow-hidden{overflow:hidden}
 .overflow-y-auto{overflow-y:auto}
+.p-2{padding:0.5rem}
 .p-3{padding:0.75rem}
 .p-3\.5{padding:0.875rem}
 .p-4{padding:1rem}
@@ -455,8 +488,10 @@ input::placeholder{opacity:1;color:#8492a6}
 .py-2{padding-top:0.5rem;padding-bottom:0.5rem}
 .py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem}
 .py-3{padding-top:0.75rem;padding-bottom:0.75rem}
+.py-3\.5{padding-top:0.875rem;padding-bottom:0.875rem}
 .py-4{padding-top:1rem;padding-bottom:1rem}
 .rounded-2xl{border-radius:1rem}
+.rounded-\[24px\]{border-radius:24px}
 .rounded-\[30px\]{border-radius:30px}
 .rounded-full{border-radius:9999px}
 .rounded-lg{border-radius:.5rem}
@@ -495,7 +530,6 @@ input::placeholder{opacity:1;color:#8492a6}
 .top-0{top:0}
 .top-1\/2{top:50%}
 .tracking-\[\.3em\]{letter-spacing:.3em}
-.tracking-tight{letter-spacing:-.025em}
 .truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .underline{text-decoration-line:underline}
 .underline-offset-4{text-underline-offset:4px}
@@ -508,6 +542,7 @@ input::placeholder{opacity:1;color:#8492a6}
 .w-\[46\%\]{width:46%}
 .w-\[60px\]{width:60px}
 .w-full{width:100%}
+.whitespace-nowrap{white-space:nowrap}
 .z-10{z-index:10}
 .z-30{z-index:30}
 .z-40{z-index:40}
@@ -519,23 +554,59 @@ input::placeholder{opacity:1;color:#8492a6}
 
 <!-- ============ START (GATE) ============ -->
 <section id="s-gate" class="screen off">
-  <div class="glass rounded-[30px] w-full max-w-[420px] p-6 text-center">
-    <div class="flex justify-center"><svg class="logo-ball shrink-0" width="48" height="48" viewBox="0 0 46 46" aria-hidden="true">
-        <circle cx="23" cy="23" r="20" fill="#e8ff3d" stroke="#243000" stroke-width="2.5"/>
-        <g fill="#243000" opacity=".75"><circle cx="16" cy="15" r="2.6"/><circle cx="27" cy="13" r="2.6"/><circle cx="33" cy="22" r="2.6"/><circle cx="22" cy="24" r="2.6"/><circle cx="13" cy="26" r="2.6"/><circle cx="28" cy="32" r="2.6"/><circle cx="18" cy="35" r="2.6"/></g>
-      </svg></div>
-    <h1 class="font-display text-[42px] leading-none tracking-tight mt-3">Pickle Rush</h1>
-    <p class="text-[var(--muted)] font-medium mt-2">Level up, unlock gear and climb the leaderboard.</p>
-    <div class="mt-6 grid gap-2.5">
-      <button data-act="guest" class="primary rounded-2xl py-4 font-display text-xl">Play anonymously</button>
-      <div class="grid grid-cols-2 gap-2.5">
-        <button id="gLogin" data-act="gateLogin" class="tile rounded-2xl py-3 font-bold">Log in</button>
-        <button id="gSignup" data-act="gateSignup" class="tile rounded-2xl py-3 font-bold">Sign up</button>
+  <div class="authWrap">
+    <div class="glass authHero">
+      <canvas id="pvGate" class="authStage" aria-hidden="true"></canvas>
+      <div class="authHeroTxt">
+        <div class="flex items-center gap-2"><svg class="logo-ball shrink-0" width="40" height="40" viewBox="0 0 46 46" aria-hidden="true"><circle cx="23" cy="23" r="20" fill="#e8ff3d" stroke="#243000" stroke-width="2.5"/><g fill="#243000" opacity=".75"><circle cx="16" cy="15" r="2.6"/><circle cx="27" cy="13" r="2.6"/><circle cx="33" cy="22" r="2.6"/><circle cx="22" cy="24" r="2.6"/><circle cx="13" cy="26" r="2.6"/><circle cx="28" cy="32" r="2.6"/><circle cx="18" cy="35" r="2.6"/></g></svg><span class="lobbyTag">ARCADE PICKLEBALL</span></div>
+        <h1 class="heroTitle font-display mt-2">Pickle Rush</h1>
+        <p class="text-[var(--muted)] font-semibold mt-1">Climb a 16-opponent ladder, open chests, dance after every point and play friends online.</p>
+        <div class="featRow"><span>🏆 Ranked seasons</span><span>🎁 Chests</span><span>🌐 Online 1v1 &amp; 2v2</span><span>📅 Daily challenges</span></div>
       </div>
     </div>
-    <p id="gNote" class="text-sm text-[var(--muted)] mt-4">Checking for the server…</p>
+    <div class="glass authCard">
+      <div id="gTabs" class="seg authTabs"><button data-act="gatePlay" data-v="play">Play</button><button id="gLogin" data-act="gateLogin" data-v="login">Log in</button><button id="gSignup" data-act="gateSignup" data-v="signup">Sign up</button></div>
+      <div id="gPlay" class="authPane">
+        <div class="font-display text-2xl">Jump right in</div>
+        <p class="text-sm text-[var(--muted)] mt-1">Play without an account. Your progress stays in this browser.</p>
+        <button data-act="guest" class="primary rounded-2xl py-4 w-full font-display text-xl mt-4">Play as guest</button>
+        <div class="authOr"><span>or</span></div>
+        <button data-act="gateSignup" class="tile rounded-2xl py-3 w-full font-bold">Create a free account</button>
+      </div>
+      <div id="gForm" class="authPane hidden">
+        <div id="gFormTitle" class="font-display text-2xl">Welcome back</div>
+        <label class="field mt-4"><svg class="fIco" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.2-4 4.3-6 8-6s6.8 2 8 6"/></svg><input id="suName" maxlength="14" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="Username"></label>
+        <label class="field mt-2.5"><svg class="fIco" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="suPass" type="password" maxlength="64" autocomplete="current-password" placeholder="Password"><button type="button" data-act="eye" data-for="suPass" class="eyeBtn" aria-label="Show password"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></label>
+        <div id="pwMeter" class="pwMeter hidden"><i></i><span></span></div>
+        <label id="agreeRow" class="agree hidden"><input id="suAgree" type="checkbox"> <span>I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a></span></label>
+        <div id="suErr" class="authErr"></div>
+        <button id="suGo" data-act="suGo" class="primary rounded-2xl py-3.5 w-full font-display text-lg">Log in</button>
+        <button id="gForgot" data-act="gateRecover" class="text-sm font-semibold text-[var(--muted)] underline underline-offset-4 mt-3">Forgot password?</button>
+      </div>
+      <div id="gRecover" class="authPane hidden">
+        <div class="font-display text-2xl">Reset your password</div>
+        <p class="text-sm text-[var(--muted)] mt-1">Use the recovery code you saved when you signed up.</p>
+        <label class="field mt-4"><svg class="fIco" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.2-4 4.3-6 8-6s6.8 2 8 6"/></svg><input id="rcName" maxlength="14" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="Username"></label>
+        <label class="field mt-2.5"><svg class="fIco" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="14" r="4"/><path d="M11 11l9-9M16 6l3 3"/></svg><input id="rcCode" maxlength="16" autocapitalize="characters" spellcheck="false" placeholder="Recovery code (XXXX-XXXX-XXXX)"></label>
+        <label class="field mt-2.5"><svg class="fIco" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="rcPass" type="password" maxlength="64" autocomplete="new-password" placeholder="New password"><button type="button" data-act="eye" data-for="rcPass" class="eyeBtn" aria-label="Show password"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></label>
+        <div id="rcErr" class="authErr"></div>
+        <button data-act="rcGo" class="primary rounded-2xl py-3.5 w-full font-display text-lg">Reset password</button>
+        <button data-act="gateLogin" class="text-sm font-semibold text-[var(--muted)] underline underline-offset-4 mt-3">Back to log in</button>
+      </div>
+      <p id="gNote" class="text-xs text-[var(--muted)] mt-4">Checking for the server…</p>
+      <div class="authLinks"><a href="privacy.html" target="_blank" rel="noopener">Privacy</a><span>·</span><a href="terms.html" target="_blank" rel="noopener">Terms</a></div>
+    </div>
   </div>
 </section>
+
+<div id="recOv" class="hidden chestOv" style="z-index:70">
+  <div class="glass rounded-[24px] p-6 w-full max-w-[440px] text-center">
+    <span class="lobbyTag">SAVE THIS</span><div class="font-display text-2xl mt-2">Your recovery code</div>
+    <p class="text-sm text-[var(--muted)] mt-1">If you forget your password, this code is the only way back into your account. Screenshot it or write it down. You’ll only see it now.</p>
+    <div id="recCode" class="recCode">XXXX-XXXX-XXXX</div>
+    <div class="grid grid-cols-2 gap-2 mt-4"><button data-act="recCopy" class="tile rounded-xl py-3 font-bold">Copy</button><button data-act="recDone" class="primary rounded-xl py-3 font-bold">I saved it</button></div>
+  </div>
+</div>
 
 <!-- ============ MAIN MENU (player dashboard) ============ -->
 <section id="s-menu" class="screen off">
@@ -547,6 +618,7 @@ input::placeholder{opacity:1;color:#8492a6}
         <button data-act="online" class="navBtn"><svg class="ico " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.4 3.8 5.2 3.8 8.5s-1.2 6.1-3.8 8.5c-2.6-2.4-3.8-5.2-3.8-8.5s1.2-6.1 3.8-8.5z"/></svg><span>Online</span><i id="mOnlineDot" class="navDot"></i></button>
         <button data-act="shop" class="navBtn"><svg class="ico " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 8h13l-1 12h-11z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg><span>Shop</span></button>
         <button data-act="char" class="navBtn"><svg class="ico " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 4 4 6.5l2 4 2.2-1V20h7.6V9.5l2.2 1 2-4L15.5 4c-.6 1.4-1.9 2.2-3.5 2.2S9.1 5.4 8.5 4z"/></svg><span>Locker</span></button>
+        <button data-act="ach" class="navBtn"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="5.5"/><path d="M8.5 13.5 7 21l5-2.5 5 2.5-1.5-7.5"/></svg><span>Achievements</span><i id="achDot" class="navDot" style="background:var(--hot); display:none"></i></button>
         <button data-act="rank" class="navBtn"><svg class="ico " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8.5 20h7M10 17h4"/></svg><span>Ranking</span></button>
         <button data-act="ctrl" class="navBtn"><svg class="ico " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/></svg><span>Settings</span></button>
         <button data-act="how" class="navBtn"><svg class="ico " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.5a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1 .8-1 1.6v.6M12 17h.01"/></svg><span>How to play</span></button>
@@ -557,7 +629,7 @@ input::placeholder{opacity:1;color:#8492a6}
       <div class="glass hero">
         <canvas id="pvMenu" class="heroStage" aria-label="Your player"></canvas>
         <div class="heroInfo">
-          <span class="lobbyTag">SEASON 1 · RANKED LADDER</span>
+          <span id="heroSeason" class="lobbyTag">SEASON</span>
           <h1 class="heroTitle font-display">Pickle Rush</h1>
           <p id="m1pSub" class="text-[var(--muted)] font-semibold">Ranked singles</p>
           <div id="mNext" class="nextOpp"></div>
@@ -569,6 +641,10 @@ input::placeholder{opacity:1;color:#8492a6}
         <button data-act="duo" class="modeCard mcGreen"><svg class="ico " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8.5" r="3"/><path d="M3.5 19c.6-3 2.8-4.6 5.5-4.6s4.9 1.6 5.5 4.6"/><circle cx="17" cy="9.5" r="2.4"/><path d="M15.5 14.6c2.3-.2 4.3 1.1 5 4"/></svg><b>2v2</b><span>Doubles</span></button>
         <button data-act="rally" class="modeCard mcBlue"><svg class="ico " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3 5.5 13.5H12L11 21l7.5-10.5H12z"/></svg><b>Rally</b><span id="mBest">Best: 0</span></button>
         <button data-act="online" class="modeCard mcPurple"><svg class="ico " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.4 3.8 5.2 3.8 8.5s-1.2 6.1-3.8 8.5c-2.6-2.4-3.8-5.2-3.8-8.5s1.2-6.1 3.8-8.5z"/></svg><b>Online</b><span id="mOnlineSub">Quick match &amp; rooms</span></button>
+      </div>
+      <div class="glass chPanel">
+        <div class="flex items-center justify-between gap-2 flex-wrap"><div class="flex items-center gap-2"><span class="lobbyTag">CHALLENGES</span><div id="chTabs" class="seg"><button data-act="chTab" data-v="d" class="chip-on">Daily</button><button data-act="chTab" data-v="w">Weekly</button></div></div><span id="chLeft" class="text-xs font-bold text-[var(--muted)]"></span></div>
+        <div id="chList" class="grid gap-2 mt-3"></div>
       </div>
     </main>
     <aside class="glass dashSide">
@@ -582,7 +658,7 @@ input::placeholder{opacity:1;color:#8492a6}
         <div class="min-w-0"><div class="font-bold">Season XP</div><div id="mXpText" class="text-sm text-[var(--muted)]">0 / 100 XP</div><div class="bar mt-2" style="background:var(--line)"><i id="mXp" style="background:var(--accent)"></i></div></div>
       </div>
       <div class="duprTile">
-        <div><span>DUPR <i>(est.)</i></span><b id="mDupr" class="tabular-nums">2.000</b></div>
+        <div><span>PR RATING</span><b id="mDupr" class="tabular-nums">2.000</b></div>
         <div class="text-right min-w-0"><span id="mDuprTier">Beginner</span><div class="duprBar"><i id="mDuprBar"></i></div><em>2.0 → 8.0 scale</em></div>
       </div>
       <div class="statGrid">
@@ -606,21 +682,14 @@ input::placeholder{opacity:1;color:#8492a6}
       <h2 id="suTitle" class="font-display text-2xl">Your account</h2>
       <button data-act="menu" class="font-semibold text-[var(--muted)]">Back</button>
     </div>
-    <div id="suIn">
-      <div id="suTabs" class="seg mt-4"><button data-act="suTab" data-v="signup">Sign up</button><button data-act="suTab" data-v="login">Log in</button></div>
-      <label class="grid gap-1.5 mt-4"><span class="text-sm font-semibold text-[var(--muted)]">Username</span>
-        <input id="suName" maxlength="14" class="tile rounded-xl px-3 py-2.5 font-semibold text-[var(--text)] bg-[var(--panel)]" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="3–14 letters, numbers or _"></label>
-      <label id="suPassWrap" class="grid gap-1.5 mt-3"><span class="text-sm font-semibold text-[var(--muted)]">Password</span>
-        <input id="suPass" type="password" maxlength="64" class="tile rounded-xl px-3 py-2.5 font-semibold text-[var(--text)] bg-[var(--panel)]" autocomplete="new-password" placeholder="At least 4 characters"></label>
-      <div id="suErr" class="text-sm font-semibold mt-2 min-h-[20px]" style="color:var(--bad)"></div>
-      <button id="suGo" data-act="suGo" class="primary rounded-xl py-3 w-full font-display text-lg mt-1">Create account</button>
-    </div>
     <div id="suOut" class="hidden">
       <div class="tile rounded-2xl p-4 mt-4 flex items-center gap-3">
         <canvas id="pvSign" class="w-[60px] h-[76px] rounded-xl bg-[var(--panel2)] shrink-0"></canvas>
         <div class="min-w-0 flex-1"><div id="suUser" class="font-display text-2xl truncate">Player</div><div id="suStats" class="text-sm text-[var(--muted)]">0 MMR</div></div>
       </div>
-      <button data-act="logout" class="tile rounded-xl py-3 w-full font-semibold mt-3">Log out</button>
+      <button data-act="recNew" class="tile rounded-xl py-3 w-full font-semibold mt-3">Make a new recovery code</button>
+      <button data-act="logout" class="tile rounded-xl py-3 w-full font-semibold mt-2">Log out</button>
+      <div class="authLinks"><a href="privacy.html" target="_blank" rel="noopener">Privacy</a><span>·</span><a href="terms.html" target="_blank" rel="noopener">Terms</a></div>
     </div>
     <p id="suNote" class="text-sm text-[var(--muted)] mt-3"></p>
   </div>
@@ -714,6 +783,22 @@ input::placeholder{opacity:1;color:#8492a6}
   </div>
 </section>
 
+<!-- ============ ACHIEVEMENTS ============ -->
+<section id="s-ach" class="screen off">
+  <div class="glass rounded-[30px] w-full max-w-[900px] p-5 sm:p-6">
+    <div class="flex items-center justify-between stickyHead"><div><span class="lobbyTag">ACHIEVEMENTS</span><h2 id="achTitle" class="font-display text-2xl mt-1">0 of 21 unlocked</h2></div><button data-act="menu" class="tile rounded-xl px-4 py-2 font-bold">Back</button></div>
+    <div id="achSeason" class="mt-3"></div>
+    <div id="achGrid" class="achGrid mt-3"></div>
+  </div>
+</section>
+
+<div id="confirmOv" class="hidden chestOv" style="z-index:70">
+  <div class="glass rounded-[24px] p-6 w-full max-w-[420px] text-center">
+    <div id="cfTitle" class="font-display text-2xl">Are you sure?</div><p id="cfText" class="text-[var(--muted)] mt-2"></p>
+    <div class="grid grid-cols-2 gap-2 mt-5"><button data-act="cfNo" class="tile rounded-xl py-3 font-bold">Keep playing</button><button data-act="cfYes" id="cfYes" class="rounded-xl py-3 font-bold" style="background:#ef4444; color:#fff">Quit</button></div>
+  </div>
+</div>
+
 <!-- ============ PLAYER PROFILE ============ -->
 <section id="s-player" class="screen off">
   <div class="glass rounded-[30px] w-full max-w-[880px] p-5 sm:p-6">
@@ -723,20 +808,22 @@ input::placeholder{opacity:1;color:#8492a6}
       <div class="min-w-0 flex flex-col gap-3">
         <div class="flex items-center gap-2 min-w-0"><i id="ppDot" class="navDot" style="margin:0"></i><div id="ppName" class="font-display text-3xl truncate">Player</div></div>
         <div id="ppSub" class="text-sm text-[var(--muted)]"></div>
-        <div class="duprTile"><div><span>DUPR <i>(est.)</i></span><b id="ppDupr" class="tabular-nums">2.000</b></div><div class="text-right min-w-0"><span id="ppTier" style="color:var(--text);text-transform:none;letter-spacing:0;font-size:14px">Beginner</span><div class="duprBar"><i id="ppBar"></i></div></div></div>
+        <div class="duprTile"><div><span>PR RATING</span><b id="ppDupr" class="tabular-nums">2.000</b></div><div class="text-right min-w-0"><span id="ppTier" style="color:var(--text);text-transform:none;letter-spacing:0;font-size:14px">Beginner</span><div class="duprBar"><i id="ppBar"></i></div></div></div>
         <div class="statGrid">
           <div class="statTile"><span>Level</span><b id="ppLevel">1</b></div><div class="statTile"><span>MMR</span><b id="ppMmr" class="hot">0</b></div>
           <div class="statTile"><span>Record</span><b id="ppRec">0–0</b></div><div class="statTile"><span>Win rate</span><b id="ppRate">—</b></div>
           <div class="statTile"><span>Best rally</span><b id="ppRally">0</b></div><div class="statTile"><span>Peak MMR</span><b id="ppPeak">0</b></div>
         </div>
         <div><div class="sideHead">Recent matches</div><div id="ppHist" class="grid gap-1.5"></div></div>
-        <div class="flex gap-2 flex-wrap"><button id="ppFriend" data-act="ppFriend" class="primary rounded-2xl px-5 py-3 font-display">Add friend</button><button id="ppInvite" data-act="ppInvite" class="tile rounded-2xl px-5 py-3 font-bold">Invite to my room</button></div>
+        <div class="flex gap-2 flex-wrap"><button id="ppFriend" data-act="ppFriend" class="primary rounded-2xl px-5 py-3 font-display">Add friend</button><button id="ppInvite" data-act="ppInvite" class="tile rounded-2xl px-5 py-3 font-bold">Invite to my room</button><button id="ppReport" data-act="ppReport" class="tile rounded-2xl px-4 py-3 font-bold text-[var(--muted)]">⚑ Report</button></div>
+        <div id="ppMod" class="hidden tile rounded-2xl p-3"><div class="text-sm font-bold">Owner tools <span id="ppModInfo" class="text-[var(--muted)] font-semibold"></span></div><div class="flex gap-2 flex-wrap mt-2"><button data-act="modAct" data-v="clear" class="tile rounded-xl px-3 py-1.5 text-sm font-bold">Clear reports</button><button data-act="modAct" data-v="ban" class="rounded-xl px-3 py-1.5 text-sm font-bold" style="background:#ef4444; color:#fff">Ban</button><button data-act="modAct" data-v="unban" class="tile rounded-xl px-3 py-1.5 text-sm font-bold">Unban</button></div></div>
         <div id="ppMsg" class="text-sm font-semibold min-h-[20px]"></div>
       </div>
     </div>
   </div>
 </section>
 
+<div id="emoteBar" class="hidden glass rounded-2xl p-2" style="position:fixed; z-index:30; left:50%; transform:translateX(-50%); top:calc(env(safe-area-inset-top,0px) + 74px); display:flex; gap:4px"></div>
 <div id="chestOv" class="hidden chestOv">
   <div class="chestBox glass">
     <div class="text-center"><span id="chestTag" class="lobbyTag">OPENING</span><div id="chestTitle" class="font-display text-3xl mt-1">Rally Chest</div></div>
@@ -884,7 +971,7 @@ input::placeholder{opacity:1;color:#8492a6}
       </div>
       <div class="flex items-center justify-between gap-3 flex-wrap">
         <div><div class="font-bold">Shake, sound and FPS</div><div class="text-sm text-[var(--muted)]">FPS shows your frame rate (and ping online) in the corner</div></div>
-        <div class="flex gap-2"><button id="optShake" data-act="optToggle" data-k="shake" class="tile rounded-xl px-3 py-1.5 font-bold">Shake</button><button id="optSound" data-act="sound" class="tile rounded-xl px-3 py-1.5 font-bold">Sound</button><button id="optFps" data-act="optToggle" data-k="fps" class="tile rounded-xl px-3 py-1.5 font-bold">FPS</button><button id="optFull" data-act="optToggle" data-k="fullscreen" class="tile rounded-xl px-3 py-1.5 font-bold">Fullscreen</button><button data-act="music" class="musicBtn tile rounded-xl px-3 py-1.5 font-bold">Music</button><button id="optDance" data-act="optToggle" data-k="pointDance" class="tile rounded-xl px-3 py-1.5 font-bold">Point dances</button></div>
+        <div class="flex gap-2"><button id="optShake" data-act="optToggle" data-k="shake" class="tile rounded-xl px-3 py-1.5 font-bold">Shake</button><button id="optSound" data-act="sound" class="tile rounded-xl px-3 py-1.5 font-bold">Sound</button><button id="optFps" data-act="optToggle" data-k="fps" class="tile rounded-xl px-3 py-1.5 font-bold">FPS</button><button id="optFull" data-act="optToggle" data-k="fullscreen" class="tile rounded-xl px-3 py-1.5 font-bold">Fullscreen</button><button data-act="music" class="musicBtn tile rounded-xl px-3 py-1.5 font-bold">Music</button><button id="optDance" data-act="optToggle" data-k="pointDance" class="tile rounded-xl px-3 py-1.5 font-bold">Point dances</button><button id="optReplay" data-act="optToggle" data-k="replays" class="tile rounded-xl px-3 py-1.5 font-bold">Replays</button></div>
       </div>
       <div class="flex items-center justify-between gap-3">
         <div><div class="font-bold">Gamepads</div><div id="padInfo" class="text-sm text-[var(--muted)]">Press any button on a gamepad to connect it.</div></div>
@@ -998,7 +1085,7 @@ input::placeholder{opacity:1;color:#8492a6}
         <div id="h1Score" class="sbScore">0</div>
       </div>
       <div class="sbMid">
-        <div class="sbRow"><span id="sbClock" class="sbClock">0:00</span><button data-act="camCycle" class="sbPause" aria-label="Change camera" title="Camera (C)"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13.5" r="3.2"/></svg></button><button data-act="pause" class="sbPause" aria-label="Pause">II</button></div>
+        <div class="sbRow"><span id="sbClock" class="sbClock">0:00</span><button data-act="camCycle" class="sbPause" aria-label="Change camera" title="Camera (C)"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13.5" r="3.2"/></svg></button><button id="emoteBtn" data-act="emoteBar" class="sbPause hidden" aria-label="Emotes" title="Emotes (keys 1–8)">😀</button><button data-act="pause" class="sbPause" aria-label="Pause">II</button></div>
         <div id="sbCall" class="sbCall">0-0-2</div>
         <div class="sbRow"><span id="sbTag" class="sbTag hidden">GAME POINT</span><span id="netBadge" class="sbPing hidden">LAN</span></div>
       </div>
@@ -1035,12 +1122,12 @@ input::placeholder{opacity:1;color:#8492a6}
     <button id="hitBtn" data-t="hit" class="tbtn rounded-full font-display primary">Hit</button>
   </div>
 </div>
-<script src="catalog.js?v=13"></script>
+<script src="catalog.js?v=14"></script>
 <script>
 /* Safety net: if catalog.js is missing or older than this page, reload once without the cache,
    then explain what to fix instead of showing a blank screen. Startup errors are shown too. */
 (function(){
-  var NEED = 13;
+  var NEED = 14;
   function box(title, msg){
     var d = document.createElement('div');
     d.style.cssText = 'position:fixed;inset:0;z-index:99;display:grid;place-items:center;padding:20px;background:#070f1f;color:#eef3fb;font:16px/1.5 system-ui,sans-serif';
@@ -1177,7 +1264,7 @@ const AI_BLURB = {
   legend:'Advanced: strong kitchen play and real consistency.', champion:'Advanced: smart placement and quick hands at the net.', grandmaster:'Advanced: almost no unforced errors.',
   semi1:'Semi-pro: tournament-level speed-ups and drops.', semi2:'Semi-pro: punishes anything high.', tour1:'Pro: fast feet, sharp volleys, deep drives.',
   tour2:'Pro: controls the kitchen battle from start to finish.', nightmare:'World-best: lightning reactions and ruthless attacks.', atlas:'World No.1: near-perfect in every part of the game.',
-  king:'8.0 DUPR. The final boss of pickleball.' };
+  king:'8.0 rating. The final boss of pickleball.' };
 function aiFromDupr(d){
   const t = clamp((d - 2) / 6, 0, 1);
   return { speed:3.0 + 3.4 * Math.pow(t, .9), react:.42 - .38 * Math.pow(t, .8), aimSd:.85 - .73 * Math.pow(t, .7), mistake:.2 * Math.pow(1 - t, 3) + .004,
@@ -1270,6 +1357,15 @@ async function detectServer(){
 }
 const isServerAcc = () => !!(ACC.server && ACC.user);
 function getAcc(){ return isServerAcc() ? ACC.user : data.localAcc; }
+// errors on real phones and browsers are sent to the server log, so problems can be fixed
+let errSent = 0;
+function reportError(msg, at){ if (errSent++ > 4) return; try { fetch('api/clientError', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ msg:String(msg || '').slice(0, 300), at:at || '', ua:navigator.userAgent, page:typeof screenNow === 'string' ? screenNow : '' }) }).catch(() => {}); } catch (e) {} }
+window.addEventListener('error', e => reportError(e.message, String(e.filename || '').split('/').pop() + ':' + e.lineno));
+window.addEventListener('unhandledrejection', e => reportError('Promise: ' + ((e.reason && e.reason.message) || e.reason), ''));
+if (data.localAcc){
+  CAT.normalize(data.localAcc); const sr = CAT.seasonRoll(data.localAcc); if (sr) data.localAcc.seasonNote = sr; CAT.ensureChallenges(data.localAcc);
+  if (data.localAcc.open) setTimeout(() => { const d = settleLocalQuit(data.localAcc); if (d !== null) addNotif({ type:'info', text:`Your unfinished ranked match counted as a loss (${d} rating)` }); }, 1500);
+}
 if (data.bestRally){ if (data.localAcc && !(data.localAcc.bestRally >= data.bestRally)) data.localAcc.bestRally = data.bestRally; data.bestRally = 0; }
 function ensureLocal(){
   if (!data.localAcc){ data.localAcc = Object.assign({ name:'Guest' + (100 + Math.floor(Math.random() * 900)) }, CAT.newProgress()); save(); }
@@ -1293,15 +1389,85 @@ async function progEquip(slot, id){
   else { const e = CAT.equip(ensureLocal(), slot, id); if (e) throw new Error(e); save(); }
   netHello();
 }
+/* match stats feed challenges and achievements */
+function matchStats(){ const st2 = G.stats || {}; return { dinks:st2.dinks || 0, smashes:st2.smashes || 0, perfects:st2.perfect || 0, points:st2.points || 0, longRally:st2.longest || 0 }; }
 async function progMatch(key, won, sc, doubles){
-  if (isServerAcc()){ const j = await api('api/ranked', { ai:key, won, score:sc, mode:doubles ? 'doubles' : 'singles' }); ACC.user = j.user; return j.result; }
-  const r = CAT.applyMatch(ensureLocal(), key, won, sc, doubles); if (typeof r === 'string') throw new Error(r); save(); return r;
+  if (isServerAcc()){
+    const j = await api('api/ranked', { ai:key, won, score:sc, mode:doubles ? 'doubles' : 'singles', matchId:G.rankedId, stats:matchStats() });
+    G.rankedId = null; ACC.user = j.user; handleProg(j.prog); return j.result;
+  }
+  const a = ensureLocal(); a.open = null;
+  const r = CAT.applyMatch(a, key, won, sc, doubles); if (typeof r === 'string') throw new Error(r);
+  handleProg(CAT.trackStats(a, Object.assign(matchStats(), { matches:1, rankedWins:won ? 1 : 0, points:(G.score || [0])[myTeam() - 1] || 0 }))); save(); return r;
+}
+// ranked matches get a ticket from the server when they start; quitting one counts as a loss
+async function startRanked(mode, diff){
+  G.rankedId = null;
+  if (isServerAcc()){
+    try { const j = await api('api/ranked/start', { ai:diff, mode:mode === 'duo-ai' ? 'doubles' : 'singles' }); G.rankedId = j.matchId; ACC.user = j.user;
+      if (j.quit) showToast('Your unfinished match counted as a loss', `${j.quit.delta} rating`); }
+    catch (e){ showToast('This match won’t be ranked', e.message); }
+  } else {
+    const a = ensureLocal(); settleLocalQuit(a);
+    a.open = { ai:diff, mode:mode === 'duo-ai' ? 'doubles' : 'singles', t:Date.now() }; save();
+  }
+}
+function settleLocalQuit(a){
+  if (!a || !a.open) return null;
+  const o = a.open; a.open = null;
+  const r = CAT.applyMatch(a, o.ai, false, 'Quit', o.mode === 'doubles'); if (typeof r === 'string') return null;
+  a.mmr = Math.max(0, a.mmr - 10); if (a.history[0]){ a.history[0].delta -= 10; a.history[0].mmr = a.mmr; a.history[0].score = 'Quit'; }
+  save(); return r.delta - 10;
+}
+async function quitRanked(){
+  if (isServerAcc()){ try { const j = await api('api/ranked/abandon', { matchId:G.rankedId }); if (j.user) ACC.user = j.user; showToast('Match counted as a loss', `${j.delta || 0} rating`); } catch (e) {} G.rankedId = null; }
+  else { const d = settleLocalQuit(getAcc()); if (d !== null) showToast('Match counted as a loss', `${d} rating`); }
+}
+async function reportProgress(){
+  const stats = Object.assign(matchStats(), { matches:1, online:G.mode === 'online' ? 1 : 0 });
+  try {
+    if (isServerAcc()){ const j = await api('api/progress', { stats, match:true }); ACC.user = j.user; handleProg(j.prog); }
+    else { const a = ensureLocal(); handleProg(CAT.trackStats(a, stats)); save(); }
+  } catch (e) {}
+}
+function handleProg(pr){
+  if (!pr) return;
+  for (const id of pr.challenges || []){ const c = CAT.CH_BY_ID[id]; if (!c) continue; showToast('✅ Challenge complete!', `${c.text} · +${c.coins} coins${c.keys ? ' +1 🔑' : ''}`); addNotif({ type:'info', text:`Challenge complete: ${c.text} (+${c.coins} coins${c.keys ? ', +1 key' : ''})` }); }
+  for (const id of pr.achievements || []){ const a = CAT.ACHIEVEMENTS.find(x => x.id === id); if (!a) continue; setTimeout(() => showToast(`${a.icon} Achievement unlocked!`, `${a.name} · +${a.coins} coins${a.keys ? ` +${a.keys} 🔑` : ''}`), 1800); addNotif({ type:'info', text:`${a.icon} Achievement: ${a.name} (+${a.coins} coins${a.keys ? `, +${a.keys} keys` : ''})` }); }
+}
+function seasonInfo(){ const ends = CAT.seasonEnds(), days = Math.max(0, Math.ceil((ends - Date.now()) / 864e5)); return { id:CAT.seasonId(), days }; }
+function noteSeason(a){
+  const n = a && a.seasonNote; if (!n) return;
+  addNotif({ type:'info', text:`Season ${n.from} ended: you finished ${n.tier} · +${n.coins} coins${n.keys ? `, +${n.keys} keys` : ''}. Your rating was soft-reset for the new season.` });
+  showToast(`Season ${n.from} rewards`, `${n.tier} · +${n.coins} coins${n.keys ? ` +${n.keys} 🔑` : ''}`);
+  a.seasonNote = null; if (!isServerAcc()) save();
+}
+let chTab = 'd';
+function renderChallenges(a){
+  if (!a) return;
+  CAT.ensureChallenges(a);
+  const list = chTab === 'd' ? a.ch.d : a.ch.w;
+  const end = chTab === 'd' ? (() => { const t = new Date(); return Date.UTC(t.getUTCFullYear(), t.getUTCMonth(), t.getUTCDate() + 1); })() : (() => { const t = new Date(); const d0 = Date.UTC(t.getUTCFullYear(), t.getUTCMonth(), t.getUTCDate()); return d0 + (7 - (t.getUTCDay() + 6) % 7) * 864e5; })();
+  const hrs = Math.max(0, Math.round((end - Date.now()) / 36e5));
+  setTxt('#chLeft', hrs >= 48 ? `New in ${Math.round(hrs / 24)} days` : `New in ${hrs} h`);
+  $$('#chTabs button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === chTab));
+  $('#chList').innerHTML = list.map(c => { const d = CAT.CH_BY_ID[c.id]; if (!d) return ''; const pc = Math.min(100, c.prog / d.n * 100);
+    return `<div class="chRow ${c.done ? 'done' : ''}"><div class="font-semibold min-w-0 truncate">${c.done ? '✅ ' : ''}${esc(d.text)}</div><div class="text-sm font-bold whitespace-nowrap" style="color:#f5c542">${COIN_SVG} ${d.coins}${d.keys ? ' + 🔑' : ''}</div>
+      <div class="chBar"><i style="width:${pc.toFixed(0)}%"></i></div><div class="text-xs text-[var(--muted)]">${Math.min(c.prog, d.n)} / ${d.n}</div></div>`; }).join('');
+}
+function renderAch(){
+  const a = getAcc() || ensureLocal(); const got = new Set(a.ach || []);
+  setTxt('#achTitle', `${got.size} of ${CAT.ACHIEVEMENTS.length} unlocked`);
+  const si = seasonInfo(), hist = (a.seasons || []).slice(-4).reverse();
+  $('#achSeason').innerHTML = `<div class="tile rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3"><div><div class="font-display text-xl">Season ${si.id}</div><div class="text-sm text-[var(--muted)]">Ends in ${si.days} day${si.days === 1 ? '' : 's'}. Finish higher for bigger rewards (up to 3,000 coins + 4 🔑 for World-best). Ratings soft-reset to 75% each season.</div></div>
+    <div class="flex gap-2 flex-wrap">${hist.map(h => `<span class="lobbyTag">${esc(h.id)} · ${esc(h.tier)}</span>`).join('') || '<span class="text-sm text-[var(--muted)]">No past seasons yet</span>'}</div></div>`;
+  $('#achGrid').innerHTML = CAT.ACHIEVEMENTS.map((x, i) => `<div class="achCard ${got.has(x.id) ? 'on' : 'off'}" style="animation-delay:${Math.min(i, 12) * .03}s"><div class="ai">${x.icon}</div><div class="min-w-0"><div class="font-bold">${esc(x.name)}</div><div class="text-xs text-[var(--muted)]">${esc(x.desc)}</div><div class="text-xs font-bold mt-1" style="color:#f5c542">${got.has(x.id) ? '✓ Unlocked' : `+${x.coins} coins${x.keys ? ` · +${x.keys} 🔑` : ''}`}</div></div></div>`).join('');
 }
 let lastRallyRew = 0;
 async function progRally(n){
   if (isServerAcc()){ const j = await api('api/rally', { returns:n }); ACC.user = j.user; return j.result; }
   const a = ensureLocal(); if (n > (a.bestRally || 0)) a.bestRally = n;
-  let r = null; if (n > 0 && Date.now() - lastRallyRew > 8000){ lastRallyRew = Date.now(); r = CAT.addRewards(a, CAT.rallyRewards(n)); }
+  let r = null; if (n > 0 && Date.now() - lastRallyRew > 8000){ lastRallyRew = Date.now(); r = CAT.addRewards(a, CAT.rallyRewards(n)); handleProg(CAT.trackStats(a, { longRally:Math.min(n, 200) })); }
   save(); return r;
 }
 async function loadBoard(){
@@ -1815,7 +1981,7 @@ function startMatch(mode, diff, players){
   else if (G.netRole !== 'guest'){ const a = getAcc(); G.court = (a && a.equip.court) || 'court_stadium'; }
   G.bfx = [];   // first-serve exception: the opening team gets one server (0-0-2)
   G.ball = newBall(); G.fx = []; G.rings = []; G.texts = []; G.trail = []; G.confetti = []; G.flashes = []; G.lastWin = 0; G.hitstop = 0; G.dance = null; G.cele = null;
-  G.stats = { perfect:0, winners:0, longest:0, cur:0 };
+  G.stats = { perfect:0, winners:0, longest:0, cur:0, dinks:0, smashes:0, points:0 };
   if (mode !== 'online') { G.netRole = null; G.flip = false; }
   if (CAM.preset !== camKey() || (mode !== 'online' && CAM.yaw !== CAMS[camKey()].yaw)) fitCamera();
   setupServe(); updateHUD();
@@ -1915,6 +2081,7 @@ function launch(p, type, tx, depth, tScale = 1, err = null, label = null, lcol =
   if (type === 'smash' || type === 'spike'){ p.jumpT = .5; G.punch = .3; shake(type === 'spike' ? .34 : .28); sfx('smash'); if (p.human) vibrate(30); }
   else { sfx('hit'); if (type === 'slice' || type === 'curve') sfx('skill'); if (p.human) vibrate(10); }
   if (type !== 'serve'){ G.stats.cur++; G.stats.longest = Math.max(G.stats.longest, G.stats.cur); }
+  if (p.human && !p.human.remote){ if (type === 'dink') G.stats.dinks++; if (type === 'smash' || type === 'spike') G.stats.smashes++; }
 }
 
 function consume(p, type, bonus = 0){
@@ -2103,6 +2270,7 @@ function onBounce(){
 
 /* the side that scores does a short victory dance; your own side also gets a few seconds of its beat */
 function celebratePoint(T){
+  if (G.stats && T === myTeam()) G.stats.points++;
   if (data.opts.pointDance === false) return;
   G.cele = { team:T, start:G.time };
   const mine = team(T).find(p => p.human && !p.human.remote);
@@ -2149,7 +2317,55 @@ function endPoint(winner, title, sub = ''){
     const humanWin = team(winner).some(p => p.human && !p.human.remote), humanLose = team(other(winner)).some(p => p.human && !p.human.remote);
     playSfx(humanWin || !humanLose ? 'point' : 'lose');
   }
+  if (!G.over) maybeReplay(winner);
   updateHUD();
+}
+/* ---------- instant replay: slow motion after smash winners and long rallies ---------- */
+const REC = { frames:[], acc:0 };
+function recordFrame(dt){
+  if (G.mode === 'demo') return;
+  REC.acc += dt; if (REC.acc < 1 / 30) return; REC.acc = 0;
+  const b = G.ball;
+  REC.frames.push({ b:[b.x, b.y, b.z, b.live ? 1 : 0, b.type], p:G.players.map(p => [p.x, p.y, p.swing, p.run, p.moving ? 1 : 0, p.jumpT || 0]) });
+  if (REC.frames.length > 150) REC.frames.shift();
+}
+function maybeReplay(winner){
+  G.ptN = (G.ptN || 0) + 1;
+  if (data.opts.replays === false || G.mode === 'demo' || G.netRole === 'guest') return false;
+  const b = G.ball, rally = G.stats ? G.stats.cur : 0, smash = (b.type === 'smash' || b.type === 'spike') && b.lastHitter === winner;
+  if (!smash && rally < 10) return false;
+  if (!smash && G.lastReplay != null && G.ptN - G.lastReplay < 3) return false;
+  const frames = REC.frames.slice(-Math.round(30 * (smash ? 2.4 : 3.4)));
+  if (frames.length < 20) return false;
+  G.lastReplay = G.ptN;
+  G.replay = { frames, t:0, dur:(frames.length - 1) / 30, speed:smash ? .4 : .55, label:smash ? (b.type === 'spike' ? 'SPIKE!' : 'SMASH!') : `${rally}-SHOT RALLY`, resume:G.timer };
+  G.state = 'replay'; REC.frames = [];
+  return true;
+}
+function tickReplay(dt){
+  const R = G.replay; if (!R) return;
+  G.time += dt; R.t += dt * R.speed;
+  const f = Math.min(R.frames.length - 1.001, R.t * 30), i = Math.floor(f), k = f - i, A = R.frames[i], B = R.frames[i + 1] || A, b = G.ball;
+  b.x = lerp(A.b[0], B.b[0], k); b.y = lerp(A.b[1], B.b[1], k); b.z = lerp(A.b[2], B.b[2], k); b.live = true; b.type = A.b[4];
+  G.players.forEach((p, j) => { const a = A.p[j], c2 = B.p[j]; if (!a || !c2) return; p.x = lerp(a[0], c2[0], k); p.y = lerp(a[1], c2[1], k); p.swing = c2[2]; p.run = lerp(a[3], c2[3], k); p.moving = !!c2[4]; p.jumpT = c2[5]; });
+  if (R.t >= R.dur) endReplay();
+}
+function endReplay(){
+  const R = G.replay; if (!R) return;
+  G.replay = null; G.ball.live = false; G.state = 'point'; G.timer = clamp(R.resume, .6, 1.1);
+  if (G.cele) G.cele.start = G.time;           // the point dance plays after the replay
+}
+function drawReplayOverlay(c){
+  const label = G.replay ? G.replay.label : G.replayLabel; if (G.state !== 'replay') return;
+  const bh = Math.round(VH * .085), blink = Math.sin(performance.now() / 180) > 0;
+  c.save(); c.setTransform(DPR, 0, 0, DPR, 0, 0);
+  c.fillStyle = 'rgba(0,0,0,.82)'; c.fillRect(0, 0, VW, bh); c.fillRect(0, VH - bh, VW, bh);
+  c.font = '800 15px Barlow, system-ui, sans-serif'; c.textBaseline = 'middle'; c.textAlign = 'left';
+  c.fillStyle = blink ? '#ef4444' : '#7f1d1d'; c.beginPath(); c.arc(24, bh / 2, 6, 0, TAU); c.fill();
+  c.fillStyle = '#fff'; c.fillText('REPLAY', 38, bh / 2);
+  c.font = `${Math.round(Math.min(30, bh * .55))}px "Russo One", Impact, sans-serif`; c.textAlign = 'center'; c.fillStyle = '#ffd23f'; c.fillText(label || '', VW / 2, VH - bh / 2 + 1);
+  if (G.netRole !== 'guest'){ c.font = '600 13px Barlow, system-ui, sans-serif'; c.fillStyle = 'rgba(255,255,255,.7)'; c.textAlign = 'right'; c.fillText(isTouch ? 'Tap to skip' : 'Space to skip', VW - 18, VH - bh / 2); }
+  c.restore();
 }
 /* ---------- AI brain ---------- */
 function teamPredict(t){
@@ -2322,6 +2538,8 @@ function pollPads(){
 
 /* ---------- update ---------- */
 function update(dt){
+  if (G.state === 'replay'){ tickReplay(dt); tickEffects(dt); return; }
+  if (G.state === 'play' || G.state === 'serve') recordFrame(dt);
   G.time += dt;
   if (G.mode !== 'demo' && G.state !== 'over') G.matchT += dt;
   const b = G.ball, mt = METER_T[data.opts.meter] || .8;
@@ -2445,6 +2663,7 @@ function showResult(w, sc){
   $('#resMmr').classList.add('hidden'); $('#resRew').classList.add('hidden');
   if (won || versus){ confetti(); playSfx('win'); } else playSfx('lose');
   if (RANKED(G.mode)) rankedResult(w === 1, sc);
+  else if (G.mode !== 'demo') reportProgress();
   if (online){
     $('#resMmr').classList.remove('hidden'); $('#resNew').textContent = '…'; $('#resDelta').textContent = '';
     $('#resRank').textContent = 'Updating rankings…';
@@ -2923,6 +3142,7 @@ function render(){
     c.lineWidth = 4; c.strokeStyle = 'rgba(5,10,25,.8)'; c.strokeText(t.txt, q[0], q[1]); c.fillStyle = t.color; c.fillText(t.txt, q[0], q[1]);
   }
   c.globalAlpha = 1;
+  drawEmotes(c); drawReplayOverlay(c);
   if (G.whiteFlash > 0){ c.fillStyle = `rgba(255,255,255,${G.whiteFlash / .14 * .22})`; c.fillRect(-40, -40, VW + 80, VH + 80); }
   for (const k of G.confetti){
     c.save(); c.translate(k.x, k.y); c.rotate(k.rot); c.globalAlpha = Math.min(1, k.life); c.fillStyle = k.c; c.fillRect(-k.w / 2, -k.h / 2, k.w, k.h * Math.abs(Math.cos(k.rot * 1.3))); c.restore();
@@ -3174,6 +3394,7 @@ function updateHUD(){
   $('#touch').classList.toggle('hidden', !tOn); $('#touch').classList.toggle('big', data.opts.touch === 'big');
   if (document.body.classList.contains('touchui') !== tOn){ document.body.classList.toggle('touchui', tOn); if (tOn) requestAnimationFrame(() => { const h = $('#hitBtn').offsetHeight; if (h) document.body.style.setProperty('--hitpx', h + 'px'); }); }
   const me = meP();
+  $('#emoteBtn').classList.toggle('hidden', G.mode !== 'online'); if (G.mode !== 'online') $('#emoteBar').classList.add('hidden');
   const serveNow = tOn && G.state === 'serve' && me && G.serverP === me && !G.serveDrop;
   const hb = $('#hitBtn'); if (hb.classList.contains('serve') !== !!serveNow){ hb.classList.toggle('serve', !!serveNow); hb.textContent = serveNow ? 'Serve' : 'Hit'; }
   if (!inGame || !G.players.length){ $('#hint').classList.add('hidden'); return; }
@@ -3231,13 +3452,14 @@ function toast(t, s){ emit({ k:'toast', a:t, b:s || '' }); showToast(t, s); }
 
 /* ---------- screens ---------- */
 let screenNow = 'menu', ctrlFrom = 'menu', charFrom = 'menu';
-const MENU_SCREENS = ['menu', 'diff', 'char', 'rank', 'how', 'signup', 'online', 'room', 'duo', 'gate', 'shop', 'player'];
+const MENU_SCREENS = ['menu', 'diff', 'char', 'rank', 'how', 'signup', 'online', 'room', 'duo', 'gate', 'shop', 'player', 'ach'];
 function show(id){
   $$('.screen').forEach(s => s.classList.toggle('off', s.id !== id));
   screenNow = id ? id.replace('s-', '') : 'game';
   const wantsDemo = MENU_SCREENS.includes(screenNow) || (screenNow === 'ctrl' && ctrlFrom === 'menu');
   if (wantsDemo && G.mode !== 'demo'){ G.netRole = null; startMatch('demo'); }
   invalidateRects(); HUD_RECT = null;
+  if (screenNow === 'ach') renderAch();
   ({ gate:renderGate, shop:renderShop, menu:refreshMenu, diff:renderDiff, char:renderChar, rank:renderRank, signup:renderSignup, online:renderOnline, room:renderRoom, ctrl:renderCtrl, pause:renderPause }[screenNow] || (() => {}))();
   if (screenNow === 'rank' && Date.now() - ACC.boardT > 5000) loadBoard();
   if (['menu', 'online', 'room'].includes(screenNow)){ renderFriendBits(); loadFriends(); }
@@ -3253,6 +3475,7 @@ function show(id){
 let rotTimer = 0;
 function playGame(mode, diff){
   ensureAudio(); goFullscreen(); startMatch(mode, diff); show(null);
+  if (RANKED(mode)) startRanked(mode, diff);
   if (isTouch && VH > VW){ $('#rotTip').classList.remove('hidden'); clearTimeout(rotTimer); rotTimer = setTimeout(() => $('#rotTip').classList.add('hidden'), 4000); }
 }
 function refreshMenu(){
@@ -3263,6 +3486,8 @@ function refreshMenu(){
   $('#mRing').style.strokeDashoffset = String(263.9 * (1 - lv.into / lv.need));
   const n = a.wins + a.losses;
   setTxt('#mKeys', String(a.keys | 0));
+  renderChallenges(a); noteSeason(a);
+  const si = seasonInfo(); setTxt('#heroSeason', `SEASON ${si.id} · ${si.days} DAY${si.days === 1 ? '' : 'S'} LEFT`);
   const dp = CAT.dupr(a.mmr);
   setTxt('#mDupr', dp.toFixed(3)); setTxt('#mDuprTier', CAT.duprTier(dp)); $('#mDuprBar').style.width = ((dp - 2) / 6 * 100).toFixed(1) + '%';
   setTxt('#mWins', String(a.wins)); setTxt('#mRate', n ? Math.round(a.wins / n * 100) + '%' : '—'); setTxt('#mPeak', String(a.peak || a.mmr));
@@ -3288,9 +3513,17 @@ function refreshMenu(){
   if (next){ const rw = CAT.matchRewards(next, true); $('#mNext').innerHTML = `<span class="lobbyTag">NEXT</span><div class="min-w-0 flex-1"><b class="block truncate">${esc(AIS[next].name)}</b><span class="text-xs text-[var(--muted)]">${AIS[next].mmr} MMR · win ${rw.coins} coins, ${rw.xp} XP</span></div>`; }
   else $('#mNext').innerHTML = '<span class="lobbyTag">CHAMPION</span><b>All 10 opponents beaten</b>';
 }
+let gateTab = 'play';
 function renderGate(){
   const ok = ACC.server, chk = ACC.checked;
   $('#gLogin').disabled = !ok; $('#gSignup').disabled = !ok;
+  if (!ok && gateTab !== 'play') gateTab = 'play';
+  $$('#gTabs button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === (gateTab === 'recover' ? 'login' : gateTab)));
+  $('#gPlay').classList.toggle('hidden', gateTab !== 'play'); $('#gForm').classList.toggle('hidden', gateTab !== 'login' && gateTab !== 'signup'); $('#gRecover').classList.toggle('hidden', gateTab !== 'recover');
+  const su = gateTab === 'signup'; suMode = su ? 'signup' : 'login';
+  setTxt('#gFormTitle', su ? 'Create your account' : 'Welcome back'); setTxt('#suGo', su ? 'Create account' : 'Log in');
+  $('#suPass').setAttribute('autocomplete', su ? 'new-password' : 'current-password'); $('#suPass').placeholder = su ? 'Password (at least 4 characters)' : 'Password';
+  $('#pwMeter').classList.toggle('hidden', !su); $('#agreeRow').classList.toggle('hidden', !su); $('#gForgot').classList.toggle('hidden', su);
   $('#gNote').textContent = !chk ? 'Checking for the server…' : ok ? (ACC.temporary ? '⚠ This server has no permanent database yet, so accounts are deleted whenever it restarts. The owner needs to connect Upstash (see README).' : 'Anonymous progress stays in this browser. An account keeps it on the server and puts you on the leaderboard.') : 'No server found, so accounts are off. Anonymous progress is saved in this browser.';
 }
 function renderDiff(){
@@ -3313,36 +3546,47 @@ function renderDiff(){
     btn.className = 'tile rounded-2xl p-3.5 text-left flex items-center gap-3' + (locked ? ' opacity-60' : '');
     btn.dataset.act = locked ? 'lockedAi' : 'diff'; btn.dataset.key = k;
     const tier = CAT.duprTier(ai.dupr), prevTier = i ? CAT.duprTier(AIS[LADDER[i - 1]].dupr) : '';
-    if (tier !== prevTier){ const h = document.createElement('div'); h.className = 'sideHead'; h.style.margin = '10px 0 2px'; h.textContent = `${tier} · ${({ Beginner:'2.0–2.99', Intermediate:'3.0–3.49', 'Advanced intermediate':'3.5–3.99', Advanced:'4.0–4.99', 'Semi-professional':'5.0–5.99', Professional:'6.0–6.99', 'World-best':'7.0–8.0' })[tier]} DUPR`; list.appendChild(h); }
+    if (tier !== prevTier){ const h = document.createElement('div'); h.className = 'sideHead'; h.style.margin = '10px 0 2px'; h.textContent = `${tier} · ${({ Beginner:'2.0–2.99', Intermediate:'3.0–3.49', 'Advanced intermediate':'3.5–3.99', Advanced:'4.0–4.99', 'Semi-professional':'5.0–5.99', Professional:'6.0–6.99', 'World-best':'7.0–8.0' })[tier]} rating`; list.appendChild(h); }
     btn.innerHTML = `<span class="font-display text-lg w-7 text-center text-[var(--muted)] tabular-nums">${locked ? '🔒' : beaten ? '✓' : i + 1}</span>
       <div class="flex-1 min-w-0"><div class="font-display text-lg leading-none">${esc(m === '1p' ? ai.name : ai.name + ' & ' + ai.name2.split(' ')[1])}</div>
       <div class="text-sm text-[var(--muted)] mt-1">${locked ? `Beat ${esc(AIS[LADDER[i - 1]].name)} to unlock` : ai.blurb}</div></div>
-      <div class="text-right shrink-0"><div class="font-display text-xl leading-none tabular-nums">${ai.mmr}</div><div class="text-[11px] font-bold hot tabular-nums">${CAT.dupr(ai.mmr).toFixed(2)} DUPR</div>
+      <div class="text-right shrink-0"><div class="font-display text-xl leading-none tabular-nums">${ai.mmr}</div><div class="text-[11px] font-bold hot tabular-nums">${CAT.dupr(ai.mmr).toFixed(2)} rating</div>
       ${ranked && !locked ? `<div class="text-[13px] font-semibold mt-1 tabular-nums"><span style="color:var(--good)">+${win}</span> <span class="text-[var(--muted)]">/</span> <span style="color:var(--bad)">−${loss}</span></div><div class="text-[11px] text-[var(--muted)]">win: ${rw.coins} coins</div>` : ''}</div>`;
     list.appendChild(btn);
   });
 }
 function renderSignup(){
   const srv = ACC.server;
-  $('#suTitle').textContent = !srv ? 'Accounts' : ACC.user ? 'Your account' : (suMode === 'login' ? 'Log in' : 'Create your account');
-  $('#suTabs').classList.toggle('hidden', !srv);
-  $$('#suTabs button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === suMode));
-  $('#suIn').classList.toggle('hidden', !srv || !!ACC.user);
+  $('#suTitle').textContent = !srv ? 'Accounts' : 'Your account';
   $('#suOut').classList.toggle('hidden', !(srv && ACC.user));
-  $('#suGo').textContent = suMode === 'login' ? 'Log in' : 'Create account';
-  $('#suPass').setAttribute('autocomplete', suMode === 'login' ? 'current-password' : 'new-password');
   if (srv && ACC.user){ const lv = CAT.levelInfo(ACC.user.xp); $('#suUser').textContent = ACC.user.username; $('#suStats').textContent = `Lv ${lv.level} · ${ACC.user.mmr} MMR · ${ACC.user.coins} coins · ${ACC.user.wins}–${ACC.user.losses}`; }
   $('#suNote').textContent = srv
     ? 'An account keeps your level, coins, gear and MMR on the server, so you can log in from any device. It starts fresh at level 1 and 0 MMR.'
     : 'Accounts need the Pickle Rush server. You can still play anonymously; progress is saved in this browser.';
 }
 let suMode = 'signup';
+function pwScore(pw){ let sc = 0; if (pw.length >= 6) sc++; if (pw.length >= 10) sc++; if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) sc++; if (/\d/.test(pw)) sc++; if (/[^A-Za-z0-9]/.test(pw)) sc++; if (/^(1234|12345|123456|password|qwerty|abcd)/i.test(pw)) sc = 0; return sc; }
+function showRecovery(code){ $('#recCode').textContent = code; $('#recOv').classList.remove('hidden'); }
+async function rcGo(){
+  const name = $('#rcName').value.trim(), code = $('#rcCode').value.trim(), pass = $('#rcPass').value;
+  $('#rcErr').textContent = '';
+  if (!name || code.replace(/[^A-Za-z0-9]/g, '').length < 12){ $('#rcErr').textContent = 'Enter your username and the 12-character code.'; return; }
+  if (pass.length < 4){ $('#rcErr').textContent = 'The new password needs at least 4 characters.'; return; }
+  try {
+    const j = await api('api/recover', { username:name, code, password:pass });
+    data.token = j.token; ACC.user = j.user; FR.t = 0; dailyTried = false; save(); netHello();
+    $('#rcPass').value = ''; $('#rcCode').value = '';
+    showToast('Password changed', 'Here is your new recovery code'); showRecovery(j.recovery);
+  } catch (e) { $('#rcErr').textContent = e.message; }
+}
 async function suGo(){
   const name = $('#suName').value.trim(), pass = $('#suPass').value;
   $('#suErr').textContent = '';
   if (!ACC.server) return;
   if (!/^[A-Za-z0-9_]{3,14}$/.test(name)){ $('#suErr').textContent = 'Usernames are 3–14 letters, numbers or _'; return; }
   if (pass.length < 4){ $('#suErr').textContent = 'Passwords need at least 4 characters.'; return; }
+  if (suMode === 'signup' && CAT.badName(name)){ $('#suErr').textContent = 'Please pick a different username.'; return; }
+  if (suMode === 'signup' && !$('#suAgree').checked){ $('#suErr').textContent = 'Please agree to the Terms and Privacy Policy.'; return; }
   $('#suGo').disabled = true;
   try {
     const j = await api(suMode === 'login' ? 'api/login' : 'api/signup', { username:name, password:pass, look:data.p1 });
@@ -3351,7 +3595,7 @@ async function suGo(){
     data.p1.name = j.user.username.slice(0, 12); save();
     $('#suPass').value = ''; netHello();
     showToast(suMode === 'login' ? 'Welcome back' : 'Account created', j.user.username);
-    show('s-menu');
+    if (j.recovery) showRecovery(j.recovery); else show('s-menu');
   } catch (e) { $('#suErr').textContent = e.message; }
   $('#suGo').disabled = false;
 }
@@ -3360,7 +3604,7 @@ function renderRank(){
   if (a){
     const n = a.wins + a.losses;
     $('#rMe').innerHTML = `<div class="flex items-end justify-between gap-4 flex-wrap">
-      <div><div class="font-display text-[60px] leading-none tabular-nums">${a.mmr}</div><div class="text-sm font-semibold text-[var(--muted)] mt-1">${esc(a.username || a.name)}’s MMR · <span class="hot">${CAT.dupr(a.mmr).toFixed(3)} DUPR (est.)</span> · ${CAT.duprTier(CAT.dupr(a.mmr))}</div></div>
+      <div><div class="font-display text-[60px] leading-none tabular-nums">${a.mmr}</div><div class="text-sm font-semibold text-[var(--muted)] mt-1">${esc(a.username || a.name)}’s MMR · <span class="hot">${CAT.dupr(a.mmr).toFixed(3)} PR Rating</span> · ${CAT.duprTier(CAT.dupr(a.mmr))}</div></div>
       <div class="grid grid-cols-3 gap-4 text-right">
         <div><div class="font-display text-xl tabular-nums">${a.peak || a.mmr}</div><div class="text-xs text-[var(--muted)] font-semibold">Peak</div></div>
         <div><div class="font-display text-xl tabular-nums">${a.wins}–${a.losses}</div><div class="text-xs text-[var(--muted)] font-semibold">W–L</div></div>
@@ -3502,6 +3746,7 @@ function renderCtrl(){
   $('#optFps').classList.toggle('chip-on', !!data.opts.fps);
   $('#optFull').classList.toggle('chip-on', data.opts.fullscreen !== false);
   $('#optDance').classList.toggle('chip-on', data.opts.pointDance !== false);
+  $('#optReplay').classList.toggle('chip-on', data.opts.replays !== false);
   $('#optShake').classList.toggle('chip-on', !!data.opts.shake); $('#optSound').classList.toggle('chip-on', !!data.sound);
   $('#padInfo').textContent = padsSeen ? `${padsSeen} gamepad${padsSeen > 1 ? 's' : ''} connected. Gamepad 1 controls Player 1, gamepad 2 Player 2, and so on.` : 'Press any button on a gamepad to connect it.';
 }
@@ -3564,8 +3809,17 @@ function act(name, el){
     case 'onSlot': netSend({ t:'slot', i:+el.dataset.i }); break;
     case 'char': charFrom = screenNow === 'signup' ? 'signup' : 'menu'; editWho = 'p1'; show('s-char'); break;
     case 'guest': ensureLocal(); show('s-menu'); break;
-    case 'gateLogin': suMode = 'login'; $('#suErr').textContent = ''; show('s-signup'); break;
-    case 'gateSignup': suMode = 'signup'; $('#suErr').textContent = ''; show('s-signup'); break;
+    case 'gatePlay': gateTab = 'play'; renderGate(); break;
+    case 'gateLogin': gateTab = 'login'; $('#suErr').textContent = ''; if (screenNow !== 'gate') show('s-gate'); else renderGate(); setTimeout(() => $('#suName').focus(), 50); break;
+    case 'gateSignup': gateTab = 'signup'; $('#suErr').textContent = ''; if (screenNow !== 'gate') show('s-gate'); else renderGate(); setTimeout(() => $('#suName').focus(), 50); break;
+    case 'gateRecover': gateTab = 'recover'; $('#rcErr').textContent = ''; $('#rcName').value = $('#suName').value; renderGate(); break;
+    case 'eye': { const inp = $('#' + el.dataset.for); inp.type = inp.type === 'password' ? 'text' : 'password'; el.classList.toggle('on', inp.type === 'text'); break; }
+    case 'rcGo': rcGo(); break;
+    case 'recCopy': { const code = $('#recCode').textContent; try { navigator.clipboard.writeText(code); showToast('Copied', 'Keep it somewhere safe'); } catch (e) { showToast('Copy it by hand', code); } break; }
+    case 'recDone': $('#recOv').classList.add('hidden'); if (screenNow === 'gate') show('s-menu'); break;
+    case 'recNew': api('api/recovery/new', {}).then(j => showRecovery(j.recovery)).catch(e => showToast('Couldn’t make a code', e.message)); break;
+    case 'ppReport': if (PROF.p) askConfirm(`Report ${PROF.p.username}?`, 'Report an offensive name or bad behavior. After several reports the player is hidden until the owner reviews it.', 'Report', () => api('api/report', { username:PROF.p.username, reason:'Offensive name or behavior' }).then(() => showToast('Report sent', 'Thanks for keeping the game friendly')).catch(e => showToast('Couldn’t send report', e.message))); break;
+    case 'modAct': if (PROF.p) api('api/mod/action', { username:PROF.p.username, action:el.dataset.v }).then(() => { showToast('Done', `${el.dataset.v} · ${PROF.p.username}`); openPlayer(PROF.p.username); }).catch(e => showToast('Couldn’t do that', e.message)); break;
     case 'shop': if (screenNow !== 'shop') shopFrom = screenNow; show('s-shop'); break;
     case 'shopPartners': shopFrom = 'diff'; shopTab = 'partner'; show('s-shop'); break;
     case 'shopBack': show('s-' + (['char', 'diff'].includes(shopFrom) ? shopFrom : 'menu')); break;
@@ -3598,6 +3852,12 @@ function act(name, el){
     case 'ctrlTab': REB = null; ctrlSet = el.dataset.v; renderCtrl(); break;
     case 'bind': REB = { set:ctrlSet, act:el.dataset.a }; renderCtrl(); break;
     case 'dancePreview': previewDance(el.dataset.id); break;
+    case 'chTab': chTab = el.dataset.v; renderChallenges(getAcc()); break;
+    case 'emoteBar': { const bar = $('#emoteBar'); if (!bar.children.length) bar.innerHTML = EMOTES.map((e2, i) => `<button data-act="emote" data-e="${i}" class="tile rounded-xl font-bold" style="width:42px; height:42px; font-size:${e2 === 'GG' ? 15 : 22}px">${e2}</button>`).join(''); bar.classList.toggle('hidden'); break; }
+    case 'emote': sendEmote(+el.dataset.e); break;
+    case 'ach': show('s-ach'); break;
+    case 'cfNo': $('#confirmOv').classList.add('hidden'); CONFIRM.cb = null; break;
+    case 'cfYes': { $('#confirmOv').classList.add('hidden'); const cb = CONFIRM.cb; CONFIRM.cb = null; if (cb) cb(); break; }
     case 'chestOpen': openChestUI(el.dataset.id, !!el.dataset.key); break;
     case 'chestAgain': if (!CH.busy){ const a = getAcc() || ensureLocal(); const useKey = CH.key && (a.keys | 0) > 0; openChestUI(CH.chest, useKey); } break;
     case 'chestClose': if (!CH.busy){ $('#chestOv').classList.add('hidden'); renderShop(); } break;
@@ -3607,7 +3867,7 @@ function act(name, el){
     case 'ppFriend': if (PROF.p){ const act2 = { friend:'remove', asked:'accept', sent:'cancel', none:'add' }[el.dataset.state || 'none']; friendChange(PROF.p.username, act2).then(renderPlayer); } break;
     case 'frAccept': friendChange(el.dataset.name, 'accept'); break;
     case 'frDecline': friendChange(el.dataset.name, 'decline'); break;
-    case 'bell': NOTIF.open = !NOTIF.open; $('#notifPanel').classList.toggle('hidden', !NOTIF.open); if (NOTIF.open){ loadFriends(true); renderNotifs(); setTimeout(() => { NOTIF.items.forEach(n => n.read = true); renderNotifs(); }, 1500); } break;
+    case 'bell': NOTIF.open = !NOTIF.open; $('#notifPanel').classList.toggle('hidden', !NOTIF.open); if (NOTIF.open){ loadFriends(true); renderNotifs(); if (ACC.user && ACC.user.owner) api('api/mod/list', {}).then(j => { NOTIF.mod = j.list; renderNotifs(); }).catch(() => {}); setTimeout(() => { NOTIF.items.forEach(n => n.read = true); renderNotifs(); }, 1500); } break;
     case 'notifDrop': NOTIF.items.splice(+el.dataset.i, 1); renderNotifs(); break;
     case 'notifJoin': { const n = NOTIF.items[+el.dataset.i]; NOTIF.items.splice(+el.dataset.i, 1); renderNotifs(); if (n && !['game', 'pause'].includes(screenNow)){ NW.err = ''; netSend({ t:'join', code:n.code }); NOTIF.open = false; $('#notifPanel').classList.add('hidden'); } break; }
     case 'ppInvite': if (PROF.p) netSend({ t:'invite', to:PROF.p.username }); break;
@@ -3627,12 +3887,12 @@ function act(name, el){
       break;
     }
     case 'opt': data.opts[el.dataset.k] = el.dataset.v; save(); if (el.dataset.k === 'gfx') applyGfx(); if (el.dataset.k === 'camera') fitCamera(); renderCtrl(); updateHUD(); break;
-    case 'optToggle': { const k = el.dataset.k, cur = data.opts[k] === undefined ? ['fullscreen', 'pointDance', 'shake', 'music'].includes(k) : !!data.opts[k]; data.opts[k] = !cur; save(); renderCtrl(); break; }
+    case 'optToggle': { const k = el.dataset.k, cur = data.opts[k] === undefined ? ['fullscreen', 'pointDance', 'shake', 'music', 'replays'].includes(k) : !!data.opts[k]; data.opts[k] = !cur; save(); renderCtrl(); break; }
     case 'resetBinds': data.binds[ctrlSet] = clone(DEF_BINDS[ctrlSet]); save(); renderCtrl(); break;
     case 'rank': show('s-rank'); break;
     case 'how': show('s-how'); break;
     case 'sound': data.sound = !data.sound; save(); refreshMenu(); if (screenNow === 'ctrl') renderCtrl(); break;
-    case 'signup': suMode = isServerAcc() ? suMode : 'signup'; $('#suErr').textContent = ''; show('s-signup'); break;
+    case 'signup': if (isServerAcc()) show('s-signup'); else { gateTab = 'signup'; $('#suErr').textContent = ''; show('s-gate'); } break;
     case 'suTab': suMode = el.dataset.v; $('#suErr').textContent = ''; renderSignup(); break;
     case 'suGo': suGo(); break;
     case 'logout': api('api/logout', {}).catch(() => {}); data.token = null; ACC.user = null; FR.list = []; FR.keys = new Set(); FR.incoming = []; FR.outgoing = new Set(); NOTIF.items = []; renderNotifs(); FR.t = 0; dailyTried = false; save(); netHello(); show('s-gate'); break;
@@ -3642,16 +3902,27 @@ function act(name, el){
       if (G.mode === 'online'){ if (G.netRole === 'host') netSend({ t:'start' }); }
       else playGame(G.mode, G.diff);
       break;
-    case 'quit':
+    case 'quit': {
+      const midMatch = screenNow !== 'result' && G.state !== 'over';
       if (G.mode === 'online'){
         if (screenNow === 'result' && G.netRole === 'host'){ netSend({ t:'lobby' }); break; }
-        NW.leaving = false; clearRejoin(); netSend({ t:'leave' }); leaveOnline();
+        const leave = () => { NW.leaving = false; clearRejoin(); netSend({ t:'leave' }); leaveOnline(); };
+        if (midMatch && isServerAcc()) askConfirm('Leave this match?', 'Leaving an online match before it ends counts as a loss (−15 rating).', 'Leave', leave); else leave();
+      } else if (midMatch && RANKED(G.mode)){
+        askConfirm('Quit this ranked match?', 'Quitting counts as a loss, plus a small extra rating penalty.', 'Quit', () => { quitRanked(); show('s-menu'); });
       } else show('s-menu');
       break;
+    }
   }
 }
 document.addEventListener('click', e => { const a = e.target.closest('[data-act]'); if (a) act(a.dataset.act, a); });
 $('#suPass').addEventListener('keydown', e => { if (e.key === 'Enter') suGo(); });
+$('#suName').addEventListener('keydown', e => { if (e.key === 'Enter') $('#suPass').focus(); });
+$('#rcPass').addEventListener('keydown', e => { if (e.key === 'Enter') rcGo(); });
+$('#suPass').addEventListener('input', () => {
+  const sc = pwScore($('#suPass').value), lbl = ['Too easy', 'Weak', 'Okay', 'Good', 'Strong', 'Very strong'][sc], col = ['#f87171', '#f87171', '#fbbf24', '#a3e635', '#4ade80', '#22c55e'][sc];
+  $('#pwMeter').style.setProperty('--w', ((sc + 1) / 6 * 100) + '%'); $('#pwMeter').style.setProperty('--c', col); $('#pwMeter span').textContent = $('#suPass').value ? lbl : ''; $('#pwMeter span').style.color = col;
+});
 $('#onCode').addEventListener('keydown', e => { if (e.key === 'Enter') act('onJoinCode'); });
 
 /* ---------- keyboard ---------- */
@@ -3666,6 +3937,8 @@ addEventListener('keydown', e => {
   ensureAudio();
   if (c === 'Escape'){ if (screenNow === 'game') togglePause(true); else if (screenNow === 'pause') togglePause(false); else if (screenNow === 'ctrl') act('ctrlBack'); return; }
   if (screenNow !== 'game' || G.paused || G.state === 'over' || G.mode === 'demo') return;
+  if (G.state === 'replay' && G.netRole !== 'guest' && ['Space', 'Enter', 'NumpadEnter'].includes(c)){ endReplay(); return; }
+  if (G.mode === 'online' && /^Digit[1-8]$/.test(c)){ sendEmote(+c.slice(5) - 1); return; }
   if (c === 'KeyC' && !localHumans().some(p => Object.values(bindSets(p)).some(set => Object.values(set).includes('KeyC')))){ act('camCycle'); return; }
   for (const p of localHumans()) for (const a of SHOT_ACTS) if (isBind(p, a, c)) control(p, a, true);
 });
@@ -3853,6 +4126,25 @@ async function openChestUI(id, useKey){
     }, 5600);
   });
 }
+const EMOTES = ['👏', '😂', '🔥', '😮', '🙏', '😎', '💪', 'GG'];
+function showEmote(i, e){ const p = G.players[i]; if (p) p.emote = { e:EMOTES[e] || '👏', t:performance.now() }; }
+function sendEmote(e){
+  if (G.mode !== 'online' || performance.now() - (NW.emoteT || 0) < 1500) return;
+  NW.emoteT = performance.now(); netSend({ t:'emote', e }); showEmote(NW.you, e); $('#emoteBar').classList.add('hidden');
+}
+function drawEmotes(c){
+  const now = performance.now();
+  for (const p of G.players){
+    if (!p.emote) continue; const age = (now - p.emote.t) / 1000; if (age > 2.4){ p.emote = null; continue; }
+    const q = toScreen(proj(p.x, p.y, 2.3)), k = Math.min(1, age * 7) * (age > 2 ? 1 - (age - 2) / .4 : 1), r = 22 * Math.max(.01, k), y = q[1] - 26 - Math.min(age, .3) * 20;
+    c.save(); c.setTransform(DPR, 0, 0, DPR, 0, 0); c.globalAlpha = Math.max(0, k);
+    c.fillStyle = '#ffffff'; c.beginPath(); c.arc(q[0], y, r, 0, TAU); c.fill(); c.beginPath(); c.moveTo(q[0] - 6, y + r - 3); c.lineTo(q[0], y + r + 8); c.lineTo(q[0] + 6, y + r - 3); c.fill();
+    c.font = p.emote.e === 'GG' ? `800 ${Math.round(17 * k)}px Barlow, sans-serif` : `${Math.round(24 * k)}px system-ui, "Apple Color Emoji", "Segoe UI Emoji", sans-serif`;
+    c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = '#14213d'; c.fillText(p.emote.e, q[0], y + 1); c.restore();
+  }
+}
+const CONFIRM = { cb:null };
+function askConfirm(title, text, yes, cb){ setTxt('#cfTitle', title); setTxt('#cfText', text); setTxt('#cfYes', yes); CONFIRM.cb = cb; $('#confirmOv').classList.remove('hidden'); }
 const PROF = { p:null, from:'menu' }, FR = { list:[], keys:new Set(), incoming:[], outgoing:new Set(), t:0 };
 const NOTIF = { items:[], open:false };
 function addNotif(n){ NOTIF.items.unshift(Object.assign({ t:Date.now(), read:false }, n)); NOTIF.items = NOTIF.items.slice(0, 30); renderNotifs(); $('#bellBtn').classList.remove('ring'); void $('#bellBtn').offsetWidth; $('#bellBtn').classList.add('ring'); }
@@ -3860,11 +4152,12 @@ function renderNotifs(){
   const unread = FR.incoming.length + NOTIF.items.filter(n => !n.read).length;
   $('#bellCount').classList.toggle('hidden', !unread); $('#bellCount').textContent = unread > 9 ? '9+' : String(unread);
   const ago = t => { const m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'now' : m < 60 ? m + 'm' : Math.round(m / 60) + 'h'; };
-  const req = FR.incoming.map(f => `<div class="notif unread"><div class="min-w-0 flex-1"><b data-act="viewPlayer" data-name="${esc(f.username)}" style="cursor:pointer">${flagHTML(f.look && f.look.nation)} ${esc(f.username)}</b><div class="text-xs text-[var(--muted)]">wants to be your friend · ${f.dupr.toFixed(2)} DUPR</div></div>
+  const req = FR.incoming.map(f => `<div class="notif unread"><div class="min-w-0 flex-1"><b data-act="viewPlayer" data-name="${esc(f.username)}" style="cursor:pointer">${flagHTML(f.look && f.look.nation)} ${esc(f.username)}</b><div class="text-xs text-[var(--muted)]">wants to be your friend · ${f.dupr.toFixed(2)} rating</div></div>
     <button data-act="frAccept" data-name="${esc(f.username)}" class="primary rounded-xl px-3 py-1.5 text-sm font-bold">Accept</button><button data-act="frDecline" data-name="${esc(f.username)}" class="tile rounded-xl px-2.5 py-1.5 text-sm font-bold" aria-label="Decline">✕</button></div>`);
   const rest = NOTIF.items.map((n, i) => `<div class="notif ${n.read ? '' : 'unread'}"><div class="min-w-0 flex-1"><div class="font-semibold">${esc(n.text)}</div><div class="text-xs text-[var(--muted)]">${ago(n.t)}</div></div>
     ${n.type === 'invite' ? `<button data-act="notifJoin" data-i="${i}" class="primary rounded-xl px-3 py-1.5 text-sm font-bold">Join</button>` : ''}<button data-act="notifDrop" data-i="${i}" class="tile rounded-xl px-2.5 py-1.5 text-sm font-bold" aria-label="Dismiss">✕</button></div>`);
-  $('#notifList').innerHTML = req.concat(rest).join('') || '<div class="mini text-[var(--muted)]">You’re all caught up.</div>';
+  const mod = (NOTIF.mod || []).map(x => `<div class="notif" style="border-color:rgba(239,68,68,.5)"><div class="min-w-0 flex-1"><b>⚑ ${esc(x.username)}</b><div class="text-xs text-[var(--muted)]">${x.reports} report${x.reports === 1 ? '' : 's'} · ${esc(x.reasons.join(', '))}${x.banned ? ' · banned' : x.flagged ? ' · hidden' : ''}</div></div><button data-act="viewPlayer" data-name="${esc(x.username)}" class="tile rounded-xl px-3 py-1.5 text-sm font-bold">Review</button></div>`);
+  $('#notifList').innerHTML = req.concat(rest, mod).join('') || '<div class="mini text-[var(--muted)]">You’re all caught up.</div>';
 }
 const meKey = () => (ACC.user && ACC.user.username || '').toLowerCase();
 async function openPlayer(name){
@@ -3889,6 +4182,10 @@ function renderPlayer(){
   $('#ppFriend').textContent = { friend:'Remove friend', asked:'Accept friend request', sent:'Request sent · tap to cancel', none:'Add friend' }[st];
   $('#ppFriend').classList.toggle('primary', st === 'none' || st === 'asked'); $('#ppFriend').classList.toggle('tile', st === 'friend' || st === 'sent');
   $('#ppInvite').classList.toggle('hidden', self || !p.online || !NW.room || NW.room.state !== 'lobby');
+  $('#ppReport').classList.toggle('hidden', self || !ACC.user);
+  const owner = !!(ACC.user && ACC.user.owner); $('#ppMod').classList.toggle('hidden', !owner || self);
+  if (owner) setTxt('#ppModInfo', `· ${p.reports || 0} report${p.reports === 1 ? '' : 's'}${p.banned ? ' · BANNED' : ''}`);
+  setTxt('#ppSub', $('#ppSub').textContent + ` · 🏅 ${p.ach || 0} achievements`);
   if (!ACC.user && !self) { setTxt('#ppMsg', 'Sign in to add friends.'); $('#ppMsg').style.color = 'var(--muted)'; }
 }
 async function loadFriends(force){
@@ -3969,6 +4266,7 @@ function netMsg(m){
       beginOnline(); if (wasReconnect || m.rejoin) showToast('Reconnected', 'You’re back in the match');
       break;
     }
+    case 'emote': showEmote(m.s, m.e); break;
     case 'invited': showInvite(m); addNotif({ type:'invite', code:m.code, text:`${m.from} invited you to a ${m.mode} match` }); break;
     case 'notify':
       if (m.kind === 'request'){ showToast(`${m.from} sent you a friend request`, 'Open the bell to accept'); $('#bellBtn').classList.remove('ring'); void $('#bellBtn').offsetWidth; $('#bellBtn').classList.add('ring'); }
@@ -4020,7 +4318,7 @@ function renderRoom(){
     const sl = r.slots[i], team = i % 2 === 0 ? 't1' : 't2', num = `${i + 1}P`;
     if (!sl) return `<button data-act="onSlot" data-i="${i}" class="pcard empty" style="animation-delay:${i * .07}s"><div class="pcNum" style="color:var(--muted)">${num}</div><div class="pcPlus">+</div><div class="pcName">Open slot</div><div class="pcMeta">Tap to move here.<br>The AI plays if nobody joins.</div></button>`;
     const you = i === NW.you, isHost = i === r.host;
-    const meta = [sl.level ? `Lv ${sl.level}` : (sl.account ? '' : 'Guest'), sl.account ? `${CAT.dupr(sl.mmr).toFixed(2)} DUPR` : ''].filter(Boolean).join(' · ');
+    const meta = [sl.level ? `Lv ${sl.level}` : (sl.account ? '' : 'Guest'), sl.account ? `${CAT.dupr(sl.mmr).toFixed(2)} rating` : ''].filter(Boolean).join(' · ');
     const state = sl.away ? `<span class="pulse">RECONNECTING ${sl.awayLeft}s</span>` : sl.ready ? `${CHECK_SVG}<span>READY</span>` : `<span style="opacity:.7">NOT READY</span>`;
     return `<div class="pcard ${team} ${sl.ready ? 'ready' : ''} ${you ? 'me' : ''} ${sl.away ? 'away' : ''}" style="animation-delay:${i * .07}s">
       ${you || isHost ? `<span class="pcBadge">${[you ? 'YOU' : '', isHost ? 'HOST' : ''].filter(Boolean).join(' · ')}</span>` : ''}
@@ -4118,7 +4416,7 @@ function hostInput(m){
 }
 function hostSnapshot(){
   const b = G.ball;
-  return { t:'st', s:G.state, sc:G.score, sv:G.server, sp:G.players.indexOf(G.serverP), rp:G.players.indexOf(G.recvP), sn:G.serveNum, lw:G.lastWin, ce:G.cele && G.state === 'point' ? G.cele.team : 0, wait:netWaiting(), sty:SERVES.indexOf(G.serverP ? G.serverP.serveType || 'volley' : 'volley'), mt:Math.round(G.matchT), r:G.rally,
+  return { t:'st', s:G.state, sc:G.score, sv:G.server, sp:G.players.indexOf(G.serverP), rp:G.players.indexOf(G.recvP), sn:G.serveNum, lw:G.lastWin, rl:G.replay ? G.replay.label : '', ce:G.cele && G.state === 'point' ? G.cele.team : 0, wait:netWaiting(), sty:SERVES.indexOf(G.serverP ? G.serverP.serveType || 'volley' : 'volley'), mt:Math.round(G.matchT), r:G.rally,
     b:[r3(b.x), r3(b.y), r3(b.z), TYPES.indexOf(b.type), b.live ? 1 : 0, b.hitCount, b.lastHitter, b.serveSign, BALL_IDS.indexOf(b.skin || 'ball_classic')], ct:COURT_IDS.indexOf(G.court),
     p:G.players.map(p => [r3(p.x), r3(p.y), r3(p.swing), r3(p.run), p.moving ? 1 : 0, Math.round(p.energy), ARMS.indexOf(p.armed), p.charging ? 1 : 0, r3(p.charge), r3(p.meterT), r3(p.meterQ), r3(p.jumpT || 0), Math.round(p.stamina ?? 100), p.sprinting ? 1 : 0]),
     ev:G.netEv.splice(0) };
@@ -4151,7 +4449,7 @@ function guestInterp(){
   const k = b.rt > a.rt ? clamp((rt - a.rt) / (b.rt - a.rt), 0, 1) : 1;
   G.players.forEach((p, i) => {
     const A = a.p[i], B = b.p[i]; if (!A || !B) return;
-    if (i === NW.you){
+    if (i === NW.you && G.state !== 'replay'){
       const Z = S[S.length - 1].p[i];
       NW.auth = [Z[0], Z[1]];
       p.swing = Math.max(p.swing, B[2]); p.energy = B[5]; p.armed = ARMS[B[6]] || 'drive';
@@ -4171,7 +4469,7 @@ function guestInterp(){
   const last = S[S.length - 1];
   if (G.state !== 'over') G.state = last.s;
   if (COURT_IDS[last.ct]) G.court = COURT_IDS[last.ct];
-  G.lastWin = last.lw || 0;
+  G.lastWin = last.lw || 0; G.replayLabel = last.rl || '';
   if (last.ce && last.s === 'point' && !(G.cele && G.cele.live)){ G.cele = { team:last.ce, start:G.time, live:true }; const mine = team(last.ce).find(p => p.human && !p.human.remote); if (mine && musicOn() && actx) startTrack(IT((mine.look && mine.look.dance) || 'dance_pump').style || 'pump', { seconds:1.6, vol:.32 }); }
   if (!last.ce && G.cele && G.cele.live) G.cele = null;
   G.serverP = G.players[last.sp] || null; if (G.serverP) G.serverP.serveType = SERVES[last.sty] || 'volley'; G.recvP = G.players[last.rp] || null; G.serveNum = last.sn || 1; G.server = last.sv; G.rally = last.r;
@@ -4195,7 +4493,8 @@ function guestTick(dt){
   if (me && me.human){
     if (screenNow === 'game') readInput(me); else { me.inX = me.inY = 0; }
     const frozen = G.state === 'serve' && G.serverP === me;
-    if (frozen){ me.vx = me.vy = 0; me.moving = false; if (NW.auth){ me.x = NW.auth[0]; me.y = NW.auth[1]; } }
+    if (G.state === 'replay'){ me.moving = false; }           // the host's replay moves everyone
+    else if (frozen){ me.vx = me.vy = 0; me.moving = false; if (NW.auth){ me.x = NW.auth[0]; me.y = NW.auth[1]; } }
     else {
       updateStamina(me, wantsSprint(me) && Math.hypot(me.inX, me.inY) > .25, dt);
       movePlayer(me, me.inX, me.inY, dt, 5.2 * (me.sprinting ? SPRINT.mult : 1));
@@ -4218,6 +4517,7 @@ const DT = 1 / 120;
 let lastRender = 0, lastShop = 0;
 let HUD_RECT = null, CB_RECT = null;
 addEventListener('resize', () => { HUD_RECT = CB_RECT = null; });
+cv.addEventListener('pointerdown', () => { if (G.state === 'replay' && G.netRole !== 'guest') endReplay(); });
 const toScreen = q => { const v = G.view; return v ? [(q[0] - v.fx) * v.k + v.fx + v.ox, (q[1] - v.fy) * v.k + v.fy + v.oy, q[2]] : q; };
 function hudAutoHide(dt){
   const hud = $('#hud'), cb = $('#callBanner');
@@ -4282,6 +4582,7 @@ function frame(nowMs){
     if (screenNow === 'signup' && ACC.user) drawPreview($('#pvSign'), myLook(), 'front', now, '');
     if (screenNow === 'shop' && now - lastShop >= 1 / 20){ lastShop = now; drawShop(now); }
     if (screenNow === 'room') drawLobby(now);
+    if (screenNow === 'gate') drawStage($('#pvGate'), myLook(), now, { tag:(myName() || '?').slice(0, 1).toUpperCase() });
     if (screenNow === 'player' && PROF.p) drawStage($('#pvPlayer'), PROF.p.look, now, { tag:PROF.p.username.slice(0, 1).toUpperCase() });
     if (['menu', 'online', 'room', 'player'].includes(screenNow) && (NW.frT = (NW.frT || 0) + d) > 15){ NW.frT = 0; loadFriends(); }
   }

@@ -26,6 +26,28 @@ Set two environment variables and the server creates (or updates) that account o
 
 Then log in with that username and password. MMR and DUPR still start at 0 / 2.000 and are earned in ranked games.
 
+## Safety and fair play
+
+- **Ranked results are checked.** The server gives every ranked match a ticket when it starts, and only accepts a result for that ticket if the score is a real finished game (to 11, win by 2), the match took a believable time, and you haven't won more than 20 ranked matches in the last hour.
+- **Quitting counts as a loss.** Leaving a ranked match early (or closing the page) counts as a loss with a small extra penalty. Leaving an online match before it ends costs 15 rating. The game asks before you quit.
+- **Login protection.** 5 wrong passwords lock that account for 10 minutes; new accounts are limited per connection.
+- **Recovery codes.** Every new account gets a recovery code (shown once). *Forgot password?* on the login screen uses it to set a new password. Account → *Make a new recovery code* gives older accounts one too.
+- **Names and reports.** Offensive usernames are blocked (English and Filipino, including leetspeak). Players can report a profile; after 3 different players report someone, they're hidden from the leaderboard until reviewed.
+- **Owner tools.** Your owner account (OWNER_USERNAME) sees reported players in the bell and can Clear reports, Ban or Unban from their profile.
+- **Error reports.** If the game crashes on someone's phone or browser, the error and browser type show up in your Render logs as `[client error]`.
+- **Privacy Policy and Terms** are at `/privacy.html` and `/terms.html`. Replace `YOUR-EMAIL@example.com` in both files with your contact email before launching.
+
+## Seasons, challenges and achievements
+
+- **Seasons** last one calendar month. When a season ends you get rewards for the highest tier you reached (up to 3,000 coins + 4 keys for World-best) and your rating soft-resets to 75%.
+- **Challenges:** 3 daily and 3 weekly, like "Hit 15 dinks" or "Win 10 ranked matches". Weekly ones also give a chest key.
+- **Achievements:** 21 of them, from First Win to beating The Pickle King, each with coins and some with keys.
+
+## Replays and emotes
+
+- **Instant replay** in slow motion after a smash or spike winner and after rallies of 10+ shots. Tap or press Space to skip; turn *Replays* off in Settings.
+- **Quick emotes** online: press 1–8 or tap 😀 in the scoreboard.
+
 ## Friends and profiles
 
 Tap a player's name (leaderboard, Top players, lobby cards, friends list) to open their profile: character, level, DUPR, MMR, record and recent matches. Signed-in players can **Add friend**, see which friends are online (green dot), and **invite** online friends to the room they are in. Invites pop up anywhere in the menus.
@@ -62,9 +84,9 @@ Settings → *Court in custom games* picks the court for 1v1, 2v2 and new online
 
 The menus have background music. Turn it on or off with *Music* in the sidebar or in Settings.
 
-## DUPR rating
+## PR Rating
 
-The dashboard, ranking page, leaderboard, lobby cards and opponent list show a **DUPR (est.)** rating on pickleball's real 2.000–8.000 scale. It is estimated from your in-game MMR (the game can't read official DUPR): 0 MMR = 2.0 and every 667 MMR adds 1.0, up to 4000 MMR = 8.0. Tiers: Beginner 2.0–2.99, Intermediate 3.0–3.49, Advanced intermediate 3.5–3.99, Advanced 4.0–4.99, Semi-professional 5.0–5.99, Professional 6.0–6.99, World-best 7.0–8.0. The 16 AI opponents are spread across all tiers, from Rookie Rex (2.00) to The Pickle King (8.00).
+The dashboard, ranking page, leaderboard, lobby cards and opponent list show a **PR Rating** (Pickle Rush Rating) on a 2.000–8.000 scale like real pickleball ratings. It is calculated from your in-game MMR and isn't an official rating: 0 MMR = 2.0 and every 667 MMR adds 1.0, up to 4000 MMR = 8.0. Tiers: Beginner 2.0–2.99, Intermediate 3.0–3.49, Advanced intermediate 3.5–3.99, Advanced 4.0–4.99, Semi-professional 5.0–5.99, Professional 6.0–6.99, World-best 7.0–8.0. The 16 AI opponents are spread across all tiers, from Rookie Rex (2.00) to The Pickle King (8.00).
 
 ## Sprint
 
