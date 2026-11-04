@@ -1233,7 +1233,7 @@ function endPoint(winner, title, sub = ''){
   if (G.mode === 'demo'){ if (G.over){ G.over = null; G.score = [0, 0]; G.server = 1; G.serveNum = 2; G.serverP = null; } }
   else {
     const call = G.over ? '' : ` · ${scoreCall()}`;
-    toast(title, (sub ? sub + ' · ' : '') + note + call);
+    callToast(title);                                  // the full score call is already on the scoreboard
     emit({ k:'pt', w:winner });
     const humanWin = team(winner).some(p => p.human && !p.human.remote), humanLose = team(other(winner)).some(p => p.human && !p.human.remote);
     playSfx(humanWin || !humanLose ? 'point' : 'lose');
@@ -2426,10 +2426,17 @@ function tickBars(){
 let toastT = 0;
 function showToast(t, s){
   $('#tTitle').textContent = t; $('#tSub').textContent = s || '';
-  const el = $('#toast'); el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
+  const el = $('#toast'); el.classList.remove('show', 'call'); void el.offsetWidth; el.classList.add('show');
   clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('show'), 1300);
 }
+// the quick call after a point ("Point!", "Out!", "Net!"): small, under the scoreboard, gone in a second
+function showCall(t){
+  $('#tTitle').textContent = t; $('#tSub').textContent = '';
+  const el = $('#toast'); el.classList.remove('show'); el.classList.add('call'); void el.offsetWidth; el.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('show'), 950);
+}
 function toast(t, s){ emit({ k:'toast', a:t, b:s || '' }); showToast(t, s); }
+function callToast(t){ emit({ k:'toast', a:t, b:'', c:1 }); showCall(t); }
 
 /* ---------- screens ---------- */
 let screenNow = 'menu', ctrlFrom = 'menu', charFrom = 'menu';
@@ -3666,7 +3673,7 @@ function applyEvent(ev){
     case 'shake': if (data.opts.shake) G.shake = Math.max(G.shake, ev.v); if (ev.v >= .28) G.punch = .3; break;
     case 'pf': G.whiteFlash = .14; break;
     case 'dust': dustPuff(ev.x, ev.y, ev.big, true); break;
-    case 'toast': showToast(ev.a, ev.b); break;
+    case 'toast': if (ev.c) showCall(ev.a); else showToast(ev.a, ev.b); break;
     case 'call': showCall(ev.c, ev.sv, ev.n); break;
     case 'pt': playSfx(ev.w === myTeam() ? 'point' : 'lose'); break;
     case 'over': { const last = NW.snaps[NW.snaps.length - 1]; if (last) G.score = last.sc.slice(); showResult(ev.w, ev.sc); break; }

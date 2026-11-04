@@ -440,7 +440,7 @@ function endPoint(winner, title, sub = ''){
   if (G.mode === 'demo'){ if (G.over){ G.over = null; G.score = [0, 0]; G.server = 1; G.serveNum = 2; G.serverP = null; } }
   else {
     const call = G.over ? '' : ` · ${scoreCall()}`;
-    toast(title, (sub ? sub + ' · ' : '') + note + call);
+    callToast(title);                                  // the full score call is already on the scoreboard
     emit({ k:'pt', w:winner });
     const humanWin = team(winner).some(p => p.human && !p.human.remote), humanLose = team(other(winner)).some(p => p.human && !p.human.remote);
     playSfx(humanWin || !humanLose ? 'point' : 'lose');

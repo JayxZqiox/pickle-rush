@@ -89,10 +89,17 @@ function tickBars(){
 let toastT = 0;
 function showToast(t, s){
   $('#tTitle').textContent = t; $('#tSub').textContent = s || '';
-  const el = $('#toast'); el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
+  const el = $('#toast'); el.classList.remove('show', 'call'); void el.offsetWidth; el.classList.add('show');
   clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('show'), 1300);
 }
+// the quick call after a point ("Point!", "Out!", "Net!"): small, under the scoreboard, gone in a second
+function showCall(t){
+  $('#tTitle').textContent = t; $('#tSub').textContent = '';
+  const el = $('#toast'); el.classList.remove('show'); el.classList.add('call'); void el.offsetWidth; el.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('show'), 950);
+}
 function toast(t, s){ emit({ k:'toast', a:t, b:s || '' }); showToast(t, s); }
+function callToast(t){ emit({ k:'toast', a:t, b:'', c:1 }); showCall(t); }
 
 /* ---------- screens ---------- */
 let screenNow = 'menu', ctrlFrom = 'menu', charFrom = 'menu';

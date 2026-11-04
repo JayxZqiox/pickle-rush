@@ -55,6 +55,9 @@ input{font-size:16px;} /* stops iOS zooming into inputs */
 #toast{position:fixed; left:50%; top:24%; z-index:15; pointer-events:none; text-align:center; opacity:0;
   transform:translate(-50%,-10px) scale(.9); transition:opacity .18s ease, transform .26s cubic-bezier(.2,1.5,.4,1);}
 #toast.show{opacity:1; transform:translate(-50%,0) scale(1);}
+#toast.call{top:calc(env(safe-area-inset-top,0px) + 78px);}
+#toast.call #tTitle{font-size:24px; padding:6px 18px; border-radius:999px; background:rgba(5,10,25,.6); text-shadow:none;}
+#toast.call #tSub{display:none;}
 /* rarity cards + stages */
 .rcard{position:relative; display:flex; flex-direction:column; gap:6px; padding:10px; border-radius:18px; border:1px solid var(--rc-b);
   background:radial-gradient(90% 60% at 50% 0%, var(--rc-a), transparent 70%), linear-gradient(180deg, var(--panel2), var(--panel)); transition:transform .2s var(--ease), box-shadow .2s; animation:fadeUp .45s var(--ease) both;}

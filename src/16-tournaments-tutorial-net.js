@@ -492,7 +492,7 @@ function applyEvent(ev){
     case 'shake': if (data.opts.shake) G.shake = Math.max(G.shake, ev.v); if (ev.v >= .28) G.punch = .3; break;
     case 'pf': G.whiteFlash = .14; break;
     case 'dust': dustPuff(ev.x, ev.y, ev.big, true); break;
-    case 'toast': showToast(ev.a, ev.b); break;
+    case 'toast': if (ev.c) showCall(ev.a); else showToast(ev.a, ev.b); break;
     case 'call': showCall(ev.c, ev.sv, ev.n); break;
     case 'pt': playSfx(ev.w === myTeam() ? 'point' : 'lose'); break;
     case 'over': { const last = NW.snaps[NW.snaps.length - 1]; if (last) G.score = last.sc.slice(); showResult(ev.w, ev.sc); break; }
