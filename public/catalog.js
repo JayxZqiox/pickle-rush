@@ -501,16 +501,16 @@
 
   /* ---------- tournaments: 8-team knockout (Quarterfinal, Semifinal, Final) ---------- */
   const CUPS = [
-    { id:'cup_brgy', opp:['club','pro','veteran'], ticket:150,    region:'PH', tier:'Beginner',     name:'Barangay Cup',         lo:2.0, hi:2.9, need:0,   prev:null,          coins:[70, 110, 250],   xp:[50, 70, 120],   keys:1, prizes:['court_lansangan', 'sando_brgy'], venue:'court_barangay' },
-    { id:'cup_visayas', opp:['elite','legend','champion'], ticket:400, region:'PH', tier:'Intermediate', name:'Visayas Open',         lo:3.0, hi:4.3, need:2.8, prev:'cup_brgy',    coins:[140, 200, 500],  xp:[80, 110, 200],  keys:2, prizes:['jer_visayas', 'dance_sinulog'], venue:'court_beach' },
-    { id:'cup_phnats', opp:['grandmaster','semi2','tour1'], ticket:900,  region:'PH', tier:'Pro',          name:'Philippine Nationals', lo:4.5, hi:6.7, need:4.3, prev:'cup_visayas', coins:[260, 380, 1000], xp:[120, 170, 330], keys:3, prizes:['top_phnats', 'mate_lando'], venue:'court_stadium' },
-    { id:'cup_street', opp:['lando'], ticket:300,  region:'PH', tier:'Legend',       name:'Street Challenge: Kuya Lando', lo:7.8, hi:7.8, need:0, prev:null, rounds:1, singles:true, coins:[500], xp:[200], keys:2, prizes:['mate_lando'], venue:'court_lansangan', boss:'lando' },
-    { id:'cup_s1', opp:['club','pro','veteran'], ticket:150, region:'SOLO', tier:'Beginner',     name:'Singles Open',       lo:2.0, hi:3.0, need:0,   prev:null,     singles:true, coins:[90, 130, 300],  xp:[50, 75, 140],  keys:1, prizes:['jer_singles', 'wrist_champ'], venue:'court_park' },
-    { id:'cup_s2', opp:['elite','champion','grandmaster'], ticket:400, region:'SOLO', tier:'Intermediate', name:'Singles Masters',    lo:3.4, hi:5.0, need:3.2, prev:'cup_s1', singles:true, coins:[170, 240, 650], xp:[90, 120, 230], keys:2, prizes:['top_masters', 'ball_masters'], venue:'court_clay' },
-    { id:'cup_s3', opp:['semi1','semi2','tour2'], ticket:900, region:'SOLO', tier:'Pro',          name:'Singles Grand Slam', lo:5.4, hi:7.6, need:5.0, prev:'cup_s2', singles:true, coins:[300, 450, 1300], xp:[140, 200, 380], keys:3, prizes:['pad_slam', 'head_slam'], venue:'court_royal' },
-    { id:'cup_club', opp:['pro','veteran','legend'], ticket:200,    region:'WORLD', tier:'Beginner',  name:'Club Cup',             lo:2.3, hi:3.8, need:0,   prev:null,          coins:[100, 150, 350],  xp:[60, 80, 150],   keys:1, prizes:['top_cup_club', 'dance_trophy'] },
-    { id:'cup_open', opp:['champion','grandmaster','semi2'], ticket:500,    region:'WORLD', tier:'Intermediate', name:'Pro Open',          lo:3.8, hi:5.4, need:3.5, prev:'cup_club',    coins:[180, 260, 700],  xp:[90, 120, 250],  keys:2, prizes:['top_cup_open', 'head_laurel'] },
-    { id:'cup_world', opp:['semi2','tour1','nightmare'], ticket:1200,   region:'WORLD', tier:'Pro',       name:'World Championship',   lo:5.6, hi:8.0, need:5.0, prev:'cup_open',    coins:[320, 480, 1400], xp:[140, 200, 400], keys:3, prizes:['pad_cup', 'head_wc'] },
+    { id:'cup_brgy', title:'Barangay Cup Champion', opp:['club','pro','veteran'], ticket:150,    region:'PH', tier:'Beginner',     name:'Barangay Cup',         lo:2.0, hi:2.9, need:0,   prev:null,          coins:[70, 110, 250],   xp:[50, 70, 120],   keys:1, prizes:['court_lansangan', 'sando_brgy'], venue:'court_barangay' },
+    { id:'cup_visayas', title:'Visayas Open Champion', opp:['elite','legend','champion'], ticket:400, region:'PH', tier:'Intermediate', name:'Visayas Open',         lo:3.0, hi:4.3, need:2.8, prev:'cup_brgy',    coins:[140, 200, 500],  xp:[80, 110, 200],  keys:2, prizes:['jer_visayas', 'dance_sinulog'], venue:'court_beach' },
+    { id:'cup_phnats', title:'Philippine National Champion', opp:['grandmaster','semi2','tour1'], ticket:900,  region:'PH', tier:'Pro',          name:'Philippine Nationals', lo:4.5, hi:6.7, need:4.3, prev:'cup_visayas', coins:[260, 380, 1000], xp:[120, 170, 330], keys:3, prizes:['top_phnats', 'mate_lando'], venue:'court_stadium' },
+    { id:'cup_street', title:'Street Legend Slayer', opp:['lando'], ticket:300,  region:'PH', tier:'Legend',       name:'Street Challenge: Kuya Lando', lo:7.8, hi:7.8, need:0, prev:null, rounds:1, singles:true, coins:[500], xp:[200], keys:2, prizes:['mate_lando'], venue:'court_lansangan', boss:'lando' },
+    { id:'cup_s1', title:'Singles Open Champion', opp:['club','pro','veteran'], ticket:150, region:'SOLO', tier:'Beginner',     name:'Singles Open',       lo:2.0, hi:3.0, need:0,   prev:null,     singles:true, coins:[90, 130, 300],  xp:[50, 75, 140],  keys:1, prizes:['jer_singles', 'wrist_champ'], venue:'court_park' },
+    { id:'cup_s2', title:'Singles Masters Champion', opp:['elite','champion','grandmaster'], ticket:400, region:'SOLO', tier:'Intermediate', name:'Singles Masters',    lo:3.4, hi:5.0, need:3.2, prev:'cup_s1', singles:true, coins:[170, 240, 650], xp:[90, 120, 230], keys:2, prizes:['top_masters', 'ball_masters'], venue:'court_clay' },
+    { id:'cup_s3', title:'Singles Grand Slam Champion', opp:['semi1','semi2','tour2'], ticket:900, region:'SOLO', tier:'Pro',          name:'Singles Grand Slam', lo:5.4, hi:7.6, need:5.0, prev:'cup_s2', singles:true, coins:[300, 450, 1300], xp:[140, 200, 380], keys:3, prizes:['pad_slam', 'head_slam'], venue:'court_royal' },
+    { id:'cup_club', title:'Club Cup Champion', opp:['pro','veteran','legend'], ticket:200,    region:'WORLD', tier:'Beginner',  name:'Club Cup',             lo:2.3, hi:3.8, need:0,   prev:null,          coins:[100, 150, 350],  xp:[60, 80, 150],   keys:1, prizes:['top_cup_club', 'dance_trophy'] },
+    { id:'cup_open', title:'Pro Open Champion', opp:['champion','grandmaster','semi2'], ticket:500,    region:'WORLD', tier:'Intermediate', name:'Pro Open',          lo:3.8, hi:5.4, need:3.5, prev:'cup_club',    coins:[180, 260, 700],  xp:[90, 120, 250],  keys:2, prizes:['top_cup_open', 'head_laurel'] },
+    { id:'cup_world', title:'World Champion', opp:['semi2','tour1','nightmare'], ticket:1200,   region:'WORLD', tier:'Pro',       name:'World Championship',   lo:5.6, hi:8.0, need:5.0, prev:'cup_open',    coins:[320, 480, 1400], xp:[140, 200, 400], keys:3, prizes:['pad_cup', 'head_wc'] },
   ];
   CUPS.forEach(c => { c.rounds = c.rounds || 3; });
   // shown ranges follow the real opponents
@@ -519,6 +519,10 @@
     'Drop Shot Squad', 'Erne Express', 'Pickle Pirates', 'Sweet Spot Crew', 'Smash Society', 'Third Shot Thunder', 'Topspin Titans', 'Court Crushers', 'Ace Avengers'];
   const PH_TEAM_NAMES = ['Tsinelas Titans', 'Adobo Aces', 'Kalamansi Kings', 'Barako Ballers', 'Halo-Halo Heroes', 'Jeepney Jammers', 'Sinigang Smashers', 'Bayanihan Blitz',
     'Mabuhay Mavericks', 'Lechon Lobbers', 'Bagyo Blasters', 'Kampeon Crew', 'Sampaguita Spinners', 'Kalabaw Kings', 'Banig Bashers', 'Tabo Titans'];
+  // titles: winning a cup earns its title ("Singles Grand Slam Champion"); you wear one at a time
+  function titleName(id, count) { const c = CUP_BY[id]; return c ? c.title + (count > 1 ? ` ×${count}` : '') : ''; }
+  function titlesOf(p) { return CUPS.filter(c => ((p.trophies || {})[c.id] || 0) > 0).map(c => c.id); }
+  function setTitle(p, id) { if (id && !((p.trophies || {})[id] > 0)) return 'You haven’t won that tournament yet'; p.title = id || ''; p.titlePicked = true; return null; }
   function cleanTeamName(n) { return String(n || '').replace(/[^\w \-'’.&]/g, '').replace(/\s+/g, ' ').trim().slice(0, 20); }
   function teamNameError(n) { if (n.length < 3) return 'Team names need at least 3 characters'; if (badName(n.replace(/[^A-Za-z0-9]/g, '_'))) return 'Please pick a different team name'; return null; }
   // pay for the ticket and get a fresh bracket
@@ -615,6 +619,7 @@
     Object.assign(out, addRewards(p, { coins:c.coins[round], xp:c.xp[round] }));
     if (round >= c.rounds - 1) {
       out.champion = true; p.trophies = p.trophies || {}; p.trophies[c.id] = (p.trophies[c.id] || 0) + 1;
+      out.title = c.id; if (!p.titlePicked || !p.title) p.title = c.id;      // the newest title is worn unless you picked one
       for (const id of c.prizes) { if (!p.owned.includes(id)) { p.owned.push(id); out.prizes.push(id); } else { p.coins += 500; out.dupCoins += 500; } }
       p.keys = (p.keys | 0) + c.keys; out.keys = c.keys;
     }
@@ -680,12 +685,12 @@
       hairStyle: styles.includes(l.hairStyle) ? l.hairStyle : styles[0],
       body: BODY_TYPES.includes(l.body) ? l.body : 'regular',
       height: Math.max(150, Math.min(200, Math.round(+l.height || (gender === 'girl' ? 165 : 175)))),
-      nation: NATIONS[l.nation] ? l.nation : '' };
+      nation: NATIONS[l.nation] ? l.nation : '', title: CUP_BY[l.title] ? l.title : '' };
     for (const s of ['hairx', 'head', 'top', 'bottom', 'shoes', 'wrist', 'paddle', 'ball', 'dance']) { const it = BY_ID[l[s]]; out[s] = it && it.slot === s ? it.id : DEFAULT_EQUIP[s]; }
     return out;
   }
 
-  const API = { VERSION: 19, tourEnter, cleanTeamName, teamNameError, TEAM_NAMES, PH_TEAM_NAMES, CUPS, CUP_BY, ROUND_NAME, cupUnlocked, tourNew, tourOpp, tourReward, tourResult, tourWinner, tourParts, tourWatchable, tourDecide, tourAdvance, PH_PLACES, PRACTICE_GAP, isPractice, matchPreview, parseScore, seasonId, seasonEnds, seasonRoll, SEASON_REWARD, CH_DAILY, CH_WEEKLY, CH_BY_ID, ensureChallenges, cleanStats, trackStats,
+  const API = { VERSION: 20, titleName, titlesOf, setTitle, tourEnter, cleanTeamName, teamNameError, TEAM_NAMES, PH_TEAM_NAMES, CUPS, CUP_BY, ROUND_NAME, cupUnlocked, tourNew, tourOpp, tourReward, tourResult, tourWinner, tourParts, tourWatchable, tourDecide, tourAdvance, PH_PLACES, PRACTICE_GAP, isPractice, matchPreview, parseScore, seasonId, seasonEnds, seasonRoll, SEASON_REWARD, CH_DAILY, CH_WEEKLY, CH_BY_ID, ensureChallenges, cleanStats, trackStats,
     ACHIEVEMENTS, checkAchievements, badName, LADDER, SKILL_LEVELS, ITEMS, BY_ID, SLOTS, STARTER, DEFAULT_EQUIP, HAIR_STYLES, ALL_HAIR, HAIR_COLORS, BODY_TYPES, NATIONS,
     rarityOf, CHESTS, CHEST_POOL, DUP_REFUND, openChest,
     levelInfo, aiIndex, dupr, duprTier, xpForLevel, claimDaily, DAILY_COINS, PALETTE, matchRewards, rallyRewards, onlineRewards, elo, aiUnlocked,

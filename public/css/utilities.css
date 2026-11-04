@@ -38,6 +38,7 @@ input::placeholder{opacity:1;color:#8492a6}
 .font-display{font-family:"Russo One",Impact,system-ui,sans-serif}
 .font-extrabold{font-weight:800}
 .font-medium{font-weight:500}
+.font-normal{font-weight:400}
 .font-semibold{font-weight:600}
 .gap-1{gap:0.25rem}
 .gap-1\.5{gap:0.375rem}
@@ -138,6 +139,7 @@ input::placeholder{opacity:1;color:#8492a6}
 .py-4{padding-top:1rem;padding-bottom:1rem}
 .rounded-2xl{border-radius:1rem}
 .rounded-\[24px\]{border-radius:24px}
+.rounded-\[26px\]{border-radius:26px}
 .rounded-\[28px\]{border-radius:28px}
 .rounded-\[30px\]{border-radius:30px}
 .rounded-full{border-radius:9999px}

@@ -82,7 +82,9 @@ function ensureLocal(){
 }
 function myName(){ const a = getAcc(); return (a && (a.username || a.name)) || data.p1.name || 'Player 1'; }
 const myLevel = () => { const a = getAcc(); return a ? CAT.levelInfo(a.xp).level : 1; };
-function myLook(){ const a = getAcc(); return Object.assign({}, data.p1, CAT.DEFAULT_EQUIP, a ? a.equip : {}); }
+function myLook(){ const a = getAcc(); return Object.assign({}, data.p1, CAT.DEFAULT_EQUIP, a ? a.equip : {}, { title:(a && a.title) || '', titleN:a && a.title ? ((a.trophies || {})[a.title] || 0) : 0 }); }
+// the title someone wears ("Singles Grand Slam Champion"); AI players have their own
+function titleOf(p){ if (p && p.titleTxt) return p.titleTxt; const lk = p && (p.look || p); return lk && lk.title ? CAT.titleName(lk.title, lk.titleN) : ''; }
 function p2Look(){ return Object.assign({}, data.p2, CAT.DEFAULT_EQUIP, data.p2.equip || {}); }
 const elo = CAT.elo;
 /* buying, equipping and rewards: the server decides for accounts, this browser for anonymous players */

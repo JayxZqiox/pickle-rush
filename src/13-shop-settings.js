@@ -76,6 +76,14 @@ function drawShop(t){
   }
 }
 $('#cName').addEventListener('input', saveName);
+$('#titleSel').addEventListener('change', async e => {
+  const id = e.target.value;
+  try {
+    if (isServerAcc()){ const j = await api('api/title', { id }); ACC.user = j.user; }
+    else { const a = ensureLocal(), err = CAT.setTitle(a, id); if (err) throw new Error(err); save(); }
+    showToast(id ? 'Title on' : 'Title off', id ? '🏆 ' + CAT.titleName(id) : 'Your name shows on its own');
+  } catch (er){ showToast('Couldn’t change title', er.message); }
+});
 $('#teName').addEventListener('input', () => { if (!$('#teGo').disabled) setTxt('#teErr', ''); });
 $('#teName').addEventListener('keydown', e => { if (e.key === 'Enter') entryGo(); });
 $('#rmCourt').addEventListener('change', e => netSend({ t:'court', v:e.target.value }));

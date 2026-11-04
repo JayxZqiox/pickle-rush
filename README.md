@@ -42,6 +42,10 @@ Club Cup, Pro Open and World Championship: 8-team brackets (Quarterfinal → Sem
 
 Every tournament costs an entry ticket (150 to 1,200 coins; the host pays for online team tournaments) and doubles teams type a team name. Opponents get tougher each round and the Final is the hardest match: beginner cups start around 400 MMR (2.65 rating); the World Championship goes 5.65 → 6.15 → 7.15.
 
+## Titles
+
+Winning a tournament earns its title (e.g. **Singles Grand Slam Champion**, **World Champion**, **Street Legend Slayer**; wins again add ×2, ×3). Your newest title is worn automatically; pick another (or none) in the Locker. Titles show on your name tag, the dashboard, your profile, the leaderboard and online lobby cards, and the server only accepts titles you really won. AI opponents have their own titles too (Kuya Lando is the **Street Legend**).
+
 ## Singles Tour
 
 Solo tournaments (8-player brackets): **Singles Open** (Beginner), **Singles Masters** (Intermediate) and **Singles Grand Slam** (Pro). Prizes: Singles Open jersey, Champion sweatbands, Singles Masters kit, Masters comet ball, Grand Slam paddle and Grand Slam headband.

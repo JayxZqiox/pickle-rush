@@ -129,7 +129,12 @@ function hashPassword(pw, salt) {
 }
 // account appearance stores only the body; worn items live in equip
 function baseLook(l) { const c = CAT.cleanLook(l); return { gender: c.gender, skin: c.skin, hair: c.hair, hairStyle: c.hairStyle, body: c.body, height: c.height, nation: c.nation }; }
-function wornLook(u) { return CAT.cleanLook(Object.assign({}, u.look, u.equip)); }
+function wornLook(u) {
+  const lk = CAT.cleanLook(Object.assign({}, u.look, u.equip, { title: u.title || '' }));
+  if (!((u.trophies || {})[lk.title] > 0)) lk.title = '';          // only titles you really won
+  lk.titleN = lk.title ? u.trophies[lk.title] : 0;
+  return lk;
+}
 function publicUser(u) {
   const lv = CAT.levelInfo(u.xp);
   return {
@@ -138,7 +143,7 @@ function publicUser(u) {
     coins: u.coins, xp: u.xp, level: lv.level, owned: u.owned, equip: u.equip, beaten: u.beaten, keys: u.keys | 0,
     stats: u.stats || {}, ach: u.ach || [], ch: u.ch || null, season: { id: u.season, ends: CAT.seasonEnds(), peak: u.seasonPeak }, seasons: u.seasons || [],
     seasonNote: u.seasonNote || null, hasRecovery: !!u.recHash, owner: isOwner(u), openMatch: !!u.open,
-    trophies: u.trophies || {}, tour: u.tour || null, tutorialDone: !!u.tutorialDone,
+    trophies: u.trophies || {}, tour: u.tour || null, tutorialDone: !!u.tutorialDone, title: wornLook(u).title, titlePicked: !!u.titlePicked,
   };
 }
 /* ---------- profiles + friends ---------- */
@@ -239,7 +244,7 @@ async function handleApi(req, res, url) {
     const rows = Object.values(db.users).filter((x) => !x.banned && !x.flagged)
       .sort((a, b) => b.mmr - a.mmr || b.wins - a.wins)
       .slice(0, 100)
-      .map((u) => ({ username: u.username, mmr: u.mmr, wins: u.wins, losses: u.losses, peak: u.peak, level: CAT.levelInfo(u.xp).level, dupr: +CAT.dupr(u.mmr).toFixed(3), nation: (u.look && u.look.nation) || '' }));
+      .map((u) => ({ username: u.username, mmr: u.mmr, wins: u.wins, losses: u.losses, peak: u.peak, level: CAT.levelInfo(u.xp).level, dupr: +CAT.dupr(u.mmr).toFixed(3), nation: (u.look && u.look.nation) || '', title: wornLook(u).title }));
     return json(res, 200, { rows });
   }
 
@@ -426,6 +431,13 @@ async function handleApi(req, res, url) {
     if (err) return json(res, 400, { error: err });
     touchUser(u);
     return json(res, 200, { tour: t, user: publicUser(u) });
+  }
+  if (route === '/api/title') {
+    const err = CAT.setTitle(u, String(body.id || ''));
+    if (err) return json(res, 400, { error: err });
+    touchUser(u);
+    for (const c of clients) if (c.meta && c.meta.user === u.username.toLowerCase()) c.meta.look = wornLook(u);
+    return json(res, 200, { user: publicUser(u) });
   }
   if (route === '/api/tour/quit') { if (u.tour) { u.tour.alive = false; touchUser(u); } return json(res, 200, { ok: true, user: publicUser(u) }); }
   if (route === '/api/recovery/new') return json(res, 200, { recovery: (() => { const c = newRecovery(u); touchUser(u); return c; })() });
@@ -745,7 +757,7 @@ function onConnection(ws) {
         const u = userFromToken(m.token);
         ws.meta.user = u ? u.username.toLowerCase() : null;
         ws.meta.name = u ? u.username : cleanName(m.name);
-        ws.meta.look = u ? wornLook(u) : CAT.cleanLook(m.look);
+        ws.meta.look = u ? wornLook(u) : Object.assign(CAT.cleanLook(m.look), { title: '' });   // guests can't claim titles
         send(ws, { t: 'welcome', id: ws.meta.id, name: ws.meta.name, account: !!u });
         send(ws, { t: 'rooms', rooms: roomList() });
         if (room) broadcastRoom(room);

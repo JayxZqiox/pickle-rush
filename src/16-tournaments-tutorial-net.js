@@ -152,6 +152,7 @@ async function tourMatchDone(won, sc){
 function showChampion(cup, res){
   const c = CAT.CUP_BY[cup];
   setTxt('#champTitle', `${c.name} champions!`);
+  if (res.title){ const n2 = ((getAcc() || {}).trophies || {})[res.title] || 1; setTimeout(() => showToast('🏆 New title!', `${CAT.titleName(res.title, n2)} · change it in the Locker`), 900); addNotif({ type:'info', text:`New title: ${CAT.titleName(res.title, n2)}` }); }
   setTxt('#champText', `+${res.coins} coins · +${res.keys || 0} 🔑${res.dupCoins ? ` · +${res.dupCoins} coins for prizes you already had` : ''}`);
   $('#champPrizes').innerHTML = (res.prizes || []).map(id => `<div class="prize r-${CAT.rarityOf(IT(id))}"><canvas data-id="${id}"></canvas><span>${esc(IT(id).name)}</span><em>NEW</em></div>`).join('') || '<div class="text-sm text-[var(--muted)]">You already own this cup’s prizes.</div>';
   $('#champOv').classList.remove('hidden'); confetti(); playSfx('win');
@@ -232,7 +233,8 @@ async function openPlayer(name){
 }
 function renderPlayer(){
   const p = PROF.p; if (!p) return;
-  $('#ppName').innerHTML = `${flagHTML(p.look && p.look.nation, 22)} ${esc(p.username)}`; $('#ppName')._v = null; $('#ppDot').style.background = p.online ? 'var(--good)' : 'var(--muted)';
+  $('#ppName').innerHTML = `${flagHTML(p.look && p.look.nation, 22)} ${esc(p.username)}`; $('#ppName')._v = null;
+  { const tt = p.look && p.look.title ? CAT.titleName(p.look.title, p.look.titleN) : ''; $('#ppTitle').classList.toggle('hidden', !tt); setTxt('#ppTitle', tt ? '🏆 ' + tt : ''); } $('#ppDot').style.background = p.online ? 'var(--good)' : 'var(--muted)';
   setTxt('#ppSub', `${p.online ? 'Online now' : 'Offline'}${p.look && p.look.nation ? ' · ' + CAT.NATIONS[p.look.nation] : ''}${p.look ? ` · ${p.look.height || 170} cm, ${p.look.body || 'regular'} build` : ''} · playing since ${new Date(p.created || Date.now()).toLocaleDateString()}`);
   setTxt('#ppDupr', p.dupr.toFixed(3)); setTxt('#ppTier', p.tier); $('#ppBar').style.width = ((p.dupr - 2) / 6 * 100).toFixed(1) + '%';
   setTxt('#ppLevel', String(p.level)); setTxt('#ppMmr', String(p.mmr)); setTxt('#ppRec', `${p.wins}–${p.losses}`);
@@ -401,7 +403,7 @@ function renderRoom(){
     return `<div class="pcard ${team} ${sl.ready ? 'ready' : ''} ${you ? 'me' : ''} ${sl.away ? 'away' : ''}" style="animation-delay:${i * .07}s">
       ${you || isHost ? `<span class="pcBadge">${[you ? 'YOU' : '', isHost ? 'HOST' : ''].filter(Boolean).join(' · ')}</span>` : ''}
       <div class="pcNum">${num}</div><canvas class="pcAvatar" data-slot="${i}"></canvas>
-      <div class="pcName" ${sl.look && sl.look.nation ? `title="${esc(CAT.NATIONS[sl.look.nation] || '')}"` : ''} ${sl.account ? `data-act="viewPlayer" data-name="${esc(sl.name)}" style="cursor:pointer; text-decoration:underline dotted; text-underline-offset:4px"` : ''}>${flagHTML(sl.look && sl.look.nation, 12)} ${esc(sl.name)}</div><div class="pcMeta">${meta || '&nbsp;'}</div><div class="pcState">${state}</div></div>`;
+      <div class="pcName" ${sl.look && sl.look.nation ? `title="${esc(CAT.NATIONS[sl.look.nation] || '')}"` : ''} ${sl.account ? `data-act="viewPlayer" data-name="${esc(sl.name)}" style="cursor:pointer; text-decoration:underline dotted; text-underline-offset:4px"` : ''}>${flagHTML(sl.look && sl.look.nation, 12)} ${esc(sl.name)}</div>${sl.look && sl.look.title ? `<div class="titleChip" style="margin:2px auto 0">🏆 ${esc(CAT.titleName(sl.look.title, sl.look.titleN))}</div>` : ''}<div class="pcMeta">${meta || '&nbsp;'}</div><div class="pcState">${state}</div></div>`;
   };
   const html = n === 2 ? `${card(0)}<div class="vs">VS</div>${card(1)}`
     : `<div class="teamCol"><div class="teamName" style="color:var(--accent)">TEAM 1</div><div class="cards">${card(0)}${card(2)}</div></div><div class="vs">VS</div><div class="teamCol"><div class="teamName" style="color:var(--hot)">TEAM 2</div><div class="cards">${card(1)}${card(3)}</div></div>`;

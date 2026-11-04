@@ -78,13 +78,15 @@ function render(){
         const bob = Math.sin(G.time * 6) * 4, y = q[1] - 14 + bob;
         c.fillStyle = '#e8ff3d'; c.beginPath(); c.moveTo(q[0] - 8, y - 10); c.lineTo(q[0] + 8, y - 10); c.lineTo(q[0], y); c.closePath(); c.fill();
       }
-      if ((G.doubles || G.mode === 'online') && tagAlpha > .02){
+      if ((G.doubles || G.mode === 'online' || G.mode === 'tour' || G.mode === '1p') && tagAlpha > .02){
         const nm = String(p.name || '').split(' · ')[0];         // the flag already shows the country
         c.font = `700 ${Math.round(clamp(.18 * q[2], 9, 12))}px Barlow, system-ui, sans-serif`; c.textAlign = 'center'; c.textBaseline = 'alphabetic';
         const hidden = HUD_RECT && q[1] - 24 < HUD_RECT.b + 6 && q[0] > HUD_RECT.l && q[0] < HUD_RECT.r && !$('#hud').classList.contains('sb-dim');
         c.globalAlpha = tagAlpha * .9;
         const fi = !hidden && flagImg(p.look && p.look.nation); if (fi){ const tw = c.measureText(nm).width; c.drawImage(fi, q[0] - tw / 2 - 17, q[1] - 31, 13, 9); }
-        if (!hidden){ c.lineWidth = 2.5; c.strokeStyle = 'rgba(5,10,25,.6)'; c.strokeText(nm, q[0], q[1] - 22); c.fillStyle = p.human ? p.human.color : '#cbd5e1'; c.fillText(nm, q[0], q[1] - 22); }
+        if (!hidden){ c.lineWidth = 2.5; c.strokeStyle = 'rgba(5,10,25,.6)'; c.strokeText(nm, q[0], q[1] - 22); c.fillStyle = p.human ? p.human.color : '#cbd5e1'; c.fillText(nm, q[0], q[1] - 22);
+          const tt = titleOf(p);
+          if (tt){ c.font = `800 ${Math.round(clamp(.14 * q[2], 8, 10))}px Barlow, system-ui, sans-serif`; c.strokeText('🏆 ' + tt, q[0], q[1] - 35); c.fillStyle = '#f5c542'; c.fillText('🏆 ' + tt, q[0], q[1] - 35); } }
         c.globalAlpha = 1;
       }
       if (p.human) drawMeter(p);

@@ -66,6 +66,7 @@ function buildPlayers(mode, diff){
     const p = makePlayer(Object.assign({ name:nm || AIS[key].name }, o)); p.ai = mkAI(AIS[key]);
     p.look = Object.assign({}, aiLook(p.name), p.look);
     if (LADDER.includes(key)) Object.assign(p.look, aiGear(key));
+    p.titleTxt = AI_TITLE[key] || (key === 'mate_lando' ? 'Street Legend' : '');
     return p;
   };
   const n1 = myName(), n2 = data.p2.name || 'Player 2';

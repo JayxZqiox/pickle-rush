@@ -178,6 +178,9 @@ input{font-size:16px;} /* stops iOS zooming into inputs */
 .nextCard{display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap; padding:16px 18px; border-radius:20px; border:1px solid rgba(166,242,61,.35); background:radial-gradient(100% 140% at 0% 0%, rgba(166,242,61,.14), transparent 60%), var(--panel);}
 .tutBox{position:fixed; z-index:28; left:50%; transform:translateX(-50%); top:calc(env(safe-area-inset-top,0px) + 84px); width:min(470px, calc(100vw - 24px)); padding:12px 16px; border-radius:18px; animation:fadeUp .3s var(--ease) both;}
 .tutDots{display:flex; gap:6px; margin-top:8px;} .tutDots i{flex:1; height:5px; border-radius:99px; background:rgba(255,255,255,.12);} .tutDots i.on{background:var(--accent);} .tutDots i.now{background:linear-gradient(90deg, var(--accent), rgba(166,242,61,.25));}
+/* titles */
+.titleChip{display:inline-block; max-width:100%; margin-top:3px; padding:2px 9px; border-radius:99px; font-size:11px; font-weight:800; color:#f5c542; background:rgba(245,197,66,.12); border:1px solid rgba(245,197,66,.4); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.rowTitle{margin-left:8px; font-size:11px; font-weight:800; color:#f5c542;}
 /* philippine tour */
 .tourGroup{display:flex; align-items:center; gap:10px; margin-top:6px;} .tourGroup span{font-family:"Russo One",Impact,sans-serif; font-size:20px; display:flex; align-items:center; gap:8px;}
 .tourGroup::after{content:""; flex:1; height:1px; background:var(--line);}

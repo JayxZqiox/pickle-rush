@@ -138,6 +138,7 @@ function refreshMenu(){
   $('#mRing').style.strokeDashoffset = String(263.9 * (1 - lv.into / lv.need));
   const n = a.wins + a.losses;
   setTxt('#mKeys', String(a.keys | 0));
+  { const tt = a.title ? CAT.titleName(a.title, (a.trophies || {})[a.title]) : ''; $('#mTitle').classList.toggle('hidden', !tt); setTxt('#mTitle', tt ? '🏆 ' + tt : ''); }
   renderChallenges(a); noteSeason(a);
   if (!a.tutorialDone && !(a.wins + a.losses) && !data.tutAsked){ data.tutAsked = true; save(); setTimeout(() => { if (screenNow === 'menu') askConfirm('New to Pickle Rush? 👋', 'Take the 1-minute tutorial: move, serve, return, dink and smash. You’ll earn 200 coins and a chest key.', 'Start tutorial', tutStart, 'Maybe later', 'go'); }, 700); }
   const si = seasonInfo(); setTxt('#heroSeason', `SEASON ${si.id} · ${si.days} DAY${si.days === 1 ? '' : 'S'} LEFT`);
@@ -201,7 +202,7 @@ function renderDiff(){
     const tier = CAT.duprTier(ai.dupr), prevTier = i ? CAT.duprTier(AIS[LADDER[i - 1]].dupr) : '';
     if (tier !== prevTier){ const h = document.createElement('div'); h.className = 'sideHead'; h.style.margin = '10px 0 2px'; h.textContent = `${tier} · ${({ Beginner:'2.0–2.99', Intermediate:'3.0–3.49', 'Advanced intermediate':'3.5–3.99', Advanced:'4.0–4.99', 'Semi-professional':'5.0–5.99', Professional:'6.0–6.99', 'World-best':'7.0–8.0' })[tier]} rating`; list.appendChild(h); }
     btn.innerHTML = `<span class="font-display text-lg w-7 text-center text-[var(--muted)] tabular-nums">${locked ? '🔒' : beaten ? '✓' : i + 1}</span>
-      <div class="flex-1 min-w-0"><div class="font-display text-lg leading-none">${esc(m === '1p' ? ai.name : ai.name + ' & ' + ai.name2.split(' ')[1])}</div>
+      <div class="flex-1 min-w-0"><div class="font-display text-lg leading-none">${esc(m === '1p' ? ai.name : ai.name + ' & ' + ai.name2.split(' ')[1])}</div>${AI_TITLE[k] ? `<div class="titleChip">🏆 ${esc(AI_TITLE[k])}</div>` : ''}
       <div class="text-sm text-[var(--muted)] mt-1">${locked ? `Beat ${esc(AIS[LADDER[i - 1]].name)} to unlock` : ai.blurb}</div></div>
       <div class="text-right shrink-0"><div class="font-display text-xl leading-none tabular-nums">${ai.mmr}</div><div class="text-[11px] font-bold hot tabular-nums">${CAT.dupr(ai.mmr).toFixed(2)} rating</div>
       ${ranked && !locked ? (pv.practice
@@ -282,7 +283,7 @@ function renderRank(){
     const you = r.username === meName, medal = ['#f5c542', '#cfd6e0', '#d9925b'][i];
     return `<div ${ACC.server ? `data-act="viewPlayer" data-name="${esc(r.username)}" style="cursor:pointer"` : ''} class="flex items-center gap-3 rounded-xl px-3 py-2 ${you ? 'bg-[var(--accent)] text-[var(--accent-ink)]' : 'tile'}">
       <span class="font-display w-7 text-center tabular-nums rounded-md" ${medal && !you ? `style="background:${medal};color:#1b1b1b"` : ''}>${i + 1}</span>
-      <span class="flex-1 font-semibold truncate">${flagHTML(r.nation, 12)} ${esc(r.username)}${you ? ' (you)' : ''}</span>
+      <span class="flex-1 min-w-0 font-semibold truncate">${flagHTML(r.nation, 12)} ${esc(r.username)}${you ? ' (you)' : ''}${r.title ? `<span class="rowTitle">🏆 ${esc(CAT.titleName(r.title))}</span>` : ''}</span>
       <span class="text-xs font-bold opacity-80">Lv ${r.level || 1}</span><span class="text-xs font-bold hot tabular-nums">${(r.dupr ?? CAT.dupr(r.mmr)).toFixed(2)}</span><span class="text-sm tabular-nums opacity-80">${r.wins}–${r.losses}</span><span class="font-display tabular-nums w-14 text-right">${r.mmr}</span></div>`;
   }).join('') : `<div class="text-[var(--muted)]">${ACC.server ? 'No players yet. Sign up and win a ranked match to be first.' : 'Nothing here yet.'}</div>`;
   const hist = (a && a.history) || [];
@@ -306,6 +307,9 @@ function renderChar(){
   const hgt = base.height || (base.gender === 'girl' ? 165 : 175); $('#heightIn').value = hgt; setTxt('#heightVal', `${hgt} cm`);
   const ns = $('#nationSel'); if (!ns.options.length) ns.innerHTML = '<option value="">No flag</option>' + NATION_CODES.map(k => `<option value="${k}">${esc(CAT.NATIONS[k])}</option>`).join('');
   ns.value = base.nation || ''; $('#nationFlag').innerHTML = flagHTML(base.nation, 20);
+  { const a = getAcc() || ensureLocal(), mine = CAT.titlesOf(a), ts = $('#titleSel');
+    ts.innerHTML = '<option value="">No title</option>' + mine.map(id => `<option value="${id}">🏆 ${esc(CAT.titleName(id, (a.trophies || {})[id]))}</option>`).join('') + (mine.length ? '' : '<option disabled>Win a tournament to earn a title</option>');
+    ts.value = a.title || ''; ts.disabled = editWho === 'p2'; }
   $('#hairStyleRow').innerHTML = CAT.HAIR_STYLES[base.gender].map(h => `<button data-act="hairStyle" data-v="${h}" class="tile rounded-xl px-3 py-1.5 font-semibold ${base.hairStyle === h ? 'chip-on' : ''}">${HAIR_NAME[h]}</button>`).join('');
   const slots = p2 ? ['hairx', 'head', 'top', 'bottom', 'shoes', 'wrist', 'paddle', 'ball', 'dance'] : ['hairx', 'head', 'top', 'bottom', 'shoes', 'wrist', 'paddle', 'ball', 'dance', 'court', 'partner'];
   $('#equipList').innerHTML = slots.map(sl => {

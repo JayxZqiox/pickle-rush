@@ -131,6 +131,9 @@ function aiFromDupr(d){
   return { speed:3.0 + 3.4 * Math.pow(t, .9), react:.42 - .38 * Math.pow(t, .8), aimSd, mistake,
     skill:.03 + .57 * t, smash:.3 + .7 * t, tScale:1.32 - .54 * t, judge:.2 + .8 * t, acc, depth:6.2 - 1.4 * t, netRush:d >= 3.4, kitchen:clamp(.15 + 1.6 * t, 0, 1) };
 }
+const AI_TITLE = { rookie:'Weekend Rookie', amateur:'Park Regular', club:'Club Ladder Climber', pro:'Rally Specialist', veteran:'Veteran Grinder', elite:'Spin Wizard',
+  legend:'Kitchen Specialist', champion:'Regional Champion', grandmaster:'National Finalist', semi1:'Semi-Pro Contender', semi2:'Singles Masters Champion', tour1:'Pro Open Champion',
+  tour2:'Singles Grand Slam Champion', nightmare:'World Champion', atlas:'World No.1', king:'Grand Slam Legend', lando:'Street Legend' };
 // the street legend
 AIS.lando = Object.assign(aiFromDupr(7.8), { key:'lando', name:'Kuya Lando', name2:'Kuya Lando', mmr:3866, dupr:7.8, blurb:'Learned the game on the lansangan. Humble, quiet, unstoppable.' });
 for (const a of CAT.LADDER) AIS[a.key] = Object.assign(aiFromDupr(a.dupr), { dupr:a.dupr }, { key:a.key, name:a.name, name2:a.name2, mmr:a.mmr, dupr:a.dupr, blurb:AI_BLURB[a.key] || '' });
@@ -236,7 +239,9 @@ function ensureLocal(){
 }
 function myName(){ const a = getAcc(); return (a && (a.username || a.name)) || data.p1.name || 'Player 1'; }
 const myLevel = () => { const a = getAcc(); return a ? CAT.levelInfo(a.xp).level : 1; };
-function myLook(){ const a = getAcc(); return Object.assign({}, data.p1, CAT.DEFAULT_EQUIP, a ? a.equip : {}); }
+function myLook(){ const a = getAcc(); return Object.assign({}, data.p1, CAT.DEFAULT_EQUIP, a ? a.equip : {}, { title:(a && a.title) || '', titleN:a && a.title ? ((a.trophies || {})[a.title] || 0) : 0 }); }
+// the title someone wears ("Singles Grand Slam Champion"); AI players have their own
+function titleOf(p){ if (p && p.titleTxt) return p.titleTxt; const lk = p && (p.look || p); return lk && lk.title ? CAT.titleName(lk.title, lk.titleN) : ''; }
 function p2Look(){ return Object.assign({}, data.p2, CAT.DEFAULT_EQUIP, data.p2.equip || {}); }
 const elo = CAT.elo;
 /* buying, equipping and rewards: the server decides for accounts, this browser for anonymous players */
@@ -859,6 +864,7 @@ function buildPlayers(mode, diff){
     const p = makePlayer(Object.assign({ name:nm || AIS[key].name }, o)); p.ai = mkAI(AIS[key]);
     p.look = Object.assign({}, aiLook(p.name), p.look);
     if (LADDER.includes(key)) Object.assign(p.look, aiGear(key));
+    p.titleTxt = AI_TITLE[key] || (key === 'mate_lando' ? 'Street Legend' : '');
     return p;
   };
   const n1 = myName(), n2 = data.p2.name || 'Player 2';
@@ -2101,13 +2107,15 @@ function render(){
         const bob = Math.sin(G.time * 6) * 4, y = q[1] - 14 + bob;
         c.fillStyle = '#e8ff3d'; c.beginPath(); c.moveTo(q[0] - 8, y - 10); c.lineTo(q[0] + 8, y - 10); c.lineTo(q[0], y); c.closePath(); c.fill();
       }
-      if ((G.doubles || G.mode === 'online') && tagAlpha > .02){
+      if ((G.doubles || G.mode === 'online' || G.mode === 'tour' || G.mode === '1p') && tagAlpha > .02){
         const nm = String(p.name || '').split(' · ')[0];         // the flag already shows the country
         c.font = `700 ${Math.round(clamp(.18 * q[2], 9, 12))}px Barlow, system-ui, sans-serif`; c.textAlign = 'center'; c.textBaseline = 'alphabetic';
         const hidden = HUD_RECT && q[1] - 24 < HUD_RECT.b + 6 && q[0] > HUD_RECT.l && q[0] < HUD_RECT.r && !$('#hud').classList.contains('sb-dim');
         c.globalAlpha = tagAlpha * .9;
         const fi = !hidden && flagImg(p.look && p.look.nation); if (fi){ const tw = c.measureText(nm).width; c.drawImage(fi, q[0] - tw / 2 - 17, q[1] - 31, 13, 9); }
-        if (!hidden){ c.lineWidth = 2.5; c.strokeStyle = 'rgba(5,10,25,.6)'; c.strokeText(nm, q[0], q[1] - 22); c.fillStyle = p.human ? p.human.color : '#cbd5e1'; c.fillText(nm, q[0], q[1] - 22); }
+        if (!hidden){ c.lineWidth = 2.5; c.strokeStyle = 'rgba(5,10,25,.6)'; c.strokeText(nm, q[0], q[1] - 22); c.fillStyle = p.human ? p.human.color : '#cbd5e1'; c.fillText(nm, q[0], q[1] - 22);
+          const tt = titleOf(p);
+          if (tt){ c.font = `800 ${Math.round(clamp(.14 * q[2], 8, 10))}px Barlow, system-ui, sans-serif`; c.strokeText('🏆 ' + tt, q[0], q[1] - 35); c.fillStyle = '#f5c542'; c.fillText('🏆 ' + tt, q[0], q[1] - 35); } }
         c.globalAlpha = 1;
       }
       if (p.human) drawMeter(p);
@@ -2508,6 +2516,7 @@ function refreshMenu(){
   $('#mRing').style.strokeDashoffset = String(263.9 * (1 - lv.into / lv.need));
   const n = a.wins + a.losses;
   setTxt('#mKeys', String(a.keys | 0));
+  { const tt = a.title ? CAT.titleName(a.title, (a.trophies || {})[a.title]) : ''; $('#mTitle').classList.toggle('hidden', !tt); setTxt('#mTitle', tt ? '🏆 ' + tt : ''); }
   renderChallenges(a); noteSeason(a);
   if (!a.tutorialDone && !(a.wins + a.losses) && !data.tutAsked){ data.tutAsked = true; save(); setTimeout(() => { if (screenNow === 'menu') askConfirm('New to Pickle Rush? 👋', 'Take the 1-minute tutorial: move, serve, return, dink and smash. You’ll earn 200 coins and a chest key.', 'Start tutorial', tutStart, 'Maybe later', 'go'); }, 700); }
   const si = seasonInfo(); setTxt('#heroSeason', `SEASON ${si.id} · ${si.days} DAY${si.days === 1 ? '' : 'S'} LEFT`);
@@ -2571,7 +2580,7 @@ function renderDiff(){
     const tier = CAT.duprTier(ai.dupr), prevTier = i ? CAT.duprTier(AIS[LADDER[i - 1]].dupr) : '';
     if (tier !== prevTier){ const h = document.createElement('div'); h.className = 'sideHead'; h.style.margin = '10px 0 2px'; h.textContent = `${tier} · ${({ Beginner:'2.0–2.99', Intermediate:'3.0–3.49', 'Advanced intermediate':'3.5–3.99', Advanced:'4.0–4.99', 'Semi-professional':'5.0–5.99', Professional:'6.0–6.99', 'World-best':'7.0–8.0' })[tier]} rating`; list.appendChild(h); }
     btn.innerHTML = `<span class="font-display text-lg w-7 text-center text-[var(--muted)] tabular-nums">${locked ? '🔒' : beaten ? '✓' : i + 1}</span>
-      <div class="flex-1 min-w-0"><div class="font-display text-lg leading-none">${esc(m === '1p' ? ai.name : ai.name + ' & ' + ai.name2.split(' ')[1])}</div>
+      <div class="flex-1 min-w-0"><div class="font-display text-lg leading-none">${esc(m === '1p' ? ai.name : ai.name + ' & ' + ai.name2.split(' ')[1])}</div>${AI_TITLE[k] ? `<div class="titleChip">🏆 ${esc(AI_TITLE[k])}</div>` : ''}
       <div class="text-sm text-[var(--muted)] mt-1">${locked ? `Beat ${esc(AIS[LADDER[i - 1]].name)} to unlock` : ai.blurb}</div></div>
       <div class="text-right shrink-0"><div class="font-display text-xl leading-none tabular-nums">${ai.mmr}</div><div class="text-[11px] font-bold hot tabular-nums">${CAT.dupr(ai.mmr).toFixed(2)} rating</div>
       ${ranked && !locked ? (pv.practice
@@ -2652,7 +2661,7 @@ function renderRank(){
     const you = r.username === meName, medal = ['#f5c542', '#cfd6e0', '#d9925b'][i];
     return `<div ${ACC.server ? `data-act="viewPlayer" data-name="${esc(r.username)}" style="cursor:pointer"` : ''} class="flex items-center gap-3 rounded-xl px-3 py-2 ${you ? 'bg-[var(--accent)] text-[var(--accent-ink)]' : 'tile'}">
       <span class="font-display w-7 text-center tabular-nums rounded-md" ${medal && !you ? `style="background:${medal};color:#1b1b1b"` : ''}>${i + 1}</span>
-      <span class="flex-1 font-semibold truncate">${flagHTML(r.nation, 12)} ${esc(r.username)}${you ? ' (you)' : ''}</span>
+      <span class="flex-1 min-w-0 font-semibold truncate">${flagHTML(r.nation, 12)} ${esc(r.username)}${you ? ' (you)' : ''}${r.title ? `<span class="rowTitle">🏆 ${esc(CAT.titleName(r.title))}</span>` : ''}</span>
       <span class="text-xs font-bold opacity-80">Lv ${r.level || 1}</span><span class="text-xs font-bold hot tabular-nums">${(r.dupr ?? CAT.dupr(r.mmr)).toFixed(2)}</span><span class="text-sm tabular-nums opacity-80">${r.wins}–${r.losses}</span><span class="font-display tabular-nums w-14 text-right">${r.mmr}</span></div>`;
   }).join('') : `<div class="text-[var(--muted)]">${ACC.server ? 'No players yet. Sign up and win a ranked match to be first.' : 'Nothing here yet.'}</div>`;
   const hist = (a && a.history) || [];
@@ -2676,6 +2685,9 @@ function renderChar(){
   const hgt = base.height || (base.gender === 'girl' ? 165 : 175); $('#heightIn').value = hgt; setTxt('#heightVal', `${hgt} cm`);
   const ns = $('#nationSel'); if (!ns.options.length) ns.innerHTML = '<option value="">No flag</option>' + NATION_CODES.map(k => `<option value="${k}">${esc(CAT.NATIONS[k])}</option>`).join('');
   ns.value = base.nation || ''; $('#nationFlag').innerHTML = flagHTML(base.nation, 20);
+  { const a = getAcc() || ensureLocal(), mine = CAT.titlesOf(a), ts = $('#titleSel');
+    ts.innerHTML = '<option value="">No title</option>' + mine.map(id => `<option value="${id}">🏆 ${esc(CAT.titleName(id, (a.trophies || {})[id]))}</option>`).join('') + (mine.length ? '' : '<option disabled>Win a tournament to earn a title</option>');
+    ts.value = a.title || ''; ts.disabled = editWho === 'p2'; }
   $('#hairStyleRow').innerHTML = CAT.HAIR_STYLES[base.gender].map(h => `<button data-act="hairStyle" data-v="${h}" class="tile rounded-xl px-3 py-1.5 font-semibold ${base.hairStyle === h ? 'chip-on' : ''}">${HAIR_NAME[h]}</button>`).join('');
   const slots = p2 ? ['hairx', 'head', 'top', 'bottom', 'shoes', 'wrist', 'paddle', 'ball', 'dance'] : ['hairx', 'head', 'top', 'bottom', 'shoes', 'wrist', 'paddle', 'ball', 'dance', 'court', 'partner'];
   $('#equipList').innerHTML = slots.map(sl => {
@@ -2768,6 +2780,14 @@ function drawShop(t){
   }
 }
 $('#cName').addEventListener('input', saveName);
+$('#titleSel').addEventListener('change', async e => {
+  const id = e.target.value;
+  try {
+    if (isServerAcc()){ const j = await api('api/title', { id }); ACC.user = j.user; }
+    else { const a = ensureLocal(), err = CAT.setTitle(a, id); if (err) throw new Error(err); save(); }
+    showToast(id ? 'Title on' : 'Title off', id ? '🏆 ' + CAT.titleName(id) : 'Your name shows on its own');
+  } catch (er){ showToast('Couldn’t change title', er.message); }
+});
 $('#teName').addEventListener('input', () => { if (!$('#teGo').disabled) setTxt('#teErr', ''); });
 $('#teName').addEventListener('keydown', e => { if (e.key === 'Enter') entryGo(); });
 $('#rmCourt').addEventListener('change', e => netSend({ t:'court', v:e.target.value }));
@@ -3388,6 +3408,7 @@ async function tourMatchDone(won, sc){
 function showChampion(cup, res){
   const c = CAT.CUP_BY[cup];
   setTxt('#champTitle', `${c.name} champions!`);
+  if (res.title){ const n2 = ((getAcc() || {}).trophies || {})[res.title] || 1; setTimeout(() => showToast('🏆 New title!', `${CAT.titleName(res.title, n2)} · change it in the Locker`), 900); addNotif({ type:'info', text:`New title: ${CAT.titleName(res.title, n2)}` }); }
   setTxt('#champText', `+${res.coins} coins · +${res.keys || 0} 🔑${res.dupCoins ? ` · +${res.dupCoins} coins for prizes you already had` : ''}`);
   $('#champPrizes').innerHTML = (res.prizes || []).map(id => `<div class="prize r-${CAT.rarityOf(IT(id))}"><canvas data-id="${id}"></canvas><span>${esc(IT(id).name)}</span><em>NEW</em></div>`).join('') || '<div class="text-sm text-[var(--muted)]">You already own this cup’s prizes.</div>';
   $('#champOv').classList.remove('hidden'); confetti(); playSfx('win');
@@ -3468,7 +3489,8 @@ async function openPlayer(name){
 }
 function renderPlayer(){
   const p = PROF.p; if (!p) return;
-  $('#ppName').innerHTML = `${flagHTML(p.look && p.look.nation, 22)} ${esc(p.username)}`; $('#ppName')._v = null; $('#ppDot').style.background = p.online ? 'var(--good)' : 'var(--muted)';
+  $('#ppName').innerHTML = `${flagHTML(p.look && p.look.nation, 22)} ${esc(p.username)}`; $('#ppName')._v = null;
+  { const tt = p.look && p.look.title ? CAT.titleName(p.look.title, p.look.titleN) : ''; $('#ppTitle').classList.toggle('hidden', !tt); setTxt('#ppTitle', tt ? '🏆 ' + tt : ''); } $('#ppDot').style.background = p.online ? 'var(--good)' : 'var(--muted)';
   setTxt('#ppSub', `${p.online ? 'Online now' : 'Offline'}${p.look && p.look.nation ? ' · ' + CAT.NATIONS[p.look.nation] : ''}${p.look ? ` · ${p.look.height || 170} cm, ${p.look.body || 'regular'} build` : ''} · playing since ${new Date(p.created || Date.now()).toLocaleDateString()}`);
   setTxt('#ppDupr', p.dupr.toFixed(3)); setTxt('#ppTier', p.tier); $('#ppBar').style.width = ((p.dupr - 2) / 6 * 100).toFixed(1) + '%';
   setTxt('#ppLevel', String(p.level)); setTxt('#ppMmr', String(p.mmr)); setTxt('#ppRec', `${p.wins}–${p.losses}`);
@@ -3637,7 +3659,7 @@ function renderRoom(){
     return `<div class="pcard ${team} ${sl.ready ? 'ready' : ''} ${you ? 'me' : ''} ${sl.away ? 'away' : ''}" style="animation-delay:${i * .07}s">
       ${you || isHost ? `<span class="pcBadge">${[you ? 'YOU' : '', isHost ? 'HOST' : ''].filter(Boolean).join(' · ')}</span>` : ''}
       <div class="pcNum">${num}</div><canvas class="pcAvatar" data-slot="${i}"></canvas>
-      <div class="pcName" ${sl.look && sl.look.nation ? `title="${esc(CAT.NATIONS[sl.look.nation] || '')}"` : ''} ${sl.account ? `data-act="viewPlayer" data-name="${esc(sl.name)}" style="cursor:pointer; text-decoration:underline dotted; text-underline-offset:4px"` : ''}>${flagHTML(sl.look && sl.look.nation, 12)} ${esc(sl.name)}</div><div class="pcMeta">${meta || '&nbsp;'}</div><div class="pcState">${state}</div></div>`;
+      <div class="pcName" ${sl.look && sl.look.nation ? `title="${esc(CAT.NATIONS[sl.look.nation] || '')}"` : ''} ${sl.account ? `data-act="viewPlayer" data-name="${esc(sl.name)}" style="cursor:pointer; text-decoration:underline dotted; text-underline-offset:4px"` : ''}>${flagHTML(sl.look && sl.look.nation, 12)} ${esc(sl.name)}</div>${sl.look && sl.look.title ? `<div class="titleChip" style="margin:2px auto 0">🏆 ${esc(CAT.titleName(sl.look.title, sl.look.titleN))}</div>` : ''}<div class="pcMeta">${meta || '&nbsp;'}</div><div class="pcState">${state}</div></div>`;
   };
   const html = n === 2 ? `${card(0)}<div class="vs">VS</div>${card(1)}`
     : `<div class="teamCol"><div class="teamName" style="color:var(--accent)">TEAM 1</div><div class="cards">${card(0)}${card(2)}</div></div><div class="vs">VS</div><div class="teamCol"><div class="teamName" style="color:var(--hot)">TEAM 2</div><div class="cards">${card(1)}${card(3)}</div></div>`;

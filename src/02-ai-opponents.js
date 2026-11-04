@@ -33,6 +33,9 @@ function aiFromDupr(d){
   return { speed:3.0 + 3.4 * Math.pow(t, .9), react:.42 - .38 * Math.pow(t, .8), aimSd, mistake,
     skill:.03 + .57 * t, smash:.3 + .7 * t, tScale:1.32 - .54 * t, judge:.2 + .8 * t, acc, depth:6.2 - 1.4 * t, netRush:d >= 3.4, kitchen:clamp(.15 + 1.6 * t, 0, 1) };
 }
+const AI_TITLE = { rookie:'Weekend Rookie', amateur:'Park Regular', club:'Club Ladder Climber', pro:'Rally Specialist', veteran:'Veteran Grinder', elite:'Spin Wizard',
+  legend:'Kitchen Specialist', champion:'Regional Champion', grandmaster:'National Finalist', semi1:'Semi-Pro Contender', semi2:'Singles Masters Champion', tour1:'Pro Open Champion',
+  tour2:'Singles Grand Slam Champion', nightmare:'World Champion', atlas:'World No.1', king:'Grand Slam Legend', lando:'Street Legend' };
 // the street legend
 AIS.lando = Object.assign(aiFromDupr(7.8), { key:'lando', name:'Kuya Lando', name2:'Kuya Lando', mmr:3866, dupr:7.8, blurb:'Learned the game on the lansangan. Humble, quiet, unstoppable.' });
 for (const a of CAT.LADDER) AIS[a.key] = Object.assign(aiFromDupr(a.dupr), { dupr:a.dupr }, { key:a.key, name:a.name, name2:a.name2, mmr:a.mmr, dupr:a.dupr, blurb:AI_BLURB[a.key] || '' });

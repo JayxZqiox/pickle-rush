@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20">
+<link rel="stylesheet" href="css/style.css?v=22">
 <link rel="stylesheet" href="css/utilities.css?v=19">
 </head>
 <body class="overflow-hidden select-none">
@@ -120,7 +120,7 @@
     </main>
     <aside class="glass dashSide">
       <div class="flex items-center justify-between gap-2">
-        <div class="min-w-0"><div id="mName" class="font-display text-lg truncate">Player</div><button id="mAccBtn" data-act="signup" class="text-sm font-semibold underline underline-offset-4 decoration-2 decoration-[var(--accent)]">Sign up</button></div>
+        <div class="min-w-0"><div id="mName" class="font-display text-lg truncate">Player</div><div id="mTitle" class="titleChip hidden"></div><button id="mAccBtn" data-act="signup" class="text-sm font-semibold underline underline-offset-4 decoration-2 decoration-[var(--accent)]">Sign up</button></div>
         <span class="flex gap-1.5 items-center"><button data-act="shop" class="coinPill" title="Chest keys: open chests in the shop" style="color:#bfefff; background:rgba(56,189,248,.12); border-color:rgba(56,189,248,.35)">🔑 <b id="mKeys">0</b></button><span class="coinPill"><svg class="inline-block align-[-3px]" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="#f5c542" stroke="#9a6b00" stroke-width="1.5"/><path d="M8 4.2v7.6M5.8 6.2h3.4a1.4 1.4 0 0 1 0 2.8H6.8a1.4 1.4 0 0 0 0 2.8h3.4" stroke="#7a5200" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg> <b id="mCoins">0</b></span></span>
       </div>
       <div class="xpBlock">
@@ -320,6 +320,7 @@
       <canvas id="pvPlayer" class="lockStage" aria-label="Player"></canvas>
       <div class="min-w-0 flex flex-col gap-3">
         <div class="flex items-center gap-2 min-w-0"><i id="ppDot" class="navDot" style="margin:0"></i><div id="ppName" class="font-display text-3xl truncate">Player</div></div>
+        <div id="ppTitle" class="titleChip hidden"></div>
         <div id="ppSub" class="text-sm text-[var(--muted)]"></div>
         <div class="duprTile"><div><span>PR RATING</span><b id="ppDupr" class="tabular-nums">2.000</b></div><div class="text-right min-w-0"><span id="ppTier" style="color:var(--text);text-transform:none;letter-spacing:0;font-size:14px">Beginner</span><div class="duprBar"><i id="ppBar"></i></div></div></div>
         <div class="statGrid">
@@ -419,6 +420,7 @@
           <div><div class="text-sm font-semibold text-[var(--muted)] mb-1.5">Body type</div><div id="bodyRow" class="seg"></div></div>
           <div><div class="flex justify-between text-sm font-semibold text-[var(--muted)] mb-1.5"><span>Height</span><span id="heightVal">175 cm</span></div><input id="heightIn" type="range" min="150" max="200" step="1" class="w-full"></div>
         </div>
+        <div><div class="text-sm font-semibold text-[var(--muted)] mb-1.5">Title <span class="font-normal">(win tournaments to earn more)</span></div><select id="titleSel" class="courtSel w-full"></select></div>
         <div><div class="text-sm font-semibold text-[var(--muted)] mb-1.5">Nationality</div><div class="flex items-center gap-2"><span id="nationFlag"></span><select id="nationSel" class="courtSel flex-1"></select></div></div>
         <div id="equipList" class="grid gap-3"></div>
       </div>
@@ -644,12 +646,12 @@
     <button id="hitBtn" data-t="hit" class="tbtn rounded-full font-display primary">Hit</button>
   </div>
 </div>
-<script src="catalog.js?v=19"></script>
+<script src="catalog.js?v=20"></script>
 <script>
 /* Safety net: if catalog.js is missing or older than this page, reload once without the cache,
    then explain what to fix instead of showing a blank screen. Startup errors are shown too. */
 (function(){
-  var NEED = 19;
+  var NEED = 20;
   function box(title, msg){
     var d = document.createElement('div');
     d.style.cssText = 'position:fixed;inset:0;z-index:99;display:grid;place-items:center;padding:20px;background:#070f1f;color:#eef3fb;font:16px/1.5 system-ui,sans-serif';
@@ -676,6 +678,6 @@
   });
 })();
 </script>
-<script src="app.js?v=21"></script>
+<script src="app.js?v=22"></script>
 </body>
 </html>
