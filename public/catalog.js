@@ -404,24 +404,46 @@
     return tokens.some(t => BAD_WORD.includes(t));
   }
 
+  /* Fair ranking vs AI:
+   * - an opponent more than 1.0 PR below you is Practice: no rating change, no W–L, 1/4 coins and XP
+   * - an "easy win" (normal rating math gives less than +3) pays +1/+2/+3 by score margin, and half coins and XP */
+  const PRACTICE_GAP = 1.0;
+  function isPractice(mmr, key) { const ai = LADDER[aiIndex(key)]; return !!ai && dupr(mmr) - ai.dupr > PRACTICE_GAP + 1e-9; }
+  function rawElo(mmr, opp, won) { const exp = 1 / (1 + Math.pow(10, (opp - mmr) / 400)); return Math.round(40 * ((won ? 1 : 0) - exp)); }
+  function marginBonus(score) { const sc = parseScore(score); if (!sc) return 1; const m = sc.w - sc.l; return m >= 7 ? 3 : m >= 4 ? 2 : 1; }
+  function scaleRew(r, k) { return { coins: Math.round(r.coins * k), xp: Math.round(r.xp * k) }; }
+  // what a match against this opponent would be worth, for the opponent list
+  function matchPreview(mmr, key) {
+    const ai = LADDER[aiIndex(key)]; if (!ai) return null;
+    const base = matchRewards(key, true);
+    if (isPractice(mmr, key)) return { practice: true, win: 0, loss: 0, coins: scaleRew(base, .25).coins };
+    const rw = rawElo(mmr, ai.mmr, true), easy = rw < 3;
+    return { practice: false, easy, win: easy ? '1–3' : rw, loss: Math.max(3, -rawElo(mmr, ai.mmr, false)), coins: easy ? scaleRew(base, .5).coins : base.coins };
+  }
+
   function applyMatch(p, key, won, score, doubles) {
     const ai = LADDER[aiIndex(key)];
     if (!ai) return 'Unknown opponent';
     if (!aiUnlocked(p.beaten, key)) return 'That opponent is still locked';
-    const delta = elo(p.mmr, ai.mmr, won);
-    p.mmr = Math.max(0, p.mmr + delta);
-    p.peak = Math.max(p.peak || 0, p.mmr); p.seasonPeak = Math.max(p.seasonPeak || 0, p.mmr);
-    if (won) p.wins++; else p.losses++;
+    const practice = isPractice(p.mmr, key);
+    let delta = 0, easy = false;
+    if (!practice) {
+      delta = elo(p.mmr, ai.mmr, won);
+      if (won && rawElo(p.mmr, ai.mmr, true) < 3) { easy = true; delta = marginBonus(score); }   // easy win: +1/+2/+3 by margin
+      p.mmr = Math.max(0, p.mmr + delta);
+      p.peak = Math.max(p.peak || 0, p.mmr); p.seasonPeak = Math.max(p.seasonPeak || 0, p.mmr);
+      if (won) p.wins++; else p.losses++;
+    }
     let unlockedAi = null;
     if (won && !p.beaten.includes(key)) {
       p.beaten.push(key);
       const next = LADDER[aiIndex(key) + 1];
       if (next) unlockedAi = next.key;
     }
-    p.history = [{ opp: doubles ? ai.name + ' pair' : ai.name, mode: doubles ? 'Doubles' : 'Singles', score: String(score || '').slice(0, 9), delta, mmr: p.mmr, win: !!won, t: Date.now() }]
+    p.history = [{ opp: doubles ? ai.name + ' pair' : ai.name, mode: (practice ? 'Practice · ' : '') + (doubles ? 'Doubles' : 'Singles'), score: String(score || '').slice(0, 9), delta, mmr: p.mmr, win: !!won, practice, t: Date.now() }]
       .concat(p.history || []).slice(0, 20);
-    const rew = addRewards(p, matchRewards(key, won));
-    return Object.assign({ delta, unlockedAi }, rew);
+    const rew = addRewards(p, scaleRew(matchRewards(key, won), practice ? .25 : easy ? .5 : 1));
+    return Object.assign({ delta, unlockedAi, practice, easy }, rew);
   }
   function buy(p, id) {
     const it = BY_ID[id];
@@ -454,7 +476,7 @@
     return out;
   }
 
-  const API = { VERSION: 14, parseScore, seasonId, seasonEnds, seasonRoll, SEASON_REWARD, CH_DAILY, CH_WEEKLY, CH_BY_ID, ensureChallenges, cleanStats, trackStats,
+  const API = { VERSION: 15, PRACTICE_GAP, isPractice, matchPreview, parseScore, seasonId, seasonEnds, seasonRoll, SEASON_REWARD, CH_DAILY, CH_WEEKLY, CH_BY_ID, ensureChallenges, cleanStats, trackStats,
     ACHIEVEMENTS, checkAchievements, badName, LADDER, SKILL_LEVELS, ITEMS, BY_ID, SLOTS, STARTER, DEFAULT_EQUIP, HAIR_STYLES, ALL_HAIR, HAIR_COLORS, BODY_TYPES, NATIONS,
     rarityOf, CHESTS, CHEST_POOL, DUP_REFUND, openChest,
     levelInfo, aiIndex, dupr, duprTier, xpForLevel, claimDaily, DAILY_COINS, PALETTE, matchRewards, rallyRewards, onlineRewards, elo, aiUnlocked,

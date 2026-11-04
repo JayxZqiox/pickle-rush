@@ -1122,12 +1122,12 @@ input::placeholder{opacity:1;color:#8492a6}
     <button id="hitBtn" data-t="hit" class="tbtn rounded-full font-display primary">Hit</button>
   </div>
 </div>
-<script src="catalog.js?v=14"></script>
+<script src="catalog.js?v=15"></script>
 <script>
 /* Safety net: if catalog.js is missing or older than this page, reload once without the cache,
    then explain what to fix instead of showing a blank screen. Startup errors are shown too. */
 (function(){
-  var NEED = 14;
+  var NEED = 15;
   function box(title, msg){
     var d = document.createElement('div');
     d.style.cssText = 'position:fixed;inset:0;z-index:99;display:grid;place-items:center;padding:20px;background:#070f1f;color:#eef3fb;font:16px/1.5 system-ui,sans-serif';
@@ -1350,7 +1350,7 @@ async function detectServer(){
   } catch (e) { ACC.server = false; }
   ACC.checked = true;
   if (ACC.server && data.token){
-    try { ACC.user = (await api('api/me')).user; } catch (e) { if (e.status === 401){ data.token = null; save(); } }
+    try { ACC.user = (await api('api/me')).user; loadModList(); } catch (e) { if (e.status === 401){ data.token = null; save(); } }
   }
   if (screenNow === 'gate' && isServerAcc()) show('s-menu');
   refreshAll();
@@ -1398,7 +1398,8 @@ async function progMatch(key, won, sc, doubles){
   }
   const a = ensureLocal(); a.open = null;
   const r = CAT.applyMatch(a, key, won, sc, doubles); if (typeof r === 'string') throw new Error(r);
-  handleProg(CAT.trackStats(a, Object.assign(matchStats(), { matches:1, rankedWins:won ? 1 : 0, points:(G.score || [0])[myTeam() - 1] || 0 }))); save(); return r;
+  const practice = CAT.isPractice(a.mmr, key);
+  handleProg(CAT.trackStats(a, Object.assign(matchStats(), { matches:1, rankedWins:won && !practice ? 1 : 0, points:(G.score || [0])[myTeam() - 1] || 0 }))); save(); return r;
 }
 // ranked matches get a ticket from the server when they start; quitting one counts as a loss
 async function startRanked(mode, diff){
@@ -1416,12 +1417,13 @@ function settleLocalQuit(a){
   if (!a || !a.open) return null;
   const o = a.open; a.open = null;
   const r = CAT.applyMatch(a, o.ai, false, 'Quit', o.mode === 'doubles'); if (typeof r === 'string') return null;
+  if (r.practice){ save(); return 0; }
   a.mmr = Math.max(0, a.mmr - 10); if (a.history[0]){ a.history[0].delta -= 10; a.history[0].mmr = a.mmr; a.history[0].score = 'Quit'; }
   save(); return r.delta - 10;
 }
 async function quitRanked(){
-  if (isServerAcc()){ try { const j = await api('api/ranked/abandon', { matchId:G.rankedId }); if (j.user) ACC.user = j.user; showToast('Match counted as a loss', `${j.delta || 0} rating`); } catch (e) {} G.rankedId = null; }
-  else { const d = settleLocalQuit(getAcc()); if (d !== null) showToast('Match counted as a loss', `${d} rating`); }
+  if (isServerAcc()){ try { const j = await api('api/ranked/abandon', { matchId:G.rankedId }); if (j.user) ACC.user = j.user; if (j.delta) showToast('Match counted as a loss', `${j.delta} rating`); } catch (e) {} G.rankedId = null; }
+  else { const d = settleLocalQuit(getAcc()); if (d) showToast('Match counted as a loss', `${d} rating`); }
 }
 async function reportProgress(){
   const stats = Object.assign(matchStats(), { matches:1, online:G.mode === 'online' ? 1 : 0 });
@@ -2688,6 +2690,8 @@ async function rankedResult(won, sc){
   try {
     const r = await progMatch(G.diff, won, sc, doubles);
     showDelta(before, getAcc().mmr, r.delta); showRewards(r);
+    if (r.practice){ $('#resRank').textContent = 'Practice match: this opponent is more than 1.0 below your rating, so your rating didn’t change (¼ coins and XP).'; return; }
+    if (r.easy){ $('#resRank').textContent = `Easy win: +${r.delta} for the score (+3 for winning by 7+, +2 by 4–6, +1 by 2–3), half coins and XP. Play stronger opponents to climb faster!`; return; }
     if (isServerAcc()) loadBoard().then(() => { const i = ACC.board.findIndex(x => x.username === ACC.user.username); if (i >= 0) $('#resRank').textContent = `Leaderboard position #${i + 1} of ${ACC.board.length}`; });
     else $('#resRank').textContent = ACC.server ? 'Playing anonymously: saved in this browser. Sign up to join the leaderboard.' : 'Saved in this browser';
   } catch (e) { $('#resRank').textContent = e.message || 'Couldn’t save this result.'; }
@@ -2713,7 +2717,7 @@ function showRewards(r){
   el.classList.remove('hidden');
 }
 function showDelta(before, after, delta){
-  const dEl = $('#resDelta'); dEl.textContent = (delta > 0 ? '+' : '−') + Math.abs(delta); dEl.style.color = delta > 0 ? 'var(--good)' : 'var(--bad)';
+  const dEl = $('#resDelta'); dEl.textContent = delta ? (delta > 0 ? '+' : '−') + Math.abs(delta) : '±0'; dEl.style.color = delta > 0 ? 'var(--good)' : delta < 0 ? 'var(--bad)' : 'var(--muted)';
   countUp($('#resNew'), before, after);
 }
 function countUp(el, a, b){
@@ -3529,7 +3533,7 @@ function renderGate(){
 function renderDiff(){
   const m = G.pendingMode || '1p', ranked = RANKED(m), a = getAcc() || ensureLocal(), mmr = a.mmr;
   $('#diffTitle').textContent = m === '1p' ? 'Pick your opponent' : 'Pick the opposing pair';
-  $('#diffLead').textContent = ranked ? 'Beat an opponent to unlock the next one. Stronger opponents give more MMR, coins and XP.' : 'This mode is unranked, so every opponent is open.';
+  $('#diffLead').textContent = ranked ? 'Beat an opponent to unlock the next one. Opponents more than 1.0 below your rating are Practice (no rating change, ¼ rewards).' : 'This mode is unranked, so every opponent is open.';
   const pp = $('#diffPartner');
   pp.classList.toggle('hidden', m !== 'duo-ai');
   if (m === 'duo-ai'){
@@ -3541,7 +3545,7 @@ function renderDiff(){
     const ai = AIS[k], exp = 1 / (1 + Math.pow(10, (ai.mmr - mmr) / 400));
     const win = Math.max(3, Math.round(40 * (1 - exp))), loss = Math.max(3, Math.round(40 * exp));
     const locked = ranked && !CAT.aiUnlocked(a.beaten, k), beaten = (a.beaten || []).includes(k);
-    const rw = CAT.matchRewards(k, true);
+    const pv = CAT.matchPreview(mmr, k) || { win, loss, coins:CAT.matchRewards(k, true).coins };
     const btn = document.createElement('button');
     btn.className = 'tile rounded-2xl p-3.5 text-left flex items-center gap-3' + (locked ? ' opacity-60' : '');
     btn.dataset.act = locked ? 'lockedAi' : 'diff'; btn.dataset.key = k;
@@ -3551,7 +3555,9 @@ function renderDiff(){
       <div class="flex-1 min-w-0"><div class="font-display text-lg leading-none">${esc(m === '1p' ? ai.name : ai.name + ' & ' + ai.name2.split(' ')[1])}</div>
       <div class="text-sm text-[var(--muted)] mt-1">${locked ? `Beat ${esc(AIS[LADDER[i - 1]].name)} to unlock` : ai.blurb}</div></div>
       <div class="text-right shrink-0"><div class="font-display text-xl leading-none tabular-nums">${ai.mmr}</div><div class="text-[11px] font-bold hot tabular-nums">${CAT.dupr(ai.mmr).toFixed(2)} rating</div>
-      ${ranked && !locked ? `<div class="text-[13px] font-semibold mt-1 tabular-nums"><span style="color:var(--good)">+${win}</span> <span class="text-[var(--muted)]">/</span> <span style="color:var(--bad)">−${loss}</span></div><div class="text-[11px] text-[var(--muted)]">win: ${rw.coins} coins</div>` : ''}</div>`;
+      ${ranked && !locked ? (pv.practice
+        ? `<div class="mt-1"><span class="lobbyTag" style="color:#93c5fd; border-color:rgba(147,197,253,.5); background:rgba(147,197,253,.1)">PRACTICE</span></div><div class="text-[11px] text-[var(--muted)] mt-0.5">no rating · ${pv.coins} coins</div>`
+        : `<div class="text-[13px] font-semibold mt-1 tabular-nums"><span style="color:var(--good)">+${pv.win}</span> <span class="text-[var(--muted)]">/</span> <span style="color:var(--bad)">−${pv.loss}</span></div><div class="text-[11px] text-[var(--muted)]">win: ${pv.coins} coins${pv.easy ? ' · easy' : ''}</div>`) : ''}</div>`;
     list.appendChild(btn);
   });
 }
@@ -3574,7 +3580,7 @@ async function rcGo(){
   if (pass.length < 4){ $('#rcErr').textContent = 'The new password needs at least 4 characters.'; return; }
   try {
     const j = await api('api/recover', { username:name, code, password:pass });
-    data.token = j.token; ACC.user = j.user; FR.t = 0; dailyTried = false; save(); netHello();
+    resetNotifs(); data.token = j.token; ACC.user = j.user; FR.t = 0; dailyTried = false; save(); netHello(); loadModList();
     $('#rcPass').value = ''; $('#rcCode').value = '';
     showToast('Password changed', 'Here is your new recovery code'); showRecovery(j.recovery);
   } catch (e) { $('#rcErr').textContent = e.message; }
@@ -3590,7 +3596,8 @@ async function suGo(){
   $('#suGo').disabled = true;
   try {
     const j = await api(suMode === 'login' ? 'api/login' : 'api/signup', { username:name, password:pass, look:data.p1 });
-    data.token = j.token; ACC.user = j.user; FR.t = 0; dailyTried = false; if (NW.open) netHello();
+    resetNotifs(); FR.list = []; FR.keys = new Set(); FR.incoming = []; FR.outgoing = new Set();
+    data.token = j.token; ACC.user = j.user; FR.t = 0; dailyTried = false; if (NW.open) netHello(); loadModList();
     if (suMode === 'login' && j.user.look) Object.assign(data.p1, j.user.look);
     data.p1.name = j.user.username.slice(0, 12); save();
     $('#suPass').value = ''; netHello();
@@ -3867,7 +3874,7 @@ function act(name, el){
     case 'ppFriend': if (PROF.p){ const act2 = { friend:'remove', asked:'accept', sent:'cancel', none:'add' }[el.dataset.state || 'none']; friendChange(PROF.p.username, act2).then(renderPlayer); } break;
     case 'frAccept': friendChange(el.dataset.name, 'accept'); break;
     case 'frDecline': friendChange(el.dataset.name, 'decline'); break;
-    case 'bell': NOTIF.open = !NOTIF.open; $('#notifPanel').classList.toggle('hidden', !NOTIF.open); if (NOTIF.open){ loadFriends(true); renderNotifs(); if (ACC.user && ACC.user.owner) api('api/mod/list', {}).then(j => { NOTIF.mod = j.list; renderNotifs(); }).catch(() => {}); setTimeout(() => { NOTIF.items.forEach(n => n.read = true); renderNotifs(); }, 1500); } break;
+    case 'bell': NOTIF.open = !NOTIF.open; $('#notifPanel').classList.toggle('hidden', !NOTIF.open); if (NOTIF.open){ loadFriends(true); renderNotifs(); loadModList(); setTimeout(() => { for (const x of NOTIF.mod || []) NOTIF.seen[x.username] = x.reports; renderNotifs(); }, 1600); setTimeout(() => { NOTIF.items.forEach(n => n.read = true); renderNotifs(); }, 1500); } break;
     case 'notifDrop': NOTIF.items.splice(+el.dataset.i, 1); renderNotifs(); break;
     case 'notifJoin': { const n = NOTIF.items[+el.dataset.i]; NOTIF.items.splice(+el.dataset.i, 1); renderNotifs(); if (n && !['game', 'pause'].includes(screenNow)){ NW.err = ''; netSend({ t:'join', code:n.code }); NOTIF.open = false; $('#notifPanel').classList.add('hidden'); } break; }
     case 'ppInvite': if (PROF.p) netSend({ t:'invite', to:PROF.p.username }); break;
@@ -3895,7 +3902,7 @@ function act(name, el){
     case 'signup': if (isServerAcc()) show('s-signup'); else { gateTab = 'signup'; $('#suErr').textContent = ''; show('s-gate'); } break;
     case 'suTab': suMode = el.dataset.v; $('#suErr').textContent = ''; renderSignup(); break;
     case 'suGo': suGo(); break;
-    case 'logout': api('api/logout', {}).catch(() => {}); data.token = null; ACC.user = null; FR.list = []; FR.keys = new Set(); FR.incoming = []; FR.outgoing = new Set(); NOTIF.items = []; renderNotifs(); FR.t = 0; dailyTried = false; save(); netHello(); show('s-gate'); break;
+    case 'logout': api('api/logout', {}).catch(() => {}); data.token = null; ACC.user = null; FR.list = []; FR.keys = new Set(); FR.incoming = []; FR.outgoing = new Set(); resetNotifs(); FR.t = 0; dailyTried = false; save(); netHello(); show('s-gate'); break;
     case 'pause': togglePause(true); break;
     case 'resume': togglePause(false); break;
     case 'restart': case 'rematch':
@@ -3908,6 +3915,8 @@ function act(name, el){
         if (screenNow === 'result' && G.netRole === 'host'){ netSend({ t:'lobby' }); break; }
         const leave = () => { NW.leaving = false; clearRejoin(); netSend({ t:'leave' }); leaveOnline(); };
         if (midMatch && isServerAcc()) askConfirm('Leave this match?', 'Leaving an online match before it ends counts as a loss (−15 rating).', 'Leave', leave); else leave();
+      } else if (midMatch && RANKED(G.mode) && CAT.isPractice((getAcc() || {}).mmr || 0, G.diff)){
+        quitRanked(); show('s-menu');                                  // practice: leave freely
       } else if (midMatch && RANKED(G.mode)){
         askConfirm('Quit this ranked match?', 'Quitting counts as a loss, plus a small extra rating penalty.', 'Quit', () => { quitRanked(); show('s-menu'); });
       } else show('s-menu');
@@ -4146,16 +4155,20 @@ function drawEmotes(c){
 const CONFIRM = { cb:null };
 function askConfirm(title, text, yes, cb){ setTxt('#cfTitle', title); setTxt('#cfText', text); setTxt('#cfYes', yes); CONFIRM.cb = cb; $('#confirmOv').classList.remove('hidden'); }
 const PROF = { p:null, from:'menu' }, FR = { list:[], keys:new Set(), incoming:[], outgoing:new Set(), t:0 };
-const NOTIF = { items:[], open:false };
+const NOTIF = { items:[], open:false, mod:[], seen:{} };
+function resetNotifs(){ NOTIF.items = []; NOTIF.mod = []; NOTIF.seen = {}; NOTIF.open = false; $('#notifPanel').classList.add('hidden'); renderNotifs(); }
+function loadModList(){ if (!(ACC.user && ACC.user.owner)) { NOTIF.mod = []; return; } api('api/mod/list', {}).then(j => { NOTIF.mod = j.list; renderNotifs(); }).catch(() => { NOTIF.mod = []; renderNotifs(); }); }
 function addNotif(n){ NOTIF.items.unshift(Object.assign({ t:Date.now(), read:false }, n)); NOTIF.items = NOTIF.items.slice(0, 30); renderNotifs(); $('#bellBtn').classList.remove('ring'); void $('#bellBtn').offsetWidth; $('#bellBtn').classList.add('ring'); }
 function renderNotifs(){
-  const unread = FR.incoming.length + NOTIF.items.filter(n => !n.read).length;
+  const unread = FR.incoming.length + NOTIF.items.filter(n => !n.read).length + (ACC.user && ACC.user.owner ? (NOTIF.mod || []).filter(x => !x.banned && x.reports > (NOTIF.seen[x.username] || 0)).length : 0);
   $('#bellCount').classList.toggle('hidden', !unread); $('#bellCount').textContent = unread > 9 ? '9+' : String(unread);
   const ago = t => { const m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'now' : m < 60 ? m + 'm' : Math.round(m / 60) + 'h'; };
   const req = FR.incoming.map(f => `<div class="notif unread"><div class="min-w-0 flex-1"><b data-act="viewPlayer" data-name="${esc(f.username)}" style="cursor:pointer">${flagHTML(f.look && f.look.nation)} ${esc(f.username)}</b><div class="text-xs text-[var(--muted)]">wants to be your friend · ${f.dupr.toFixed(2)} rating</div></div>
     <button data-act="frAccept" data-name="${esc(f.username)}" class="primary rounded-xl px-3 py-1.5 text-sm font-bold">Accept</button><button data-act="frDecline" data-name="${esc(f.username)}" class="tile rounded-xl px-2.5 py-1.5 text-sm font-bold" aria-label="Decline">✕</button></div>`);
   const rest = NOTIF.items.map((n, i) => `<div class="notif ${n.read ? '' : 'unread'}"><div class="min-w-0 flex-1"><div class="font-semibold">${esc(n.text)}</div><div class="text-xs text-[var(--muted)]">${ago(n.t)}</div></div>
     ${n.type === 'invite' ? `<button data-act="notifJoin" data-i="${i}" class="primary rounded-xl px-3 py-1.5 text-sm font-bold">Join</button>` : ''}<button data-act="notifDrop" data-i="${i}" class="tile rounded-xl px-2.5 py-1.5 text-sm font-bold" aria-label="Dismiss">✕</button></div>`);
+  const isOwnerNow = !!(ACC.user && ACC.user.owner);
+  if (!isOwnerNow) NOTIF.mod = [];                       // reports are for the owner's eyes only
   const mod = (NOTIF.mod || []).map(x => `<div class="notif" style="border-color:rgba(239,68,68,.5)"><div class="min-w-0 flex-1"><b>⚑ ${esc(x.username)}</b><div class="text-xs text-[var(--muted)]">${x.reports} report${x.reports === 1 ? '' : 's'} · ${esc(x.reasons.join(', '))}${x.banned ? ' · banned' : x.flagged ? ' · hidden' : ''}</div></div><button data-act="viewPlayer" data-name="${esc(x.username)}" class="tile rounded-xl px-3 py-1.5 text-sm font-bold">Review</button></div>`);
   $('#notifList').innerHTML = req.concat(rest, mod).join('') || '<div class="mini text-[var(--muted)]">You’re all caught up.</div>';
 }
@@ -4584,7 +4597,7 @@ function frame(nowMs){
     if (screenNow === 'room') drawLobby(now);
     if (screenNow === 'gate') drawStage($('#pvGate'), myLook(), now, { tag:(myName() || '?').slice(0, 1).toUpperCase() });
     if (screenNow === 'player' && PROF.p) drawStage($('#pvPlayer'), PROF.p.look, now, { tag:PROF.p.username.slice(0, 1).toUpperCase() });
-    if (['menu', 'online', 'room', 'player'].includes(screenNow) && (NW.frT = (NW.frT || 0) + d) > 15){ NW.frT = 0; loadFriends(); }
+    if (['menu', 'online', 'room', 'player'].includes(screenNow) && (NW.frT = (NW.frT || 0) + d) > 15){ NW.frT = 0; loadFriends(); loadModList(); }
   }
   if ((hudTick += d) > .1){ hudTick = 0; tickBars(); if (screenNow === 'game') updateHUD(); }
   const fb = $('#fpsBox');

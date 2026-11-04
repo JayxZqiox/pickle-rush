@@ -208,6 +208,7 @@ function settleAbandoned(u, maxAgeMs) {
   const o = u.open; u.open = null;
   const r = CAT.applyMatch(u, o.ai, false, 'Quit', o.mode === 'doubles');
   if (typeof r === 'string') return null;
+  if (r.practice) { touchUser(u); return { delta: 0, practice: true }; }      // leaving practice costs nothing
   u.mmr = Math.max(0, u.mmr - 10);                 // extra penalty for leaving
   if (u.history && u.history[0]) { u.history[0].delta -= 10; u.history[0].mmr = u.mmr; u.history[0].score = 'Quit'; }
   touchUser(u);
@@ -353,7 +354,7 @@ async function handleApi(req, res, url) {
     const r = CAT.applyMatch(u, ai, won, `${sc.a}–${sc.b}`, o.mode === 'doubles');
     if (typeof r === 'string') return json(res, 400, { error: r });
     if (won) u.recentWins.push(Date.now());
-    const prog = CAT.trackStats(u, Object.assign({}, body.stats, { matches: 1, rankedWins: won ? 1 : 0, online: 0, points: sc.a }));
+    const prog = CAT.trackStats(u, Object.assign({}, body.stats, { matches: 1, rankedWins: won && !r.practice ? 1 : 0, online: 0, points: sc.a }));
     touchUser(u);
     return json(res, 200, { user: publicUser(u), result: r, delta: r.delta, prog });
   }
@@ -378,7 +379,7 @@ async function handleApi(req, res, url) {
   }
   if (route === '/api/mod/list') {
     if (!isOwner(u)) return json(res, 403, { error: 'Owner only' });
-    const list = Object.values(db.users).filter((x) => (x.reports || []).length || x.banned).map((x) => ({ username: x.username, reports: (x.reports || []).length, reasons: [...new Set((x.reports || []).map((r) => r.reason))], flagged: !!x.flagged, banned: !!x.banned }));
+    const list = Object.values(db.users).filter((x) => !isOwner(x) && ((x.reports || []).length || x.banned)).map((x) => ({ username: x.username, reports: (x.reports || []).length, reasons: [...new Set((x.reports || []).map((r) => r.reason))], flagged: !!x.flagged, banned: !!x.banned }));
     return json(res, 200, { list });
   }
   if (route === '/api/mod/action') {
