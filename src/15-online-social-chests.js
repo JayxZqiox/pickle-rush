@@ -71,6 +71,7 @@ function thumbOf(cv2, id){
   const it = IT(id), slot = it.slot;
   if (['top', 'bottom', 'hairx', 'head', 'shoes', 'wrist'].includes(slot)) drawPreview(cv2, Object.assign(myLook(), { [slot]:id }), 'front', 0, '');
   else if (slot === 'dance'){ drawStage(cv2, myLook(), .4, { facing:'front', noCone:true, dance:{ id, t:.4 } }); return; }
+  else if (slot === 'partner'){ drawPreview(cv2, MATE_LOOK[id] || myLook(), 'front', 0, ''); return; }
   else if (!fitCanvas(cv2)) return;
   else if (slot === 'ball') previewBall(cv2, id, .4);
   else if (slot === 'court') previewCourt(cv2, id);

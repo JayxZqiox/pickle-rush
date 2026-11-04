@@ -142,7 +142,16 @@
     { id:'jer_es', slot:'top', name:'Spain jersey',       price:450, lvl:2, style:'jersey', c1:'#aa151b', c2:'#f1bf00', deco:'hoops',  nation:'ES' },
     { id:'jer_in', slot:'top', name:'India jersey',       price:450, lvl:2, style:'jersey', c1:'#1e40af', c2:'#ff9933', c3:'#138808', deco:'sash',   nation:'IN' },
     { id:'jer_gb', slot:'top', name:'UK jersey',          price:450, lvl:2, style:'jersey', c1:'#ffffff', c2:'#012169', c3:'#c8102e', deco:'sash',   nation:'GB' },
+    // street style (Kuya Lando's look) — in the shop
+    { id:'tee_worn',       slot:'top',    name:'Street legend tee',   price:300, lvl:1, style:'tee',     c1:'#cfc8b8', c2:'#8a8274', deco:'worn' },
+    { id:'bot_worn',       slot:'bottom', name:'Faded cargo shorts',  price:160, lvl:1, style:'long',    c1:'#6b6658', c2:'#4d4a40' },
+    { id:'shoes_tsinelas', slot:'shoes',  name:'Tsinelas',            price:120, lvl:1, style:'slipper', c1:'#2563eb', c2:'#f1f5f9' },
+    { id:'pad_tape',       slot:'paddle', name:'Taped-up paddle',     price:450, lvl:2, c1:'#a0714a', c2:'#e5e7eb', power:1, control:1, spin:1, deco:'tape' },
     // tournament-only prizes (can't be bought or found in chests)
+    { id:'sando_brgy',   slot:'top',    name:'Barangay Cup champion sando', price:400,  lvl:1, tour:'cup_brgy',    rarity:'rare',      style:'tank',   c1:'#fcd116', c2:'#0038a8', deco:'number', num:'1' },
+    { id:'jer_visayas',  slot:'top',    name:'Visayas Open jersey',         price:800,  lvl:1, tour:'cup_visayas', rarity:'epic',      style:'jersey', c1:'#0ea5e9', c2:'#facc15', c3:'#ffffff', deco:'sash' },
+    { id:'dance_sinulog',slot:'dance',  name:'Sinulog Steps',               price:800,  lvl:1, tour:'cup_visayas', rarity:'epic',      style:'sinulog', bpm:116 },
+    { id:'top_phnats',   slot:'top',    name:'Philippine Nationals jersey', price:1600, lvl:1, tour:'cup_phnats',  rarity:'legendary', style:'kit',    c1:'#0038a8', c2:'#ce1126', c3:'#fcd116', deco:'halves' },
     { id:'top_cup_club', slot:'top',    name:'Club Cup champion jersey', price:600,  lvl:1, tour:'cup_club',  rarity:'epic',      style:'jersey', c1:'#0f766e', c2:'#cd7f32', c3:'#fde68a', deco:'sash' },
     { id:'dance_trophy', slot:'dance',  name:'Trophy Lift',              price:600,  lvl:1, tour:'cup_club',  rarity:'epic',      style:'trophy', bpm:120 },
     { id:'top_cup_open', slot:'top',    name:'Pro Open champion kit',    price:1200, lvl:1, tour:'cup_open',  rarity:'legendary', style:'kit',    c1:'#e5e7eb', c2:'#64748b', c3:'#f5c542', deco:'sides' },
@@ -176,6 +185,8 @@
     { id:'court_neon',     slot:'court', name:'Neon City',      price:700,  lvl:1, chest:true, rarity:'epic' },
     { id:'court_park',     slot:'court', name:'Park Grass',     price:600,  lvl:1, chest:true, rarity:'epic' },
     { id:'court_royal',    slot:'court', name:'Royal Arena',    price:1500, lvl:1, chest:true, rarity:'legendary' },
+    { id:'court_barangay', slot:'court', name:'Barangay Covered Court', price:700, lvl:1, chest:true, rarity:'epic' },
+    { id:'court_lansangan',slot:'court', name:'Lansangan Street Court', price:1500, lvl:1, chest:true, rarity:'legendary', tour:'cup_brgy' },
     // AI teammates for 2v2
     { id:'mate_ace',       slot:'partner', name:'Ace',          price:0,    lvl:1, speed:4.5, react:.18, aimSd:.42, mistake:.055, skill:.2,  smash:.75, tScale:1.0, judge:.7, acc:.8 },
     { id:'mate_blaze',     slot:'partner', name:'Blaze',        price:300,  lvl:3, speed:4.9, react:.14, aimSd:.34, mistake:.04,  skill:.28, smash:.82, tScale:.95, judge:.8, acc:.88 },
@@ -192,6 +203,9 @@
     { id:'mate_br', slot:'partner', name:'Lucas · Brazil',      nation:'BR', price:1100, lvl:5, speed:5.3, react:.11, aimSd:.28, mistake:.032, skill:.35, smash:.92, tScale:.9,  judge:.86, acc:.92 },
     { id:'mate_es', slot:'partner', name:'Sofia · Spain',       nation:'ES', price:1300, lvl:6, speed:5.3, react:.1,  aimSd:.25, mistake:.027, skill:.4,  smash:.9,  tScale:.9,  judge:.89, acc:.95 },
     { id:'mate_in', slot:'partner', name:'Arjun · India',       nation:'IN', price:1300, lvl:6, speed:5.4, react:.1,  aimSd:.25, mistake:.027, skill:.38, smash:.9,  tScale:.89, judge:.9,  acc:.95 },
+    // the legend: beat him in the Street Challenge, win the Philippine Nationals, or buy him
+    { id:'mate_lando', slot:'partner', name:'Kuya Lando · Philippines', nation:'PH', price:20000, lvl:1, tour:'cup_street', buy:true, rarity:'legendary',
+      speed:6.0, react:.055, aimSd:.14, mistake:.012, skill:.58, smash:1, tScale:.83, judge:.99, acc:1 },
     { id:'mate_gb', slot:'partner', name:'Oliver · UK',         nation:'GB', price:1600, lvl:7, speed:5.5, react:.09, aimSd:.22, mistake:.022, skill:.42, smash:.93, tScale:.88, judge:.92, acc:.97 },
   ];
   // every outfit piece in 11 colors
@@ -463,39 +477,94 @@
 
   /* ---------- tournaments: 8-team knockout (Quarterfinal, Semifinal, Final) ---------- */
   const CUPS = [
-    { id:'cup_club',  name:'Club Cup',           lo:2.3, hi:3.8, need:0,   prev:null,       coins:[100, 150, 350],  xp:[60, 80, 150],   keys:1, prizes:['top_cup_club', 'dance_trophy'] },
-    { id:'cup_open',  name:'Pro Open',           lo:3.8, hi:5.4, need:3.5, prev:'cup_club', coins:[180, 260, 700],  xp:[90, 120, 250],  keys:2, prizes:['top_cup_open', 'head_laurel'] },
-    { id:'cup_world', name:'World Championship', lo:5.6, hi:8.0, need:5.0, prev:'cup_open', coins:[320, 480, 1400], xp:[140, 200, 400], keys:3, prizes:['pad_cup', 'head_wc'] },
+    { id:'cup_brgy',    region:'PH', tier:'Beginner',     name:'Barangay Cup',         lo:2.0, hi:2.9, need:0,   prev:null,          coins:[70, 110, 250],   xp:[50, 70, 120],   keys:1, prizes:['court_lansangan', 'sando_brgy'], venue:'court_barangay' },
+    { id:'cup_visayas', region:'PH', tier:'Intermediate', name:'Visayas Open',         lo:3.0, hi:4.3, need:2.8, prev:'cup_brgy',    coins:[140, 200, 500],  xp:[80, 110, 200],  keys:2, prizes:['jer_visayas', 'dance_sinulog'], venue:'court_beach' },
+    { id:'cup_phnats',  region:'PH', tier:'Pro',          name:'Philippine Nationals', lo:4.5, hi:6.7, need:4.3, prev:'cup_visayas', coins:[260, 380, 1000], xp:[120, 170, 330], keys:3, prizes:['top_phnats', 'mate_lando'], venue:'court_stadium' },
+    { id:'cup_street',  region:'PH', tier:'Legend',       name:'Street Challenge: Kuya Lando', lo:7.8, hi:7.8, need:0, prev:null, rounds:1, singles:true, coins:[500], xp:[200], keys:2, prizes:['mate_lando'], venue:'court_lansangan', boss:'lando' },
+    { id:'cup_club',    region:'WORLD', tier:'Beginner',  name:'Club Cup',             lo:2.3, hi:3.8, need:0,   prev:null,          coins:[100, 150, 350],  xp:[60, 80, 150],   keys:1, prizes:['top_cup_club', 'dance_trophy'] },
+    { id:'cup_open',    region:'WORLD', tier:'Intermediate', name:'Pro Open',          lo:3.8, hi:5.4, need:3.5, prev:'cup_club',    coins:[180, 260, 700],  xp:[90, 120, 250],  keys:2, prizes:['top_cup_open', 'head_laurel'] },
+    { id:'cup_world',   region:'WORLD', tier:'Pro',       name:'World Championship',   lo:5.6, hi:8.0, need:5.0, prev:'cup_open',    coins:[320, 480, 1400], xp:[140, 200, 400], keys:3, prizes:['pad_cup', 'head_wc'] },
   ];
+  CUPS.forEach(c => { c.rounds = c.rounds || 3; });
+  const PH_PLACES = ['Cebu', 'Bohol', 'Davao', 'Manila', 'Iloilo', 'Baguio', 'Pampanga', 'Bacolod', 'Cagayan de Oro', 'Leyte', 'Palawan', 'Zamboanga', 'Batangas', 'Laguna', 'Ilocos', 'Bicol'];
   const CUP_BY = {}; CUPS.forEach(c => { CUP_BY[c.id] = c; });
   const ROUND_NAME = ['Quarterfinal', 'Semifinal', 'Final'];
   function cupUnlocked(p, cupId) { const c = CUP_BY[cupId]; if (!c) return false; return !c.need || dupr(p.peak || p.mmr || 0) >= c.need || ((p.trophies || {})[c.prev] || 0) > 0; }
   function tourNew(cupId, rnd, myNation) {
     rnd = rnd || Math.random;
-    const c = CUP_BY[cupId], pool = LADDER.filter(a => a.dupr >= c.lo && a.dupr <= c.hi);
+    const c = CUP_BY[cupId];
+    if (c.boss) return { id:Math.floor(rnd() * 1e9).toString(36), cup:cupId, round:0, alive:true, champion:false, teams:[{ you:true }, { nation:'PH', name:'Kuya Lando', ai:c.boss }], path:[1], qf:[], sf:[], dec:{}, t:Date.now() };
+    const pool = LADDER.filter(a => a.dupr >= c.lo && a.dupr <= c.hi);
     const opp = [pool[0], pool[Math.floor(pool.length / 2)], pool[pool.length - 1]].map(a => a.key);
-    const nat = Object.keys(NATIONS).filter(k => k !== myNation);
+    const ph = c.region === 'PH', nat = ph ? PH_PLACES.slice() : Object.keys(NATIONS).filter(k => k !== myNation);
     for (let i = nat.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [nat[i], nat[j]] = [nat[j], nat[i]]; }
     const any = () => pool[Math.floor(rnd() * pool.length)].key;
     // seats: 0 = you; your path is seat 1 (QF), then the winner of 2v3 (SF), then the winner of 4–7 (F)
     const teams = [{ you:true }];
-    for (let i = 1; i < 8; i++) teams.push({ nation:nat[i - 1], name:'Team ' + NATIONS[nat[i - 1]], ai:any() });
+    for (let i = 1; i < 8; i++) teams.push(ph ? { nation:'PH', name:'Team ' + nat[i - 1], ai:any() } : { nation:nat[i - 1], name:'Team ' + NATIONS[nat[i - 1]], ai:any() });
     teams[1].ai = opp[0];
     const sfSeat = 2 + Math.floor(rnd() * 2); teams[sfSeat].ai = opp[1];
     const fSeat = 4 + Math.floor(rnd() * 4); teams[fSeat].ai = opp[2];
     const other = (a, b, keep) => keep === a ? a : keep === b ? b : (rnd() < .5 ? a : b);
     const qf = [0, other(2, 3, sfSeat), other(4, 5, fSeat), other(6, 7, fSeat)];
     const sf = [0, fSeat < 6 ? qf[2] : qf[3]];
-    return { id:Math.floor(rnd() * 1e9).toString(36), cup:cupId, round:0, alive:true, champion:false, teams, path:[1, sfSeat, fSeat], qf, sf, t:Date.now() };
+    return { id:Math.floor(rnd() * 1e9).toString(36), cup:cupId, round:0, alive:true, champion:false, teams, path:[1, sfSeat, fSeat], qf, sf, dec:{}, t:Date.now() };
   }
-  function tourOpp(t) { return t && t.alive ? t.teams[t.path[t.round]] : null; }
+  /* The other matches: q1 (2v3), q2 (4v5), q3 (6v7) in the quarterfinals and s1 (winners of q2 and q3) in the semis.
+   * Watching one decides it for real; unwatched ones use the planned winner when your own round finishes. */
+  const dupOf = (t, seat) => { const a = LADDER[aiIndex(t.teams[seat].ai)]; return a ? a.dupr : 0; };
+  function tourWinner(t, key) {
+    t.dec = t.dec || {};
+    if (t.dec[key] != null) return t.dec[key];
+    const planned = { q1:t.qf[1], q2:t.qf[2], q3:t.qf[3], s1:t.sf[1] }[key], parts = tourParts(t, key);
+    if (!parts) return null;
+    return parts.includes(planned) ? planned : (dupOf(t, parts[0]) >= dupOf(t, parts[1]) ? parts[0] : parts[1]);
+  }
+  function tourParts(t, key) {
+    if (key === 'q1') return [2, 3]; if (key === 'q2') return [4, 5]; if (key === 'q3') return [6, 7];
+    if (key === 's1') return [tourWinner(t, 'q2'), tourWinner(t, 'q3')];
+    return null;
+  }
+  // can this match still be watched?
+  function tourWatchable(t, key) {
+    if (!t || !t.alive || CUP_BY[t.cup].rounds < 3) return false;
+    t.dec = t.dec || {};
+    if (t.dec[key] != null) return false;
+    if (key[0] === 'q') return t.round === 0;
+    if (key === 's1') return t.round === 1 && t.dec.q2 != null && t.dec.q3 != null;
+    return false;
+  }
+  function tourDecide(t, key, winner) {
+    if (!tourWatchable(t, key)) return 'That match can’t be watched now';
+    const parts = tourParts(t, key);
+    if (!parts.includes(winner)) return 'That team isn’t in this match';
+    t.dec[key] = winner; return null;
+  }
+  // your next opponent: seat 1, then whoever won q1, then whoever won s1
+  function tourOpp(t) {
+    if (!t || !t.alive) return null;
+    if (t.round === 0) return t.teams[t.path[0]];
+    if (t.round === 1) return t.teams[tourWinner(t, 'q1')];
+    return t.teams[tourWinner(t, 's1')];
+  }
+  // after your match: fill in the round's other results, then move on
+  function tourAdvance(t, won) {
+    t.dec = t.dec || {};
+    const rounds = CUP_BY[t.cup].rounds;
+    if (rounds >= 3) {
+      if (t.round === 0) for (const k of ['q1', 'q2', 'q3']) if (t.dec[k] == null) t.dec[k] = tourWinner(t, k);
+      if (t.round === 1 && t.dec.s1 == null) t.dec.s1 = tourWinner(t, 's1');
+    }
+    if (won) { t.round++; if (t.round >= rounds) { t.alive = false; t.champion = true; } } else t.alive = false;
+    t.t = Date.now();
+  }
   // give the rewards for a finished tournament match (also used for each player of an online team)
   function tourReward(p, cupId, round, won) {
     const c = CUP_BY[cupId], out = { won, round, champion:false, prizes:[], dupCoins:0, keys:0 };
     if (!c) return out;
     if (!won) { Object.assign(out, addRewards(p, { coins:30 * (round + 1), xp:20 * (round + 1) })); return out; }
     Object.assign(out, addRewards(p, { coins:c.coins[round], xp:c.xp[round] }));
-    if (round >= 2) {
+    if (round >= c.rounds - 1) {
       out.champion = true; p.trophies = p.trophies || {}; p.trophies[c.id] = (p.trophies[c.id] || 0) + 1;
       for (const id of c.prizes) { if (!p.owned.includes(id)) { p.owned.push(id); out.prizes.push(id); } else { p.coins += 500; out.dupCoins += 500; } }
       p.keys = (p.keys | 0) + c.keys; out.keys = c.keys;
@@ -507,8 +576,7 @@
     if (!t || !t.alive) return 'This tournament is over';
     const sc = parseScore(score); if (!sc || won !== (sc.a > sc.b)) return 'That score isn’t a finished game';
     const r = t.round, res = tourReward(p, t.cup, r, won);
-    if (won) { t.round++; if (t.round >= 3) { t.alive = false; t.champion = true; } } else t.alive = false;
-    t.t = Date.now();
+    tourAdvance(t, won);
     return res;
   }
 
@@ -541,7 +609,7 @@
     if (!it) return 'That item doesn’t exist';
     if (p.owned.includes(id)) return 'You already own this';
     if (it.chest) return 'This one only comes from chests';
-    if (it.tour) return 'This one is only won in tournaments';
+    if (it.tour && !it.buy) return 'This one is only won in tournaments';
     if (levelInfo(p.xp).level < it.lvl) return `Reach level ${it.lvl} first`;
     if ((p.coins | 0) < it.price) return 'Not enough coins';
     p.coins -= it.price; p.owned.push(id);
@@ -568,7 +636,7 @@
     return out;
   }
 
-  const API = { VERSION: 16, CUPS, CUP_BY, ROUND_NAME, cupUnlocked, tourNew, tourOpp, tourReward, tourResult, PRACTICE_GAP, isPractice, matchPreview, parseScore, seasonId, seasonEnds, seasonRoll, SEASON_REWARD, CH_DAILY, CH_WEEKLY, CH_BY_ID, ensureChallenges, cleanStats, trackStats,
+  const API = { VERSION: 17, CUPS, CUP_BY, ROUND_NAME, cupUnlocked, tourNew, tourOpp, tourReward, tourResult, tourWinner, tourParts, tourWatchable, tourDecide, tourAdvance, PH_PLACES, PRACTICE_GAP, isPractice, matchPreview, parseScore, seasonId, seasonEnds, seasonRoll, SEASON_REWARD, CH_DAILY, CH_WEEKLY, CH_BY_ID, ensureChallenges, cleanStats, trackStats,
     ACHIEVEMENTS, checkAchievements, badName, LADDER, SKILL_LEVELS, ITEMS, BY_ID, SLOTS, STARTER, DEFAULT_EQUIP, HAIR_STYLES, ALL_HAIR, HAIR_COLORS, BODY_TYPES, NATIONS,
     rarityOf, CHESTS, CHEST_POOL, DUP_REFUND, openChest,
     levelInfo, aiIndex, dupr, duprTier, xpForLevel, claimDaily, DAILY_COINS, PALETTE, matchRewards, rallyRewards, onlineRewards, elo, aiUnlocked,

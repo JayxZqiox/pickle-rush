@@ -88,6 +88,10 @@ const TRACKS = {
     mHat(t, .04, d); if (s >= 12) mHat(t + sd / 2, .03, d);
     if (s === 0) mTone(t, NOTE(36), sd * 6, 'sine', .25, d, NOTE(31));
   } },
+  sinulog: { bpm:116, play(i, t, sd, d){   // festival drums: big drums, snare rolls, a bell
+    const s = i % 16; if (s === 0 || s === 3 || s === 6 || s === 10) mKick(t, .85, d); if (s % 4 === 2) mTone(t, 150, .16, 'sine', .35, d, 90);
+    if (s >= 12) mSnare(t, .18, d); else if (s % 2 === 1) mSnare(t, .1, d); if (s === 8) mTone(t, 1760, .18, 'triangle', .06, d);
+  } },
   trophy: { bpm:120, play(i, t, sd, d){ TRACKS.pump.play(i, t, sd, d); if (i % 8 === 4) mTone(t, NOTE(84), sd * 2, 'triangle', .05, d); } },
   pump: { bpm:120, play(i, t, sd, d){    // short fanfare + crowd roar
     if (i === 0) mNoise(t, .25, d, 900, .5, 2.6, 'lowpass');

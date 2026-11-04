@@ -91,6 +91,7 @@ const MATE_LOOK = {
   mate_br: { gender:'boy',  skin:2, hair:0, hairStyle:'curly',    nation:'BR', head:'head_none',     top:'jer_br', bottom:'shorts_c_navy',  shoes:'shoes_c_yellow',paddle:'pad_lava',    body:'athletic', height:180 },
   mate_es: { gender:'girl', skin:1, hair:1, hairStyle:'long',     nation:'ES', head:'cap_c_red',     top:'jer_es', bottom:'skirt_c_yellow', shoes:'shoes_c_red',   paddle:'pad_petals',  body:'regular',  height:168 },
   mate_in: { gender:'boy',  skin:2, hair:0, hairStyle:'short',    nation:'IN', head:'head_none',     top:'jer_in', bottom:'shorts_c_navy',  shoes:'shoes_c_orange',paddle:'pad_glacier', body:'regular',  height:177 },
+  mate_lando: { gender:'boy', skin:2, hair:0, hairStyle:'curly', nation:'PH', head:'head_none', top:'tee_worn', bottom:'bot_worn', shoes:'shoes_tsinelas', paddle:'pad_tape', wrist:'wrist_none', body:'athletic', height:174, dance:'dance_budots' },
   mate_gb: { gender:'boy',  skin:0, hair:5, hairStyle:'undercut', nation:'GB', head:'head_none',     top:'jer_gb', bottom:'shorts_c_navy',  shoes:'shoes_c_white', paddle:'pad_mecha',   body:'athletic', height:183 },
 };
 

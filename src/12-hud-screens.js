@@ -37,7 +37,8 @@ function updateHUD(){
   if (document.body.classList.contains('touchui') !== tOn){ document.body.classList.toggle('touchui', tOn); if (tOn) requestAnimationFrame(() => { const h = $('#hitBtn').offsetHeight; if (h) document.body.style.setProperty('--hitpx', h + 'px'); }); }
   const me = meP();
   if ($('#tutBox').classList.contains('hidden') === !!(G.tutorial && screenNow === 'game')) renderTut();
-  $('#emoteBtn').classList.toggle('hidden', G.mode !== 'online'); if (G.mode !== 'online') $('#emoteBar').classList.add('hidden');
+  $('#emoteBtn').classList.toggle('hidden', G.mode !== 'online');
+  $('#watchSkip').classList.toggle('hidden', !(G.mode === 'watch' && screenNow === 'game')); if (G.mode !== 'online') $('#emoteBar').classList.add('hidden');
   const serveNow = tOn && G.state === 'serve' && me && G.serverP === me && !G.serveDrop;
   const hb = $('#hitBtn'); if (hb.classList.contains('serve') !== !!serveNow){ hb.classList.toggle('serve', !!serveNow); hb.textContent = serveNow ? 'Serve' : 'Hit'; }
   if (!inGame || !G.players.length){ $('#hint').classList.add('hidden'); return; }

@@ -102,6 +102,8 @@ const THEMES = {
   court_clay:   { night:true, city:['#1a2638', '#ffcf8a'], sky:['#1b2c44', '#34506e', '#5d7a92'], stands:'rgba(58,42,34,.95)', surround:'#b5552f', court:'#c8653a', kitchen:'#2e9e5a', line:'#fff5e6', board:'#3a2016', boardText:'#ffd9a8', light:'255,230,200', crowd:1 },
   court_neon:   { night:true, city:['#12062b', '#ff4fd8', '#5ff4ff'], sky:['#05010f', '#1a0938', '#0b0420'], stands:'rgba(18,7,38,.95)', surround:'#1b0f3a', court:'#2b1a6b', kitchen:'#14b86a', line:'#5ff4ff', board:'#09031a', boardText:'#ff4fd8', light:'255,79,216', crowd:1, neon:true },
   court_park:   { sky:['#6fbaf0', '#a8dcff', '#d9f0ff'], stands:'rgba(40,90,40,.9)', surround:'#4f9a45', court:'#2f74c0', kitchen:'#27a65b', line:'#ffffff', board:'#2d5e2a', boardText:'#ffffff', light:'255,255,255', crowd:.55, trees:true },
+  court_lansangan:{ night:true, street:true, city:['#141018', '#ffd28a'], sky:['#120d1c', '#2a1d33', '#3d2a3a'], stands:'rgba(28,24,30,.95)', surround:'#3a3b40', court:'#56595f', kitchen:'#4f6b55', line:'#f1e3a1', board:'#26221f', boardText:'#ffcc66', light:'255,214,150', crowd:.08 },
+  court_barangay: { covered:true, sky:['#3b4250', '#545d6d', '#6b7383'], stands:'rgba(48,52,60,.95)', surround:'#8f9187', court:'#2f6b4f', kitchen:'#b5483a', line:'#ffffff', board:'#1f3b2c', boardText:'#fcd116', light:'255,250,235', crowd:.3 },
   court_royal:  { night:true, city:['#1d0d33', '#f5c542'], sky:['#1a0d2e', '#3b1d5c', '#24113f'], stands:'rgba(42,19,63,.95)', surround:'#5b1d3a', court:'#2a3d8f', kitchen:'#1f9e5e', line:'#f5c542', board:'#1a0b28', boardText:'#f5c542', light:'245,197,66', crowd:1 },
 };
 const theme = () => THEMES[G.court] || THEMES.court_stadium;
@@ -170,6 +172,40 @@ function buildWorld(){
     }
   }
   if (th.sun){ const sx = VW * .72, sy = boardTop - 170, sg2 = c.createRadialGradient(sx, sy, 0, sx, sy, 140); sg2.addColorStop(0, 'rgba(255,248,214,1)'); sg2.addColorStop(.25, 'rgba(255,214,140,.9)'); sg2.addColorStop(1, 'rgba(255,170,110,0)'); c.fillStyle = sg2; c.fillRect(sx - 140, sy - 140, 280, 280); }
+  if (th.street){
+    // Philippine street court: sari-sari store, lamp posts, a basketball hoop and banderitas overhead
+    const base = minY0 + 24;
+    for (const [sx0, sw0, col] of [[VW * .04, 150, '#5b4636'], [VW * .74, 170, '#4a5568']]){
+      c.fillStyle = col; c.fillRect(sx0, base - 96, sw0, 110);
+      for (let k = 0; k < 7; k++){ c.fillStyle = k % 2 ? '#e53e3e' : '#f6e05e'; c.fillRect(sx0 - 6 + k * (sw0 + 12) / 7, base - 102, (sw0 + 12) / 7, 14); }
+      c.fillStyle = 'rgba(255,214,150,.85)'; c.fillRect(sx0 + 14, base - 72, sw0 - 28, 34);
+      c.fillStyle = '#2d3748'; for (let k = 0; k < 5; k++) c.fillRect(sx0 + 20 + k * (sw0 - 40) / 5, base - 68, 10, 26);
+      c.fillStyle = '#fff'; c.font = '700 11px Barlow, sans-serif'; c.textAlign = 'center'; c.fillText(sx0 < VW / 2 ? 'SARI-SARI STORE' : 'KARINDERYA', sx0 + sw0 / 2, base - 84);
+    }
+    for (const lx of [VW * .22, VW * .5, VW * .78]){ c.fillStyle = '#1a202c'; c.fillRect(lx - 2, base - 150, 4, 160); const lg = c.createRadialGradient(lx, base - 150, 0, lx, base - 150, 60); lg.addColorStop(0, 'rgba(255,220,160,.9)'); lg.addColorStop(1, 'rgba(255,220,160,0)'); c.fillStyle = lg; c.fillRect(lx - 60, base - 210, 120, 120); }
+    const hx = VW * .5, hy = boardTop - 70;          // basketball hoop behind the far baseline
+    c.fillStyle = '#2d3748'; c.fillRect(hx - 3, hy, 6, boardTop - hy + 10);
+    c.fillStyle = 'rgba(240,240,240,.92)'; c.fillRect(hx - 30, hy - 30, 60, 38); c.strokeStyle = '#e53e3e'; c.lineWidth = 2; c.strokeRect(hx - 12, hy - 18, 24, 18);
+    c.strokeStyle = '#f97316'; c.lineWidth = 2.5; c.beginPath(); c.ellipse(hx, hy + 2, 13, 4, 0, 0, TAU); c.stroke();
+    c.strokeStyle = 'rgba(255,255,255,.7)'; c.lineWidth = 1; for (let k = -2; k <= 2; k++){ c.beginPath(); c.moveTo(hx + k * 5, hy + 3); c.lineTo(hx + k * 3, hy + 16); c.stroke(); }
+    // banderitas: strings of little colored flags
+    for (let row = 0; row < 3; row++){
+      const y0 = 24 + row * 34, sag = 26; c.strokeStyle = 'rgba(255,255,255,.35)'; c.lineWidth = 1;
+      c.beginPath(); for (let x2 = -PAD; x2 <= VW + PAD; x2 += 8){ const yy = y0 + Math.sin((x2 / VW) * Math.PI) * sag; x2 === -PAD ? c.moveTo(x2, yy) : c.lineTo(x2, yy); } c.stroke();
+      const cols = ['#e53e3e', '#f6e05e', '#3182ce', '#38a169', '#ed64a6', '#ffffff'];
+      for (let x2 = -PAD + 6, k = row; x2 < VW + PAD; x2 += 22, k++){ const yy = y0 + Math.sin((x2 / VW) * Math.PI) * sag; c.fillStyle = cols[k % cols.length]; c.beginPath(); c.moveTo(x2 - 7, yy); c.lineTo(x2 + 7, yy); c.lineTo(x2, yy + 14); c.closePath(); c.fill(); }
+    }
+  }
+  if (th.covered){
+    // barangay covered court: steel roof trusses and bleachers
+    const base = minY0 + 26;
+    c.fillStyle = 'rgba(30,34,40,.95)'; c.fillRect(-PAD, 0, VW + PAD * 2, 26);
+    c.strokeStyle = 'rgba(160,170,180,.55)'; c.lineWidth = 3;
+    for (let x2 = -PAD; x2 < VW + PAD; x2 += 120){ c.beginPath(); c.moveTo(x2, 26); c.lineTo(x2 + 60, 6); c.lineTo(x2 + 120, 26); c.stroke(); c.beginPath(); c.moveTo(x2 + 60, 6); c.lineTo(x2 + 60, 26); c.stroke(); }
+    c.fillStyle = 'rgba(30,34,40,.9)'; c.fillRect(-PAD, 26, VW + PAD * 2, 6);
+    for (let k = 0; k < 5; k++){ c.fillStyle = k % 2 ? '#6b7280' : '#4b5563'; c.fillRect(-PAD, base - 20 - k * 16, VW + PAD * 2, 12); }
+    c.fillStyle = '#fcd116'; c.font = '800 16px "Russo One", Impact, sans-serif'; c.textAlign = 'center'; c.fillText('BARANGAY COVERED COURT', VW / 2, base - 104);
+  }
   if (th.trees){ c.fillStyle = '#2f6b2c'; for (let i = 0; i < 14; i++){ const tx = (i / 13) * VW, r = 38 + (i * 37 % 26); c.beginPath(); c.arc(tx, boardTop - 115 + (i % 3) * 8, r, 0, TAU); c.fill(); } }
   const sg = c.createLinearGradient(0, boardTop - 150, 0, boardTop);
   sg.addColorStop(0, 'rgba(0,0,0,0)'); sg.addColorStop(1, th.stands);
@@ -201,6 +237,8 @@ function buildWorld(){
       const x = -HW - 1.4 + rr3() * (HW * 2 + 2.8), y = -2.6 + rr3() * (L + 5.2), q = proj(x, y, 0), sz = Math.max(.6, .018 * q[2]);
       c.fillStyle = rr3() < .5 ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.09)'; c.fillRect(q[0], q[1], sz, sz * .55);
     }
+    if (th.street){ let sd2 = 9; const r4 = () => (sd2 = (sd2 * 16807) % 2147483647) / 2147483647; c.strokeStyle = 'rgba(20,20,24,.45)'; c.lineWidth = 1.2;
+      for (let k = 0; k < 14; k++){ let x = -HW - 1 + r4() * (HW * 2 + 2), y = -2 + r4() * (L + 4); c.beginPath(); let q = proj(x, y, 0); c.moveTo(q[0], q[1]); for (let j = 0; j < 4; j++){ x += (r4() - .5) * .8; y += (r4() - .5) * .8; q = proj(x, y, 0); c.lineTo(q[0], q[1]); } c.stroke(); } }
     c.globalCompositeOperation = 'lighter';
     for (const [lx, ly] of [[-2.3, NET - 3.7], [2.3, NET - 3.7], [-2.3, NET + 3.7], [2.3, NET + 3.7]]){
       const q = proj(lx, ly, 0), rx = 3.6 * q[2], ry = rx * .4, pg = c.createRadialGradient(0, 0, 0, 0, 0, rx);

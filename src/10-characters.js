@@ -17,6 +17,12 @@ function shade(hex, k){
 }
 function drawShoe(c, it, x, y){
   const c1 = it.c1 || '#f5f7fb', c2 = it.c2 || '#9aa4b4', st = it.style || 'sneaker';
+  if (st === 'slipper'){   // tsinelas: a flat sole and a V strap, toes showing
+    c.fillStyle = c2; rr(c, x - .095, y - .012, .19, .042, .02); c.fill();
+    c.fillStyle = '#d8a274'; ell(c, x + .02, y - .03, .07, .03);
+    c.strokeStyle = c1; c.lineWidth = .022; c.beginPath(); c.moveTo(x - .06, y - .01); c.lineTo(x + .05, y - .05); c.lineTo(x + .06, y - .01); c.stroke();
+    return;
+  }
   const h = st === 'hightop' ? .1 : .07, w = st === 'runner' ? .1 : .092;
   c.fillStyle = c1; rr(c, x - w, y - h, w * 2, h + .03, .045); c.fill();
   if (st === 'hightop'){ c.fillStyle = shade(c1, -.08); rr(c, x - .06, y - h - .06, .12, .08, .03); c.fill(); }
@@ -36,6 +42,9 @@ function drawPaddle(c, it, hx, hy, ang){
     if (it.deco === 'stripe'){ c.globalAlpha = .9; c.beginPath(); c.moveTo(.18, .12); c.lineTo(.26, .12); c.lineTo(.36, -.12); c.lineTo(.28, -.12); c.closePath(); c.fill(); }
     else if (it.deco === 'dots'){ c.globalAlpha = .85; for (let ix = 0; ix < 4; ix++) for (let iy = 0; iy < 3; iy++) ell(c, .16 + ix * .065, -.075 + iy * .075, .016, .016); }
     else if (it.deco === 'split'){ c.globalAlpha = .9; c.fillRect(.26, -.12, .16, .24); }
+    else if (it.deco === 'tape'){      // repaired with tape, scuffed from the street
+      c.globalAlpha = .9; c.fillStyle = c2; c.save(); c.translate(.26, 0); c.rotate(.5); c.fillRect(-.16, -.02, .32, .04); c.rotate(-1.1); c.fillRect(-.16, -.018, .32, .036); c.restore();
+      c.fillStyle = 'rgba(40,30,20,.35)'; ell(c, .19, .06, .02, .01); ell(c, .33, -.07, .025, .012); }
     else if (it.deco === 'cup'){       // trophy
       c.globalAlpha = 1; c.fillStyle = c2; c.beginPath(); c.moveTo(.22, -.07); c.lineTo(.3, -.07); c.quadraticCurveTo(.3, .02, .26, .03); c.quadraticCurveTo(.22, .02, .22, -.07); c.fill();
       c.fillRect(.252, .03, .016, .035); c.fillRect(.235, .062, .05, .014);
@@ -108,6 +117,7 @@ function dancePose(id, t){
   if (st === 'weng'){ const b = t * 118 / 60; return { x:Math.sin(b * Math.PI * .5) * .32, lean:Math.cos(b * Math.PI * .5) * .1, jump:Math.abs(Math.sin(b * Math.PI)) * .07, crouch:.2, fa:1.7 + Math.sin(b * TAU) * .55, a:1.7 - Math.sin(b * TAU) * .55, legs:Math.sin(t * 14) }; }
   if (st === 'tinikling'){ const b = t * 150 / 60 / 1.5, ph = b % 1, side = Math.floor(b) % 2 ? 1 : -1; return { x:side * .22 * Math.min(1, ph * 3), lean:side * .05, jump:Math.sin(Math.min(1, ph * 1.6) * Math.PI) * .28, crouch:0, fa:.55, a:.55, legs:ph < .5 ? .9 : -.9 }; }
   if (st === 'robot'){ const k = Math.floor(t * 110 / 60 * 2), P = [[1.6, .2], [.2, 1.6], [1.6, 1.6], [2.6, .4], [.4, 2.6]][k % 5]; return { x:0, lean:0, jump:0, crouch:k % 2 ? .3 : 0, fa:P[0], a:P[1], legs:k % 2 ? .4 : -.4 }; }
+  if (st === 'sinulog'){ const b = t * 116 / 60, ph = b % 3, fwd = ph < 2 ? ph * .12 : (3 - ph) * .24; return { x:Math.sin(b * Math.PI / 3) * .1, lean:Math.sin(b * Math.PI) * .08, jump:Math.abs(Math.sin(b * Math.PI)) * .08, crouch:.25 + fwd * .5, fa:2.6 + Math.sin(b * Math.PI) * .25, a:2.6 - Math.sin(b * Math.PI) * .25, legs:Math.sin(b * Math.PI) * .9 }; }
   if (st === 'trophy'){ const b = t * 120 / 60; return { x:0, lean:Math.sin(b * Math.PI) * .05, jump:Math.abs(Math.sin(b * Math.PI)) * .12, crouch:.15, fa:2.95, a:2.95, legs:0, trophy:true }; }
   if (st === 'dab'){ const k = Math.floor(t * 140 / 60 / 2) % 2; return { x:0, lean:k ? .22 : -.22, jump:0, crouch:.2, fa:k ? 2.5 : 1.0, a:k ? 1.0 : 2.5, legs:0 }; }
   return { x:0, lean:0, jump:Math.abs(Math.sin(t * 7)) * .2, crouch:0, fa:2.75 + Math.sin(t * 9 + 1) * .15, a:2.85 + Math.sin(t * 9) * .15 };
@@ -237,6 +247,12 @@ function drawCharacter(c, x, y, s, look, facing, swing, run, moving, t, tag, fx)
   if (dz === 'sash'){ c.lineCap = 'butt'; c.strokeStyle = t3; c.lineWidth = .095; seg(c, -B.sh - .04, -1.48, B.sh + .04, -1.0); c.strokeStyle = t2; c.lineWidth = .06; seg(c, -B.sh - .04, -1.48, B.sh + .04, -1.0); c.lineCap = 'round'; }
   if (dz === 'halves'){ c.fillStyle = t2; c.fillRect(-B.sh - .03, -1.23, B.sh * 2 + .06, .32); if (top.c3){ c.fillStyle = top.c3; ell(c, 0, -1.31, .042, .042); for (let k = 0; k < 8; k++){ const a2 = k * TAU / 8; seg(c, Math.cos(a2) * .05, -1.31 + Math.sin(a2) * .05, Math.cos(a2) * .066, -1.31 + Math.sin(a2) * .066); } } }
   if (dz === 'sides'){ c.fillStyle = t2; c.fillRect(-B.sh - .02, -1.44, .075, .46); c.fillRect(B.sh - .055, -1.44, .075, .46); if (top.c3){ c.fillStyle = top.c3; c.fillRect(-B.sh, -1.31, B.sh * 2, .028); } }
+  if (dz === 'worn'){    // faded, patched and a bit torn, but clean and proud
+    c.fillStyle = 'rgba(120,110,90,.25)'; ell(c, -.08, -1.2, .09, .06); ell(c, .1, -1.33, .06, .05);
+    c.fillStyle = shade(t1, -.18); rr(c, .05, -1.18, .07, .06, .01); c.fill(); c.strokeStyle = 'rgba(60,50,40,.6)'; c.lineWidth = .006; c.setLineDash([.008, .006]); c.strokeRect(.05, -1.18, .07, .06); c.setLineDash([]);
+    c.fillStyle = skin; ell(c, -.12, -1.07, .016, .01); ell(c, .02, -1.38, .012, .008);
+    c.strokeStyle = shade(t1, -.3); c.lineWidth = .008; for (let x2 = -B.sh + .02; x2 < B.sh - .02; x2 += .035) seg(c, x2, -1.0, x2 + .01, -.975);
+  }
   if (dz === 'number' && top.num){ c.save(); c.scale(.01, .01); c.fillStyle = t2; c.font = `${front ? 15 : 24}px "Russo One", Impact, sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(top.num, 0, front ? -122 : -118); c.restore(); }
   c.fillStyle = shade(t1, -.2); c.fillRect(-.3, -1.02, .6, .03);
   c.restore();

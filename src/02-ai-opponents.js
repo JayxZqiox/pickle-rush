@@ -33,6 +33,8 @@ function aiFromDupr(d){
   return { speed:3.0 + 3.4 * Math.pow(t, .9), react:.42 - .38 * Math.pow(t, .8), aimSd, mistake,
     skill:.03 + .57 * t, smash:.3 + .7 * t, tScale:1.32 - .54 * t, judge:.2 + .8 * t, acc, depth:6.2 - 1.4 * t, netRush:d >= 3.4, kitchen:clamp(.15 + 1.6 * t, 0, 1) };
 }
+// the street legend
+AIS.lando = Object.assign(aiFromDupr(7.8), { key:'lando', name:'Kuya Lando', name2:'Kuya Lando', mmr:3866, dupr:7.8, blurb:'Learned the game on the lansangan. Humble, quiet, unstoppable.' });
 for (const a of CAT.LADDER) AIS[a.key] = Object.assign(aiFromDupr(a.dupr), { dupr:a.dupr }, { key:a.key, name:a.name, name2:a.name2, mmr:a.mmr, dupr:a.dupr, blurb:AI_BLURB[a.key] || '' });
 for (const m of itemsOf('partner')) AIS[m.id] = { key:m.id, name:m.name, mmr:0, speed:m.speed, react:m.react, aimSd:m.aimSd, mistake:m.mistake, skill:m.skill, smash:m.smash, tScale:m.tScale, judge:m.judge, depth:5.0, netRush:false, acc:m.acc, kitchen:.85 };
 const LADDER = CAT.LADDER.map(a => a.key);

@@ -418,6 +418,14 @@ async function handleApi(req, res, url) {
     touchUser(u);
     return json(res, 200, { tour: t, res: r, prog, user: publicUser(u) });
   }
+  if (route === '/api/tour/watch') {
+    const t = u.tour;
+    if (!t || t.id !== body.id) return json(res, 400, { error: 'That tournament isn’t running' });
+    const err = CAT.tourDecide(t, String(body.key || ''), body.winner | 0);
+    if (err) return json(res, 400, { error: err });
+    touchUser(u);
+    return json(res, 200, { tour: t, user: publicUser(u) });
+  }
   if (route === '/api/tour/quit') { if (u.tour) { u.tour.alive = false; touchUser(u); } return json(res, 200, { ok: true, user: publicUser(u) }); }
   if (route === '/api/recovery/new') return json(res, 200, { recovery: (() => { const c = newRecovery(u); touchUser(u); return c; })() });
   if (route === '/api/report') {
@@ -789,7 +797,8 @@ function onConnection(ws) {
       case 'leave': leaveRoom(ws); send(ws, { t: 'rooms', rooms: roomList() }); break;
       case 'tourMode': {
         if (!room || room.host !== ws || room.state !== 'lobby' || room.mode !== '2v2') return;
-        room.tourMode = CAT.CUP_BY[m.v] ? m.v : null; broadcastRoom(room);
+        const cup = CAT.CUP_BY[m.v];
+        room.tourMode = cup && !cup.singles && cup.rounds === 3 ? m.v : null; broadcastRoom(room);
         break;
       }
       case 'court': {
@@ -838,7 +847,8 @@ function onConnection(ws) {
           const cup = String(m.tour), hostU = ws.meta.user && db.users[ws.meta.user];
           if (!CAT.CUP_BY[cup]) return send(ws, { t: 'error', msg: 'Unknown tournament.' });
           if (room.slots[1] || room.slots[3]) return send(ws, { t: 'error', msg: 'For a tournament, both players go on Team 1 (1P and 3P). Leave 2P and 4P empty.' });
-          if (cup !== 'cup_club' && !(hostU && CAT.cupUnlocked(hostU, cup))) return send(ws, { t: 'error', msg: 'The host needs to unlock that tournament first.' });
+          if (CAT.CUP_BY[cup].singles) return send(ws, { t: 'error', msg: 'That challenge is solo only.' });
+          if (CAT.CUP_BY[cup].need && !(hostU && CAT.cupUnlocked(hostU, cup))) return send(ws, { t: 'error', msg: 'The host needs to unlock that tournament first.' });
           room.tour = CAT.tourNew(cup, null, '');
         }
         if (!m.tour && room.tour && !room.tour.alive) room.tour = null;
@@ -879,7 +889,7 @@ function onConnection(ws) {
         if (room.tour && room.tour.alive) {
           // everyone on team 1 who has an account gets the tournament rewards
           const t = room.tour, round = t.round, won = winTeam === 1;
-          if (won) { t.round++; if (t.round >= 3) { t.alive = false; t.champion = true; } } else t.alive = false;
+          CAT.tourAdvance(t, won);
           room.slots.forEach((c, i) => {
             if (!c || c.away) return;
             const u = c.meta && c.meta.user && db.users[c.meta.user];

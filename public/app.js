@@ -92,6 +92,7 @@ const MATE_LOOK = {
   mate_br: { gender:'boy',  skin:2, hair:0, hairStyle:'curly',    nation:'BR', head:'head_none',     top:'jer_br', bottom:'shorts_c_navy',  shoes:'shoes_c_yellow',paddle:'pad_lava',    body:'athletic', height:180 },
   mate_es: { gender:'girl', skin:1, hair:1, hairStyle:'long',     nation:'ES', head:'cap_c_red',     top:'jer_es', bottom:'skirt_c_yellow', shoes:'shoes_c_red',   paddle:'pad_petals',  body:'regular',  height:168 },
   mate_in: { gender:'boy',  skin:2, hair:0, hairStyle:'short',    nation:'IN', head:'head_none',     top:'jer_in', bottom:'shorts_c_navy',  shoes:'shoes_c_orange',paddle:'pad_glacier', body:'regular',  height:177 },
+  mate_lando: { gender:'boy', skin:2, hair:0, hairStyle:'curly', nation:'PH', head:'head_none', top:'tee_worn', bottom:'bot_worn', shoes:'shoes_tsinelas', paddle:'pad_tape', wrist:'wrist_none', body:'athletic', height:174, dance:'dance_budots' },
   mate_gb: { gender:'boy',  skin:0, hair:5, hairStyle:'undercut', nation:'GB', head:'head_none',     top:'jer_gb', bottom:'shorts_c_navy',  shoes:'shoes_c_white', paddle:'pad_mecha',   body:'athletic', height:183 },
 };
 
@@ -130,6 +131,8 @@ function aiFromDupr(d){
   return { speed:3.0 + 3.4 * Math.pow(t, .9), react:.42 - .38 * Math.pow(t, .8), aimSd, mistake,
     skill:.03 + .57 * t, smash:.3 + .7 * t, tScale:1.32 - .54 * t, judge:.2 + .8 * t, acc, depth:6.2 - 1.4 * t, netRush:d >= 3.4, kitchen:clamp(.15 + 1.6 * t, 0, 1) };
 }
+// the street legend
+AIS.lando = Object.assign(aiFromDupr(7.8), { key:'lando', name:'Kuya Lando', name2:'Kuya Lando', mmr:3866, dupr:7.8, blurb:'Learned the game on the lansangan. Humble, quiet, unstoppable.' });
 for (const a of CAT.LADDER) AIS[a.key] = Object.assign(aiFromDupr(a.dupr), { dupr:a.dupr }, { key:a.key, name:a.name, name2:a.name2, mmr:a.mmr, dupr:a.dupr, blurb:AI_BLURB[a.key] || '' });
 for (const m of itemsOf('partner')) AIS[m.id] = { key:m.id, name:m.name, mmr:0, speed:m.speed, react:m.react, aimSd:m.aimSd, mistake:m.mistake, skill:m.skill, smash:m.smash, tScale:m.tScale, judge:m.judge, depth:5.0, netRush:false, acc:m.acc, kitchen:.85 };
 const LADDER = CAT.LADDER.map(a => a.key);
@@ -438,6 +441,10 @@ const TRACKS = {
     mHat(t, .04, d); if (s >= 12) mHat(t + sd / 2, .03, d);
     if (s === 0) mTone(t, NOTE(36), sd * 6, 'sine', .25, d, NOTE(31));
   } },
+  sinulog: { bpm:116, play(i, t, sd, d){   // festival drums: big drums, snare rolls, a bell
+    const s = i % 16; if (s === 0 || s === 3 || s === 6 || s === 10) mKick(t, .85, d); if (s % 4 === 2) mTone(t, 150, .16, 'sine', .35, d, 90);
+    if (s >= 12) mSnare(t, .18, d); else if (s % 2 === 1) mSnare(t, .1, d); if (s === 8) mTone(t, 1760, .18, 'triangle', .06, d);
+  } },
   trophy: { bpm:120, play(i, t, sd, d){ TRACKS.pump.play(i, t, sd, d); if (i % 8 === 4) mTone(t, NOTE(84), sd * 2, 'triangle', .05, d); } },
   pump: { bpm:120, play(i, t, sd, d){    // short fanfare + crowd roar
     if (i === 0) mNoise(t, .25, d, 900, .5, 2.6, 'lowpass');
@@ -594,6 +601,8 @@ const THEMES = {
   court_clay:   { night:true, city:['#1a2638', '#ffcf8a'], sky:['#1b2c44', '#34506e', '#5d7a92'], stands:'rgba(58,42,34,.95)', surround:'#b5552f', court:'#c8653a', kitchen:'#2e9e5a', line:'#fff5e6', board:'#3a2016', boardText:'#ffd9a8', light:'255,230,200', crowd:1 },
   court_neon:   { night:true, city:['#12062b', '#ff4fd8', '#5ff4ff'], sky:['#05010f', '#1a0938', '#0b0420'], stands:'rgba(18,7,38,.95)', surround:'#1b0f3a', court:'#2b1a6b', kitchen:'#14b86a', line:'#5ff4ff', board:'#09031a', boardText:'#ff4fd8', light:'255,79,216', crowd:1, neon:true },
   court_park:   { sky:['#6fbaf0', '#a8dcff', '#d9f0ff'], stands:'rgba(40,90,40,.9)', surround:'#4f9a45', court:'#2f74c0', kitchen:'#27a65b', line:'#ffffff', board:'#2d5e2a', boardText:'#ffffff', light:'255,255,255', crowd:.55, trees:true },
+  court_lansangan:{ night:true, street:true, city:['#141018', '#ffd28a'], sky:['#120d1c', '#2a1d33', '#3d2a3a'], stands:'rgba(28,24,30,.95)', surround:'#3a3b40', court:'#56595f', kitchen:'#4f6b55', line:'#f1e3a1', board:'#26221f', boardText:'#ffcc66', light:'255,214,150', crowd:.08 },
+  court_barangay: { covered:true, sky:['#3b4250', '#545d6d', '#6b7383'], stands:'rgba(48,52,60,.95)', surround:'#8f9187', court:'#2f6b4f', kitchen:'#b5483a', line:'#ffffff', board:'#1f3b2c', boardText:'#fcd116', light:'255,250,235', crowd:.3 },
   court_royal:  { night:true, city:['#1d0d33', '#f5c542'], sky:['#1a0d2e', '#3b1d5c', '#24113f'], stands:'rgba(42,19,63,.95)', surround:'#5b1d3a', court:'#2a3d8f', kitchen:'#1f9e5e', line:'#f5c542', board:'#1a0b28', boardText:'#f5c542', light:'245,197,66', crowd:1 },
 };
 const theme = () => THEMES[G.court] || THEMES.court_stadium;
@@ -662,6 +671,40 @@ function buildWorld(){
     }
   }
   if (th.sun){ const sx = VW * .72, sy = boardTop - 170, sg2 = c.createRadialGradient(sx, sy, 0, sx, sy, 140); sg2.addColorStop(0, 'rgba(255,248,214,1)'); sg2.addColorStop(.25, 'rgba(255,214,140,.9)'); sg2.addColorStop(1, 'rgba(255,170,110,0)'); c.fillStyle = sg2; c.fillRect(sx - 140, sy - 140, 280, 280); }
+  if (th.street){
+    // Philippine street court: sari-sari store, lamp posts, a basketball hoop and banderitas overhead
+    const base = minY0 + 24;
+    for (const [sx0, sw0, col] of [[VW * .04, 150, '#5b4636'], [VW * .74, 170, '#4a5568']]){
+      c.fillStyle = col; c.fillRect(sx0, base - 96, sw0, 110);
+      for (let k = 0; k < 7; k++){ c.fillStyle = k % 2 ? '#e53e3e' : '#f6e05e'; c.fillRect(sx0 - 6 + k * (sw0 + 12) / 7, base - 102, (sw0 + 12) / 7, 14); }
+      c.fillStyle = 'rgba(255,214,150,.85)'; c.fillRect(sx0 + 14, base - 72, sw0 - 28, 34);
+      c.fillStyle = '#2d3748'; for (let k = 0; k < 5; k++) c.fillRect(sx0 + 20 + k * (sw0 - 40) / 5, base - 68, 10, 26);
+      c.fillStyle = '#fff'; c.font = '700 11px Barlow, sans-serif'; c.textAlign = 'center'; c.fillText(sx0 < VW / 2 ? 'SARI-SARI STORE' : 'KARINDERYA', sx0 + sw0 / 2, base - 84);
+    }
+    for (const lx of [VW * .22, VW * .5, VW * .78]){ c.fillStyle = '#1a202c'; c.fillRect(lx - 2, base - 150, 4, 160); const lg = c.createRadialGradient(lx, base - 150, 0, lx, base - 150, 60); lg.addColorStop(0, 'rgba(255,220,160,.9)'); lg.addColorStop(1, 'rgba(255,220,160,0)'); c.fillStyle = lg; c.fillRect(lx - 60, base - 210, 120, 120); }
+    const hx = VW * .5, hy = boardTop - 70;          // basketball hoop behind the far baseline
+    c.fillStyle = '#2d3748'; c.fillRect(hx - 3, hy, 6, boardTop - hy + 10);
+    c.fillStyle = 'rgba(240,240,240,.92)'; c.fillRect(hx - 30, hy - 30, 60, 38); c.strokeStyle = '#e53e3e'; c.lineWidth = 2; c.strokeRect(hx - 12, hy - 18, 24, 18);
+    c.strokeStyle = '#f97316'; c.lineWidth = 2.5; c.beginPath(); c.ellipse(hx, hy + 2, 13, 4, 0, 0, TAU); c.stroke();
+    c.strokeStyle = 'rgba(255,255,255,.7)'; c.lineWidth = 1; for (let k = -2; k <= 2; k++){ c.beginPath(); c.moveTo(hx + k * 5, hy + 3); c.lineTo(hx + k * 3, hy + 16); c.stroke(); }
+    // banderitas: strings of little colored flags
+    for (let row = 0; row < 3; row++){
+      const y0 = 24 + row * 34, sag = 26; c.strokeStyle = 'rgba(255,255,255,.35)'; c.lineWidth = 1;
+      c.beginPath(); for (let x2 = -PAD; x2 <= VW + PAD; x2 += 8){ const yy = y0 + Math.sin((x2 / VW) * Math.PI) * sag; x2 === -PAD ? c.moveTo(x2, yy) : c.lineTo(x2, yy); } c.stroke();
+      const cols = ['#e53e3e', '#f6e05e', '#3182ce', '#38a169', '#ed64a6', '#ffffff'];
+      for (let x2 = -PAD + 6, k = row; x2 < VW + PAD; x2 += 22, k++){ const yy = y0 + Math.sin((x2 / VW) * Math.PI) * sag; c.fillStyle = cols[k % cols.length]; c.beginPath(); c.moveTo(x2 - 7, yy); c.lineTo(x2 + 7, yy); c.lineTo(x2, yy + 14); c.closePath(); c.fill(); }
+    }
+  }
+  if (th.covered){
+    // barangay covered court: steel roof trusses and bleachers
+    const base = minY0 + 26;
+    c.fillStyle = 'rgba(30,34,40,.95)'; c.fillRect(-PAD, 0, VW + PAD * 2, 26);
+    c.strokeStyle = 'rgba(160,170,180,.55)'; c.lineWidth = 3;
+    for (let x2 = -PAD; x2 < VW + PAD; x2 += 120){ c.beginPath(); c.moveTo(x2, 26); c.lineTo(x2 + 60, 6); c.lineTo(x2 + 120, 26); c.stroke(); c.beginPath(); c.moveTo(x2 + 60, 6); c.lineTo(x2 + 60, 26); c.stroke(); }
+    c.fillStyle = 'rgba(30,34,40,.9)'; c.fillRect(-PAD, 26, VW + PAD * 2, 6);
+    for (let k = 0; k < 5; k++){ c.fillStyle = k % 2 ? '#6b7280' : '#4b5563'; c.fillRect(-PAD, base - 20 - k * 16, VW + PAD * 2, 12); }
+    c.fillStyle = '#fcd116'; c.font = '800 16px "Russo One", Impact, sans-serif'; c.textAlign = 'center'; c.fillText('BARANGAY COVERED COURT', VW / 2, base - 104);
+  }
   if (th.trees){ c.fillStyle = '#2f6b2c'; for (let i = 0; i < 14; i++){ const tx = (i / 13) * VW, r = 38 + (i * 37 % 26); c.beginPath(); c.arc(tx, boardTop - 115 + (i % 3) * 8, r, 0, TAU); c.fill(); } }
   const sg = c.createLinearGradient(0, boardTop - 150, 0, boardTop);
   sg.addColorStop(0, 'rgba(0,0,0,0)'); sg.addColorStop(1, th.stands);
@@ -693,6 +736,8 @@ function buildWorld(){
       const x = -HW - 1.4 + rr3() * (HW * 2 + 2.8), y = -2.6 + rr3() * (L + 5.2), q = proj(x, y, 0), sz = Math.max(.6, .018 * q[2]);
       c.fillStyle = rr3() < .5 ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.09)'; c.fillRect(q[0], q[1], sz, sz * .55);
     }
+    if (th.street){ let sd2 = 9; const r4 = () => (sd2 = (sd2 * 16807) % 2147483647) / 2147483647; c.strokeStyle = 'rgba(20,20,24,.45)'; c.lineWidth = 1.2;
+      for (let k = 0; k < 14; k++){ let x = -HW - 1 + r4() * (HW * 2 + 2), y = -2 + r4() * (L + 4); c.beginPath(); let q = proj(x, y, 0); c.moveTo(q[0], q[1]); for (let j = 0; j < 4; j++){ x += (r4() - .5) * .8; y += (r4() - .5) * .8; q = proj(x, y, 0); c.lineTo(q[0], q[1]); } c.stroke(); } }
     c.globalCompositeOperation = 'lighter';
     for (const [lx, ly] of [[-2.3, NET - 3.7], [2.3, NET - 3.7], [-2.3, NET + 3.7], [2.3, NET + 3.7]]){
       const q = proj(lx, ly, 0), rx = 3.6 * q[2], ry = rx * .4, pg = c.createRadialGradient(0, 0, 0, 0, 0, rx);
@@ -824,8 +869,13 @@ function buildPlayers(mode, diff){
         : [AI('pro', { team:1, lane:-1 }), AI('mate_ace', { team:1, lane:1, look:MATE_LOOK.mate_nova }), AI('legend', { team:2, lane:1 }), AI('pro', { team:2, lane:-1 })];
     case '1p': return [H('p1', { team:1, look:myLook(), name:n1 }, true), AI(diff, { team:2 })];
     case 'rally': return [H('p1', { team:1, look:myLook(), name:n1 }, true), AI('coach', { team:2 })];
+    case 'watch': {
+      const W2 = TOUR.watch, A = W2.teams[0], B2 = W2.teams[1], nl = n => Object.assign(randomLook(), { nation:n });
+      return [AI(A.ai, { team:1, lane:-1, look:nl(A.nation) }), AI(A.ai, { team:1, lane:1, look:nl(A.nation) }, AIS[A.ai].name2), AI(B2.ai, { team:2, lane:1, look:nl(B2.nation) }), AI(B2.ai, { team:2, lane:-1, look:nl(B2.nation) }, AIS[B2.ai].name2)];
+    }
     case 'tour': {
       const mk = (getAcc() && getAcc().equip.partner) || 'mate_ace', o = (TOUR.cur && TOUR.cur.opp) || { nation:'' }, nl = () => Object.assign(randomLook(), { nation:o.nation });
+      if (TOUR.cur && CAT.CUP_BY[TOUR.cur.cup].singles) return [H('p1', { team:1, look:myLook(), name:n1 }, true), AI(diff, { team:2, look:MATE_LOOK.mate_lando })];
       return [H('p1', { team:1, lane:-1, look:myLook(), name:n1 }, true), AI(mk, { team:1, lane:1, look:MATE_LOOK[mk] }), AI(diff, { team:2, lane:1, look:nl() }), AI(diff, { team:2, lane:-1, look:nl() }, AIS[diff].name2)];
     }
     case '2p': return [H('p1', { team:1, look:myLook(), name:n1 }, false, 0), H('p2', { team:2, look:p2Look(), name:n2 }, false, 1)];
@@ -845,6 +895,7 @@ function startMatch(mode, diff, players){
   G.serveNum = 2; G.serverP = null; G.recvP = null; G.matchT = 0; G.firstSetup = true;
   if (mode === 'demo') G.court = COURT_IDS[(Math.random() * COURT_IDS.length) | 0];
   else if (CUSTOM_MODES.includes(mode)) G.court = resolveCourt(data.opts.customCourt);       // custom games: any court, or a random one
+  else if ((mode === 'tour' || mode === 'watch') && TOUR.cur && CAT.CUP_BY[TOUR.cur.cup].venue) G.court = CAT.CUP_BY[TOUR.cur.cup].venue;   // the tournament's venue
   else if (G.netRole !== 'guest'){ const a = getAcc(); G.court = (a && a.equip.court) || 'court_stadium'; }
   G.bfx = [];   // first-serve exception: the opening team gets one server (0-0-2)
   G.ball = newBall(); G.fx = []; G.rings = []; G.texts = []; G.trail = []; G.confetti = []; G.flashes = []; G.lastWin = 0; G.hitstop = 0; G.dance = null; G.cele = null; G.tutorial = null;
@@ -1528,14 +1579,15 @@ function showResult(w, sc){
   $('#resScore').textContent = sc;
   $('#resStats').textContent = `Match time ${fmtTime(G.matchT || 0)} · Longest rally ${G.stats.longest} · ${G.stats.perfect} perfect shot${G.stats.perfect === 1 ? '' : 's'}`;
   $('#resRank').textContent = '';
-  const versus = G.mode === '2p' || G.mode === '2v2' || G.mode === 'duo-vs';
+  const versus = G.mode === '2p' || G.mode === '2v2' || G.mode === 'duo-vs' || G.mode === 'watch';
   $('#resTitle').textContent = versus ? `${teamName(w)} win${team(w).length > 1 ? '' : 's'}` : (won ? 'Victory' : 'Defeat');
   $('#resSub').textContent = `${teamName(1)} vs ${teamName(2)}`;
   $('#resMmr').classList.add('hidden'); $('#resRew').classList.add('hidden');
   if (won || versus){ confetti(); playSfx('win'); } else playSfx('lose');
   if (RANKED(G.mode)) rankedResult(w === 1, sc);
   else if (G.mode === 'tour') tourMatchDone(w === 1, sc);
-  else if (G.mode !== 'demo' && G.mode !== 'online') reportProgress();
+  else if (G.mode === 'watch') watchDone(w, sc);
+  else if (G.mode !== 'demo' && G.mode !== 'online' && G.mode !== 'watch') reportProgress();
   if (online){
     $('#resMmr').classList.remove('hidden'); $('#resNew').textContent = '…'; $('#resDelta').textContent = '';
     $('#resRank').textContent = 'Updating rankings…';
@@ -1544,7 +1596,7 @@ function showResult(w, sc){
   }
   const host = G.netRole === 'host';
   $('#resAgain').classList.toggle('hidden', online && !host);
-  $('#resAgain').textContent = online ? 'Rematch' : 'Rematch';
+  if (G.mode !== 'tour' && G.mode !== 'watch'){ $('#resAgain').textContent = 'Rematch'; $('#resBracket').classList.add('hidden'); }
   $('#resMenu').textContent = online ? (host ? 'Back to room' : 'Leave room') : 'Menu';
   $('#resWait').classList.toggle('hidden', !(online && !host));
   // the winners celebrate on court with their victory dance before the results appear
@@ -1615,6 +1667,12 @@ function shade(hex, k){
 }
 function drawShoe(c, it, x, y){
   const c1 = it.c1 || '#f5f7fb', c2 = it.c2 || '#9aa4b4', st = it.style || 'sneaker';
+  if (st === 'slipper'){   // tsinelas: a flat sole and a V strap, toes showing
+    c.fillStyle = c2; rr(c, x - .095, y - .012, .19, .042, .02); c.fill();
+    c.fillStyle = '#d8a274'; ell(c, x + .02, y - .03, .07, .03);
+    c.strokeStyle = c1; c.lineWidth = .022; c.beginPath(); c.moveTo(x - .06, y - .01); c.lineTo(x + .05, y - .05); c.lineTo(x + .06, y - .01); c.stroke();
+    return;
+  }
   const h = st === 'hightop' ? .1 : .07, w = st === 'runner' ? .1 : .092;
   c.fillStyle = c1; rr(c, x - w, y - h, w * 2, h + .03, .045); c.fill();
   if (st === 'hightop'){ c.fillStyle = shade(c1, -.08); rr(c, x - .06, y - h - .06, .12, .08, .03); c.fill(); }
@@ -1634,6 +1692,9 @@ function drawPaddle(c, it, hx, hy, ang){
     if (it.deco === 'stripe'){ c.globalAlpha = .9; c.beginPath(); c.moveTo(.18, .12); c.lineTo(.26, .12); c.lineTo(.36, -.12); c.lineTo(.28, -.12); c.closePath(); c.fill(); }
     else if (it.deco === 'dots'){ c.globalAlpha = .85; for (let ix = 0; ix < 4; ix++) for (let iy = 0; iy < 3; iy++) ell(c, .16 + ix * .065, -.075 + iy * .075, .016, .016); }
     else if (it.deco === 'split'){ c.globalAlpha = .9; c.fillRect(.26, -.12, .16, .24); }
+    else if (it.deco === 'tape'){      // repaired with tape, scuffed from the street
+      c.globalAlpha = .9; c.fillStyle = c2; c.save(); c.translate(.26, 0); c.rotate(.5); c.fillRect(-.16, -.02, .32, .04); c.rotate(-1.1); c.fillRect(-.16, -.018, .32, .036); c.restore();
+      c.fillStyle = 'rgba(40,30,20,.35)'; ell(c, .19, .06, .02, .01); ell(c, .33, -.07, .025, .012); }
     else if (it.deco === 'cup'){       // trophy
       c.globalAlpha = 1; c.fillStyle = c2; c.beginPath(); c.moveTo(.22, -.07); c.lineTo(.3, -.07); c.quadraticCurveTo(.3, .02, .26, .03); c.quadraticCurveTo(.22, .02, .22, -.07); c.fill();
       c.fillRect(.252, .03, .016, .035); c.fillRect(.235, .062, .05, .014);
@@ -1706,6 +1767,7 @@ function dancePose(id, t){
   if (st === 'weng'){ const b = t * 118 / 60; return { x:Math.sin(b * Math.PI * .5) * .32, lean:Math.cos(b * Math.PI * .5) * .1, jump:Math.abs(Math.sin(b * Math.PI)) * .07, crouch:.2, fa:1.7 + Math.sin(b * TAU) * .55, a:1.7 - Math.sin(b * TAU) * .55, legs:Math.sin(t * 14) }; }
   if (st === 'tinikling'){ const b = t * 150 / 60 / 1.5, ph = b % 1, side = Math.floor(b) % 2 ? 1 : -1; return { x:side * .22 * Math.min(1, ph * 3), lean:side * .05, jump:Math.sin(Math.min(1, ph * 1.6) * Math.PI) * .28, crouch:0, fa:.55, a:.55, legs:ph < .5 ? .9 : -.9 }; }
   if (st === 'robot'){ const k = Math.floor(t * 110 / 60 * 2), P = [[1.6, .2], [.2, 1.6], [1.6, 1.6], [2.6, .4], [.4, 2.6]][k % 5]; return { x:0, lean:0, jump:0, crouch:k % 2 ? .3 : 0, fa:P[0], a:P[1], legs:k % 2 ? .4 : -.4 }; }
+  if (st === 'sinulog'){ const b = t * 116 / 60, ph = b % 3, fwd = ph < 2 ? ph * .12 : (3 - ph) * .24; return { x:Math.sin(b * Math.PI / 3) * .1, lean:Math.sin(b * Math.PI) * .08, jump:Math.abs(Math.sin(b * Math.PI)) * .08, crouch:.25 + fwd * .5, fa:2.6 + Math.sin(b * Math.PI) * .25, a:2.6 - Math.sin(b * Math.PI) * .25, legs:Math.sin(b * Math.PI) * .9 }; }
   if (st === 'trophy'){ const b = t * 120 / 60; return { x:0, lean:Math.sin(b * Math.PI) * .05, jump:Math.abs(Math.sin(b * Math.PI)) * .12, crouch:.15, fa:2.95, a:2.95, legs:0, trophy:true }; }
   if (st === 'dab'){ const k = Math.floor(t * 140 / 60 / 2) % 2; return { x:0, lean:k ? .22 : -.22, jump:0, crouch:.2, fa:k ? 2.5 : 1.0, a:k ? 1.0 : 2.5, legs:0 }; }
   return { x:0, lean:0, jump:Math.abs(Math.sin(t * 7)) * .2, crouch:0, fa:2.75 + Math.sin(t * 9 + 1) * .15, a:2.85 + Math.sin(t * 9) * .15 };
@@ -1835,6 +1897,12 @@ function drawCharacter(c, x, y, s, look, facing, swing, run, moving, t, tag, fx)
   if (dz === 'sash'){ c.lineCap = 'butt'; c.strokeStyle = t3; c.lineWidth = .095; seg(c, -B.sh - .04, -1.48, B.sh + .04, -1.0); c.strokeStyle = t2; c.lineWidth = .06; seg(c, -B.sh - .04, -1.48, B.sh + .04, -1.0); c.lineCap = 'round'; }
   if (dz === 'halves'){ c.fillStyle = t2; c.fillRect(-B.sh - .03, -1.23, B.sh * 2 + .06, .32); if (top.c3){ c.fillStyle = top.c3; ell(c, 0, -1.31, .042, .042); for (let k = 0; k < 8; k++){ const a2 = k * TAU / 8; seg(c, Math.cos(a2) * .05, -1.31 + Math.sin(a2) * .05, Math.cos(a2) * .066, -1.31 + Math.sin(a2) * .066); } } }
   if (dz === 'sides'){ c.fillStyle = t2; c.fillRect(-B.sh - .02, -1.44, .075, .46); c.fillRect(B.sh - .055, -1.44, .075, .46); if (top.c3){ c.fillStyle = top.c3; c.fillRect(-B.sh, -1.31, B.sh * 2, .028); } }
+  if (dz === 'worn'){    // faded, patched and a bit torn, but clean and proud
+    c.fillStyle = 'rgba(120,110,90,.25)'; ell(c, -.08, -1.2, .09, .06); ell(c, .1, -1.33, .06, .05);
+    c.fillStyle = shade(t1, -.18); rr(c, .05, -1.18, .07, .06, .01); c.fill(); c.strokeStyle = 'rgba(60,50,40,.6)'; c.lineWidth = .006; c.setLineDash([.008, .006]); c.strokeRect(.05, -1.18, .07, .06); c.setLineDash([]);
+    c.fillStyle = skin; ell(c, -.12, -1.07, .016, .01); ell(c, .02, -1.38, .012, .008);
+    c.strokeStyle = shade(t1, -.3); c.lineWidth = .008; for (let x2 = -B.sh + .02; x2 < B.sh - .02; x2 += .035) seg(c, x2, -1.0, x2 + .01, -.975);
+  }
   if (dz === 'number' && top.num){ c.save(); c.scale(.01, .01); c.fillStyle = t2; c.font = `${front ? 15 : 24}px "Russo One", Impact, sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(top.num, 0, front ? -122 : -118); c.restore(); }
   c.fillStyle = shade(t1, -.2); c.fillRect(-.3, -1.02, .6, .03);
   c.restore();
@@ -2306,7 +2374,8 @@ function updateHUD(){
   if (document.body.classList.contains('touchui') !== tOn){ document.body.classList.toggle('touchui', tOn); if (tOn) requestAnimationFrame(() => { const h = $('#hitBtn').offsetHeight; if (h) document.body.style.setProperty('--hitpx', h + 'px'); }); }
   const me = meP();
   if ($('#tutBox').classList.contains('hidden') === !!(G.tutorial && screenNow === 'game')) renderTut();
-  $('#emoteBtn').classList.toggle('hidden', G.mode !== 'online'); if (G.mode !== 'online') $('#emoteBar').classList.add('hidden');
+  $('#emoteBtn').classList.toggle('hidden', G.mode !== 'online');
+  $('#watchSkip').classList.toggle('hidden', !(G.mode === 'watch' && screenNow === 'game')); if (G.mode !== 'online') $('#emoteBar').classList.add('hidden');
   const serveNow = tOn && G.state === 'serve' && me && G.serverP === me && !G.serveDrop;
   const hb = $('#hitBtn'); if (hb.classList.contains('serve') !== !!serveNow){ hb.classList.toggle('serve', !!serveNow); hb.textContent = serveNow ? 'Serve' : 'Hit'; }
   if (!inGame || !G.players.length){ $('#hint').classList.add('hidden'); return; }
@@ -2780,6 +2849,9 @@ function act(name, el){
     case 'tour': show('s-tour'); break;
     case 'tourStart': tourStart(el.dataset.cup); break;
     case 'tourPlay': tourPlay(); break;
+    case 'tourWatch': tourWatch(el.dataset.key); break;
+    case 'watchSkip': watchSkip(); break;
+    case 'shopTeammates': show('s-shop'); shopTab = 'partner'; renderShop(); break;
     case 'tourForfeit': askConfirm('Forfeit this tournament?', 'You’ll be out of the tournament and keep the coins you already won.', 'Forfeit', () => tourQuit().then(renderTour), 'Stay in'); break;
     case 'tourOnline': if (!ACC.server){ showToast('Online needs the server', ''); break; } NW.mode = '2v2'; NW.pendingTour = el.dataset.cup; show('s-online'); netConnect(); { let tries = 0; const go = () => { if (NW.open) netSend({ t:'create', mode:'2v2', name:myName() + '’s tournament' }); else if (tries++ < 30) setTimeout(go, 300); }; go(); } break;
     case 'champClose': $('#champOv').classList.add('hidden'); break;
@@ -2841,7 +2913,8 @@ function act(name, el){
     case 'pause': togglePause(true); break;
     case 'resume': togglePause(false); break;
     case 'restart': case 'rematch':
-      if (G.mode === 'tour'){ show('s-tour'); break; }
+      if (G.mode === 'tour'){ const tt = getAcc() && getAcc().tour; if (tt && tt.alive) tourPlay(); else show('s-tour'); break; }
+      if (G.mode === 'watch'){ TOUR.watch = null; show('s-tour'); break; }
       if (G.mode === 'online'){ if (G.netRole === 'host'){ const tr = NW.room && NW.room.tour; netSend(tr && tr.alive ? { t:'start', tour:tr.cup, force:true } : { t:'start' }); } }
       else playGame(G.mode, G.diff);
       break;
@@ -2851,6 +2924,7 @@ function act(name, el){
         if (screenNow === 'result' && G.netRole === 'host'){ netSend({ t:'lobby' }); break; }
         const leave = () => { NW.leaving = false; clearRejoin(); netSend({ t:'leave' }); leaveOnline(); };
         if (midMatch && isServerAcc()) askConfirm('Leave this match?', 'Leaving an online match before it ends counts as a loss (−15 rating).', 'Leave', leave); else leave();
+      } else if (G.mode === 'watch'){ TOUR.watch = null; show('s-tour');
       } else if (midMatch && G.mode === 'tour'){
         askConfirm('Leave this tournament match?', 'Leaving now knocks your team out of the tournament.', 'Leave', () => { tourQuit(); show('s-tour'); });
       } else if (midMatch && RANKED(G.mode) && CAT.isPractice((getAcc() || {}).mmr || 0, G.diff)){
@@ -3020,6 +3094,7 @@ function thumbOf(cv2, id){
   const it = IT(id), slot = it.slot;
   if (['top', 'bottom', 'hairx', 'head', 'shoes', 'wrist'].includes(slot)) drawPreview(cv2, Object.assign(myLook(), { [slot]:id }), 'front', 0, '');
   else if (slot === 'dance'){ drawStage(cv2, myLook(), .4, { facing:'front', noCone:true, dance:{ id, t:.4 } }); return; }
+  else if (slot === 'partner'){ drawPreview(cv2, MATE_LOOK[id] || myLook(), 'front', 0, ''); return; }
   else if (!fitCanvas(cv2)) return;
   else if (slot === 'ball') previewBall(cv2, id, .4);
   else if (slot === 'court') previewCourt(cv2, id);
@@ -3099,13 +3174,23 @@ function askConfirm(title, text, yes, cb, no, yesStyle){ setTxt('#cfTitle', titl
   CONFIRM.cb = cb; $('#confirmOv').classList.remove('hidden'); }
 /* ---------- tournaments ---------- */
 const TOUR = { cur:null };
-const CUP_ICON = { cup_club:'🥉', cup_open:'🥈', cup_world:'🥇' };
+const CUP_ICON = { cup_club:'🥉', cup_open:'🥈', cup_world:'🥇', cup_brgy:'🥉', cup_visayas:'🥈', cup_phnats:'🥇', cup_street:'🔥' };
+function streetCard(a, c){
+  const owned = a.owned.includes('mate_lando'), beat = (a.trophies || {})[c.id] || 0;
+  return `<div class="cupCard streetCard"><div class="flex gap-4 items-center flex-wrap"><canvas class="landoStage" data-lando="1"></canvas>
+    <div class="min-w-0 flex-1"><span class="lobbyTag" style="color:#fb923c; border-color:rgba(251,146,60,.5)">STREET CHALLENGE · LEGEND</span>
+      <div class="font-display text-2xl mt-1">${flagHTML('PH', 18)} Kuya Lando</div>
+      <p class="text-sm text-[var(--muted)] mt-1">Worn-out shirt, tsinelas and a taped-up paddle. On the lansangan he has never lost. Beat him 1v1 at the Lansangan Street Court and he joins your team. Rating 7.8.</p>
+      <div class="text-sm font-bold mt-2" style="color:#f5c542">${owned ? '✓ Kuya Lando is on your team' : 'Three ways to get him: beat him here · win the Philippine Nationals · buy him for 20,000 coins'}</div>
+      <div class="flex gap-2 flex-wrap mt-3"><button data-act="tourStart" data-cup="cup_street" class="primary rounded-xl px-4 py-2.5 font-bold">${beat ? 'Challenge him again' : 'Challenge Kuya Lando'}</button>${owned ? '' : `<button data-act="shopTeammates" class="tile rounded-xl px-4 py-2.5 font-bold">Buy him · ${COIN_SVG} 20,000</button>`}</div></div></div></div>`;
+}
 const mateName = () => { const a = getAcc(); return IT((a && a.equip.partner) || 'mate_ace').name.split(' · ')[0]; };
 function cupCard(a, c){
+  if (c.boss) return streetCard(a, c);
   const open = CAT.cupUnlocked(a, c.id), won = (a.trophies || {})[c.id] || 0;
   const lock = c.need ? `Reach a ${c.need.toFixed(1)} rating or win the ${CAT.CUP_BY[c.prev].name} to unlock` : '';
   return `<div class="cupCard ${open ? '' : 'locked'}"><div class="cupHead"><div class="cupIcon">${CUP_ICON[c.id]}</div>
-    <div class="min-w-0 flex-1"><div class="font-display text-2xl">${esc(c.name)}</div><div class="text-sm text-[var(--muted)]">Opponents ${c.lo.toFixed(1)}–${c.hi.toFixed(1)} rating · 3 rounds · each win pays ${c.coins.join(' / ')} coins · champions get ${c.keys} 🔑</div></div>
+    <div class="min-w-0 flex-1"><div class="font-display text-2xl">${esc(c.name)} <span class="lobbyTag" style="vertical-align:middle">${esc(c.tier.toUpperCase())}</span></div><div class="text-sm text-[var(--muted)]">${c.venue ? 'At the ' + esc(IT(c.venue).name) + ' · ' : ''}Opponents ${c.lo.toFixed(1)}–${c.hi.toFixed(1)} rating · 3 rounds · each win pays ${c.coins.join(' / ')} coins · champions get ${c.keys} 🔑</div></div>
     ${won ? `<span class="lobbyTag" style="color:#f5c542; border-color:rgba(245,197,66,.5)">🏆 × ${won}</span>` : ''}</div>
     <div class="prizeRow">${c.prizes.map(id => `<div class="prize r-${CAT.rarityOf(IT(id))}"><canvas data-id="${id}"></canvas><span>${esc(IT(id).name)}</span>${a.owned.includes(id) ? '<em>OWNED</em>' : ''}</div>`).join('')}<div class="prizeNote">🏆 Only won here</div></div>
     ${open ? `<div class="flex gap-2 flex-wrap mt-3"><button data-act="tourStart" data-cup="${c.id}" class="primary rounded-xl px-4 py-2.5 font-bold">Enter with ${esc(mateName())}</button><button data-act="tourOnline" data-cup="${c.id}" class="tile rounded-xl px-4 py-2.5 font-bold">Team up with a friend online</button></div>`
@@ -3115,15 +3200,18 @@ function bracketHTML(t, youName, youNation){
   const team = i => i === 0 ? { name:youName, nation:youNation, you:true } : t.teams[i];
   const out = !t.alive && !t.champion;
   const myWins = t.round;                      // rounds you have won
+  const W = k => CAT.tourWinner(t, k);
   const qfShown = myWins >= 1 || out, sfShown = myWins >= 2 || (out && myWins >= 1), fShown = t.champion || (out && myWins >= 2);
-  const qfW = [myWins >= 1 ? 0 : 1, t.qf[1], t.qf[2], t.qf[3]], sfW = [myWins >= 2 ? 0 : t.path[1], t.sf[1]];
+  const qfW = [myWins >= 1 ? 0 : 1, W('q1'), W('q2'), W('q3')], sfW = [myWins >= 2 ? 0 : W('q1'), W('s1')];
+  const seen = k => qfShown || (t.dec && t.dec[k] != null);
   const row = (i, show, w) => { const x = team(i); return `<div class="bTeam ${x.you ? 'you' : ''} ${show ? (w === i ? 'win' : 'lose') : ''}">${flagHTML(x.nation, 11)}<span class="truncate">${esc(x.name)}</span></div>`; };
   const tbd = '<div class="bTeam tbd">To be decided</div>';
-  const m = (a1, b1, show, w) => `<div class="bMatch">${a1 == null ? tbd : row(a1, show, w)}${b1 == null ? tbd : row(b1, show, w)}</div>`;
+  const dec = t.dec || {}, watchBtn = key => CAT.tourWatchable(t, key) ? `<div class="bWatch"><button data-act="tourWatch" data-key="${key}" class="tile rounded-lg px-2.5 py-1 text-xs font-bold">▶ Watch</button></div>` : '';
+  const m = (a1, b1, show, w, key) => `<div class="bMatch">${a1 == null ? tbd : row(a1, show, w)}${b1 == null ? tbd : row(b1, show, w)}${key ? watchBtn(key) : ''}</div>`;
   const champ = t.champion ? 0 : fShown ? t.path[2] : null;
   return `<div class="bracket">
-    <div class="bCol"><h4>QUARTERFINALS</h4>${m(0, 1, qfShown, qfW[0])}${m(2, 3, qfShown, qfW[1])}${m(4, 5, qfShown, qfW[2])}${m(6, 7, qfShown, qfW[3])}</div>
-    <div class="bCol"><h4>SEMIFINALS</h4>${m(qfShown ? qfW[0] : null, qfShown ? qfW[1] : null, sfShown, sfW[0])}${m(qfShown ? qfW[2] : null, qfShown ? qfW[3] : null, sfShown, sfW[1])}</div>
+    <div class="bCol"><h4>QUARTERFINALS</h4>${m(0, 1, qfShown, qfW[0])}${m(2, 3, seen('q1'), qfW[1], 'q1')}${m(4, 5, seen('q2'), qfW[2], 'q2')}${m(6, 7, seen('q3'), qfW[3], 'q3')}</div>
+    <div class="bCol"><h4>SEMIFINALS</h4>${m(qfShown ? qfW[0] : null, seen('q1') ? qfW[1] : null, sfShown, sfW[0])}${m(seen('q2') ? qfW[2] : null, seen('q3') ? qfW[3] : null, sfShown || (t.dec && t.dec.s1 != null), sfW[1], 's1')}</div>
     <div class="bCol"><h4>FINAL</h4>${m(sfShown ? sfW[0] : null, sfShown ? sfW[1] : null, fShown, champ)}</div>
     <div class="bCol"><h4>CHAMPION</h4><div class="bMatch">${champ == null ? '<div class="bTeam tbd">🏆 ?</div>' : `<div class="bTeam ${champ === 0 ? 'you win' : ''}">🏆 ${flagHTML(team(champ).nation, 11)}<span class="truncate">${esc(team(champ).name)}</span></div>`}</div></div>
   </div>`;
@@ -3133,16 +3221,18 @@ function renderTour(){
   if (t && t.alive){
     const c = CAT.CUP_BY[t.cup], o = CAT.tourOpp(t), ai = AIS[o.ai];
     setTxt('#tourTitle', `${CUP_ICON[t.cup]} ${c.name}`);
-    $('#tourBody').innerHTML = `<div class="nextCard"><div class="min-w-0"><span class="lobbyTag">${CAT.ROUND_NAME[t.round].toUpperCase()}</span>
-      <div class="font-display text-2xl mt-1">You &amp; ${esc(mateName())} <span class="text-[var(--muted)]">vs</span> ${flagHTML(o.nation, 18)} ${esc(o.name)}</div>
-      <div class="text-sm text-[var(--muted)]">${esc(ai.name)} &amp; ${esc(ai.name2)} · ${ai.dupr.toFixed(2)} rating · a win pays ${c.coins[t.round]} coins</div></div>
-      <div class="flex gap-2"><button data-act="tourPlay" class="primary rounded-2xl px-6 py-3 font-display text-lg">Play ${CAT.ROUND_NAME[t.round]}</button><button data-act="tourForfeit" class="tile rounded-2xl px-4 py-3 font-bold text-[var(--muted)]">Forfeit</button></div></div>
-      ${bracketHTML(t, 'You & ' + mateName(), myLook().nation)}`;
+    const single = c.rounds === 1;
+    $('#tourBody').innerHTML = `<div class="nextCard"><div class="min-w-0"><span class="lobbyTag">${single ? '1v1 STREET CHALLENGE' : CAT.ROUND_NAME[t.round].toUpperCase()}</span>
+      <div class="font-display text-2xl mt-1">${single ? 'You' : 'You &amp; ' + esc(mateName())} <span class="text-[var(--muted)]">vs</span> ${flagHTML(o.nation, 18)} ${esc(o.name)}</div>
+      <div class="text-sm text-[var(--muted)]">${single ? '' : esc(ai.name) + ' &amp; ' + esc(ai.name2) + ' · '}${ai.dupr.toFixed(2)} rating · ${c.venue ? esc(IT(c.venue).name) + ' · ' : ''}a win pays ${c.coins[t.round]} coins</div></div>
+      <div class="flex gap-2"><button data-act="tourPlay" class="primary rounded-2xl px-6 py-3 font-display text-lg">${single ? 'Play the challenge' : 'Play ' + CAT.ROUND_NAME[t.round]}</button><button data-act="tourForfeit" class="tile rounded-2xl px-4 py-3 font-bold text-[var(--muted)]">Forfeit</button></div></div>
+      ${single ? '' : bracketHTML(t, 'You & ' + mateName(), myLook().nation)}`;
     return;
   }
   setTxt('#tourTitle', 'Pick a tournament');
-  const last = t && !t.alive ? `<div class="nextCard" style="border-color:${t.champion ? 'rgba(245,197,66,.6)' : 'var(--line)'}"><div><span class="lobbyTag">LAST TOURNAMENT</span><div class="font-display text-xl mt-1">${t.champion ? '🏆 Champions of the ' : 'Out in the ' + CAT.ROUND_NAME[t.round] + ' of the '}${esc(CAT.CUP_BY[t.cup].name)}</div></div></div>${bracketHTML(t, 'You & ' + mateName(), myLook().nation)}` : '';
-  $('#tourBody').innerHTML = last + CAT.CUPS.map(c => cupCard(a, c)).join('');
+  const group = (rg, title) => `<div class="tourGroup"><span>${title}</span></div>` + CAT.CUPS.filter(c => c.region === rg).map(c => cupCard(a, c)).join('');
+  const lc = t && CAT.CUP_BY[t.cup], last = t && !t.alive ? `<div class="nextCard" style="border-color:${t.champion ? 'rgba(245,197,66,.6)' : 'var(--line)'}"><div><span class="lobbyTag">LAST TOURNAMENT</span><div class="font-display text-xl mt-1">${t.champion ? (lc.rounds === 1 ? '🔥 You beat ' : '🏆 Champions of the ') : (lc.rounds === 1 ? 'Lost the ' : 'Out in the ' + CAT.ROUND_NAME[t.round] + ' of the ')}${esc(lc.rounds === 1 ? 'Street Challenge' : lc.name)}</div></div></div>${lc.rounds === 1 ? '' : bracketHTML(t, 'You & ' + mateName(), myLook().nation)}` : '';
+  $('#tourBody').innerHTML = last + group('PH', `${flagHTML('PH', 16)} Philippine Tour`) + group('WORLD', '🌍 World Tour');
   requestAnimationFrame(() => $$('#tourBody canvas[data-id]').forEach(cv2 => thumbOf(cv2, cv2.dataset.id)));
 }
 async function tourStart(cup){
@@ -3157,12 +3247,40 @@ function tourPlay(){
   const o = CAT.tourOpp(t); TOUR.cur = { id:t.id, cup:t.cup, round:t.round, opp:o };
   playGame('tour', o.ai);
 }
+// watch one of the other matches: the AI teams really play and the winner moves on
+function tourWatch(key){
+  const a = getAcc(), t = a && a.tour; if (!CAT.tourWatchable(t, key)) return;
+  const parts = CAT.tourParts(t, key);
+  TOUR.watch = { key, parts, teams:parts.map(i => t.teams[i]), id:t.id }; TOUR.cur = { id:t.id, cup:t.cup, round:t.round, opp:null };
+  playGame('watch', null); showToast(`${t.teams[parts[0]].name} vs ${t.teams[parts[1]].name}`, 'Watching at 1.6× speed · press Skip any time');
+}
+async function recordWatch(winner){
+  const a = getAcc(), W2 = TOUR.watch; if (!W2) return null;
+  try {
+    if (isServerAcc()){ const j = await api('api/tour/watch', { id:W2.id, key:W2.key, winner }); ACC.user = j.user; }
+    else { const err = CAT.tourDecide(a.tour, W2.key, winner); if (err) throw new Error(err); save(); }
+    return true;
+  } catch (e){ showToast('Couldn’t record that match', e.message); return null; }
+}
+async function watchDone(w){
+  const W2 = TOUR.watch; if (!W2) return;
+  const winner = w === 1 ? W2.parts[0] : W2.parts[1];
+  await recordWatch(winner);
+  $('#resNew').textContent = '—'; $('#resDelta').textContent = '';
+  $('#resRank').textContent = `${W2.teams[w === 1 ? 0 : 1].name} win and move on in the bracket.`;
+  $('#resAgain').textContent = 'View bracket'; $('#resBracket').classList.add('hidden');
+}
+async function watchSkip(){
+  const a = getAcc(), W2 = TOUR.watch; if (!W2 || !a.tour) return;
+  await recordWatch(CAT.tourWinner(a.tour, W2.key)); TOUR.watch = null; show('s-tour');
+}
 async function tourQuit(){
   try { if (isServerAcc()){ const j = await api('api/tour/quit', {}); ACC.user = j.user; } else { const a = getAcc(); if (a && a.tour) a.tour.alive = false; save(); } } catch (e) {}
 }
 async function tourMatchDone(won, sc){
   const a = getAcc() || ensureLocal(), score = String(sc).replace('–', '-');
   $('#resNew').textContent = '—'; $('#resDelta').textContent = ''; $('#resAgain').textContent = 'Continue';
+  $('#resBracket').classList.add('hidden');
   let res, t;
   try {
     if (isServerAcc()){ const j = await api('api/tour/result', { id:TOUR.cur && TOUR.cur.id, won, score, stats:matchStats() }); ACC.user = j.user; res = j.res; t = j.tour; handleProg(j.prog); }
@@ -3170,7 +3288,12 @@ async function tourMatchDone(won, sc){
   } catch (e){ $('#resRank').textContent = 'This match wasn’t counted: ' + e.message; return; }
   handleProg({ achievements:res.achievements || [] });
   const rn = CAT.ROUND_NAME[res.round], cname = CAT.CUP_BY[t.cup].name;
-  $('#resRank').textContent = res.champion ? `🏆 Champions of the ${cname}!` : won ? `${rn} won! Up next: the ${CAT.ROUND_NAME[res.round + 1]}.` : `Knocked out in the ${rn} of the ${cname}.`;
+  const single = CAT.CUP_BY[t.cup].rounds === 1;
+  $('#resRank').textContent = single ? (won ? '🔥 You beat Kuya Lando on his own court!' : 'Kuya Lando wins this time. Challenge him again!')
+    : res.champion ? `🏆 Champions of the ${cname}!` : won ? `${rn} won! Up next: the ${CAT.ROUND_NAME[res.round + 1]}.` : `Knocked out in the ${rn} of the ${cname}.`;
+  // after a win there's always somewhere to go: the next match, or the bracket
+  $('#resAgain').textContent = t.alive ? `Next match: ${CAT.ROUND_NAME[t.round]}` : (single ? 'Back to tournaments' : 'View bracket');
+  $('#resBracket').classList.toggle('hidden', !t.alive || single);
   showRewards(res);
   if (res.champion) setTimeout(() => showChampion(t.cup, res), 600);
 }
@@ -3666,7 +3789,7 @@ function frame(nowMs){
   pollPads();
   if (G.netRole === 'guest'){ guestInterp(); guestTick(d); }
   else if (G.hitstop > 0){ G.hitstop -= d; tickEffects(0); }
-  else if (!G.paused && !(G.netRole === 'host' && netWaiting())){ accT += d; while (accT >= DT){ update(DT); accT -= DT; } }
+  else if (!G.paused && !(G.netRole === 'host' && netWaiting())){ accT += d * (G.mode === 'watch' ? 1.6 : 1); while (accT >= DT){ update(DT); accT -= DT; } }
   if (G.mode === 'online'){
     const w = G.netRole === 'host' ? netWaiting() : guestWaiting();
     setNetBanner(w);
@@ -3690,6 +3813,7 @@ function frame(nowMs){
     if (screenNow === 'signup' && ACC.user) drawPreview($('#pvSign'), myLook(), 'front', now, '');
     if (screenNow === 'shop' && now - lastShop >= 1 / 20){ lastShop = now; drawShop(now); }
     if (screenNow === 'room') drawLobby(now);
+    if (screenNow === 'tour'){ const lc = document.querySelector('#tourBody canvas[data-lando]'); if (lc) drawStage(lc, MATE_LOOK.mate_lando, now, { ring:'#fb923c', tag:'L' }); }
     if (screenNow === 'gate') drawStage($('#pvGate'), myLook(), now, { tag:(myName() || '?').slice(0, 1).toUpperCase() });
     if (screenNow === 'player' && PROF.p) drawStage($('#pvPlayer'), PROF.p.look, now, { tag:PROF.p.username.slice(0, 1).toUpperCase() });
     if (['menu', 'online', 'room', 'player'].includes(screenNow) && (NW.frT = (NW.frT || 0) + d) > 15){ NW.frT = 0; loadFriends(); loadModList(); }

@@ -45,7 +45,7 @@ function frame(nowMs){
   pollPads();
   if (G.netRole === 'guest'){ guestInterp(); guestTick(d); }
   else if (G.hitstop > 0){ G.hitstop -= d; tickEffects(0); }
-  else if (!G.paused && !(G.netRole === 'host' && netWaiting())){ accT += d; while (accT >= DT){ update(DT); accT -= DT; } }
+  else if (!G.paused && !(G.netRole === 'host' && netWaiting())){ accT += d * (G.mode === 'watch' ? 1.6 : 1); while (accT >= DT){ update(DT); accT -= DT; } }
   if (G.mode === 'online'){
     const w = G.netRole === 'host' ? netWaiting() : guestWaiting();
     setNetBanner(w);
@@ -69,6 +69,7 @@ function frame(nowMs){
     if (screenNow === 'signup' && ACC.user) drawPreview($('#pvSign'), myLook(), 'front', now, '');
     if (screenNow === 'shop' && now - lastShop >= 1 / 20){ lastShop = now; drawShop(now); }
     if (screenNow === 'room') drawLobby(now);
+    if (screenNow === 'tour'){ const lc = document.querySelector('#tourBody canvas[data-lando]'); if (lc) drawStage(lc, MATE_LOOK.mate_lando, now, { ring:'#fb923c', tag:'L' }); }
     if (screenNow === 'gate') drawStage($('#pvGate'), myLook(), now, { tag:(myName() || '?').slice(0, 1).toUpperCase() });
     if (screenNow === 'player' && PROF.p) drawStage($('#pvPlayer'), PROF.p.look, now, { tag:PROF.p.username.slice(0, 1).toUpperCase() });
     if (['menu', 'online', 'room', 'player'].includes(screenNow) && (NW.frT = (NW.frT || 0) + d) > 15){ NW.frT = 0; loadFriends(); loadModList(); }

@@ -1,12 +1,22 @@
 /* ---------- tournaments ---------- */
 const TOUR = { cur:null };
-const CUP_ICON = { cup_club:'🥉', cup_open:'🥈', cup_world:'🥇' };
+const CUP_ICON = { cup_club:'🥉', cup_open:'🥈', cup_world:'🥇', cup_brgy:'🥉', cup_visayas:'🥈', cup_phnats:'🥇', cup_street:'🔥' };
+function streetCard(a, c){
+  const owned = a.owned.includes('mate_lando'), beat = (a.trophies || {})[c.id] || 0;
+  return `<div class="cupCard streetCard"><div class="flex gap-4 items-center flex-wrap"><canvas class="landoStage" data-lando="1"></canvas>
+    <div class="min-w-0 flex-1"><span class="lobbyTag" style="color:#fb923c; border-color:rgba(251,146,60,.5)">STREET CHALLENGE · LEGEND</span>
+      <div class="font-display text-2xl mt-1">${flagHTML('PH', 18)} Kuya Lando</div>
+      <p class="text-sm text-[var(--muted)] mt-1">Worn-out shirt, tsinelas and a taped-up paddle. On the lansangan he has never lost. Beat him 1v1 at the Lansangan Street Court and he joins your team. Rating 7.8.</p>
+      <div class="text-sm font-bold mt-2" style="color:#f5c542">${owned ? '✓ Kuya Lando is on your team' : 'Three ways to get him: beat him here · win the Philippine Nationals · buy him for 20,000 coins'}</div>
+      <div class="flex gap-2 flex-wrap mt-3"><button data-act="tourStart" data-cup="cup_street" class="primary rounded-xl px-4 py-2.5 font-bold">${beat ? 'Challenge him again' : 'Challenge Kuya Lando'}</button>${owned ? '' : `<button data-act="shopTeammates" class="tile rounded-xl px-4 py-2.5 font-bold">Buy him · ${COIN_SVG} 20,000</button>`}</div></div></div></div>`;
+}
 const mateName = () => { const a = getAcc(); return IT((a && a.equip.partner) || 'mate_ace').name.split(' · ')[0]; };
 function cupCard(a, c){
+  if (c.boss) return streetCard(a, c);
   const open = CAT.cupUnlocked(a, c.id), won = (a.trophies || {})[c.id] || 0;
   const lock = c.need ? `Reach a ${c.need.toFixed(1)} rating or win the ${CAT.CUP_BY[c.prev].name} to unlock` : '';
   return `<div class="cupCard ${open ? '' : 'locked'}"><div class="cupHead"><div class="cupIcon">${CUP_ICON[c.id]}</div>
-    <div class="min-w-0 flex-1"><div class="font-display text-2xl">${esc(c.name)}</div><div class="text-sm text-[var(--muted)]">Opponents ${c.lo.toFixed(1)}–${c.hi.toFixed(1)} rating · 3 rounds · each win pays ${c.coins.join(' / ')} coins · champions get ${c.keys} 🔑</div></div>
+    <div class="min-w-0 flex-1"><div class="font-display text-2xl">${esc(c.name)} <span class="lobbyTag" style="vertical-align:middle">${esc(c.tier.toUpperCase())}</span></div><div class="text-sm text-[var(--muted)]">${c.venue ? 'At the ' + esc(IT(c.venue).name) + ' · ' : ''}Opponents ${c.lo.toFixed(1)}–${c.hi.toFixed(1)} rating · 3 rounds · each win pays ${c.coins.join(' / ')} coins · champions get ${c.keys} 🔑</div></div>
     ${won ? `<span class="lobbyTag" style="color:#f5c542; border-color:rgba(245,197,66,.5)">🏆 × ${won}</span>` : ''}</div>
     <div class="prizeRow">${c.prizes.map(id => `<div class="prize r-${CAT.rarityOf(IT(id))}"><canvas data-id="${id}"></canvas><span>${esc(IT(id).name)}</span>${a.owned.includes(id) ? '<em>OWNED</em>' : ''}</div>`).join('')}<div class="prizeNote">🏆 Only won here</div></div>
     ${open ? `<div class="flex gap-2 flex-wrap mt-3"><button data-act="tourStart" data-cup="${c.id}" class="primary rounded-xl px-4 py-2.5 font-bold">Enter with ${esc(mateName())}</button><button data-act="tourOnline" data-cup="${c.id}" class="tile rounded-xl px-4 py-2.5 font-bold">Team up with a friend online</button></div>`
@@ -16,15 +26,18 @@ function bracketHTML(t, youName, youNation){
   const team = i => i === 0 ? { name:youName, nation:youNation, you:true } : t.teams[i];
   const out = !t.alive && !t.champion;
   const myWins = t.round;                      // rounds you have won
+  const W = k => CAT.tourWinner(t, k);
   const qfShown = myWins >= 1 || out, sfShown = myWins >= 2 || (out && myWins >= 1), fShown = t.champion || (out && myWins >= 2);
-  const qfW = [myWins >= 1 ? 0 : 1, t.qf[1], t.qf[2], t.qf[3]], sfW = [myWins >= 2 ? 0 : t.path[1], t.sf[1]];
+  const qfW = [myWins >= 1 ? 0 : 1, W('q1'), W('q2'), W('q3')], sfW = [myWins >= 2 ? 0 : W('q1'), W('s1')];
+  const seen = k => qfShown || (t.dec && t.dec[k] != null);
   const row = (i, show, w) => { const x = team(i); return `<div class="bTeam ${x.you ? 'you' : ''} ${show ? (w === i ? 'win' : 'lose') : ''}">${flagHTML(x.nation, 11)}<span class="truncate">${esc(x.name)}</span></div>`; };
   const tbd = '<div class="bTeam tbd">To be decided</div>';
-  const m = (a1, b1, show, w) => `<div class="bMatch">${a1 == null ? tbd : row(a1, show, w)}${b1 == null ? tbd : row(b1, show, w)}</div>`;
+  const dec = t.dec || {}, watchBtn = key => CAT.tourWatchable(t, key) ? `<div class="bWatch"><button data-act="tourWatch" data-key="${key}" class="tile rounded-lg px-2.5 py-1 text-xs font-bold">▶ Watch</button></div>` : '';
+  const m = (a1, b1, show, w, key) => `<div class="bMatch">${a1 == null ? tbd : row(a1, show, w)}${b1 == null ? tbd : row(b1, show, w)}${key ? watchBtn(key) : ''}</div>`;
   const champ = t.champion ? 0 : fShown ? t.path[2] : null;
   return `<div class="bracket">
-    <div class="bCol"><h4>QUARTERFINALS</h4>${m(0, 1, qfShown, qfW[0])}${m(2, 3, qfShown, qfW[1])}${m(4, 5, qfShown, qfW[2])}${m(6, 7, qfShown, qfW[3])}</div>
-    <div class="bCol"><h4>SEMIFINALS</h4>${m(qfShown ? qfW[0] : null, qfShown ? qfW[1] : null, sfShown, sfW[0])}${m(qfShown ? qfW[2] : null, qfShown ? qfW[3] : null, sfShown, sfW[1])}</div>
+    <div class="bCol"><h4>QUARTERFINALS</h4>${m(0, 1, qfShown, qfW[0])}${m(2, 3, seen('q1'), qfW[1], 'q1')}${m(4, 5, seen('q2'), qfW[2], 'q2')}${m(6, 7, seen('q3'), qfW[3], 'q3')}</div>
+    <div class="bCol"><h4>SEMIFINALS</h4>${m(qfShown ? qfW[0] : null, seen('q1') ? qfW[1] : null, sfShown, sfW[0])}${m(seen('q2') ? qfW[2] : null, seen('q3') ? qfW[3] : null, sfShown || (t.dec && t.dec.s1 != null), sfW[1], 's1')}</div>
     <div class="bCol"><h4>FINAL</h4>${m(sfShown ? sfW[0] : null, sfShown ? sfW[1] : null, fShown, champ)}</div>
     <div class="bCol"><h4>CHAMPION</h4><div class="bMatch">${champ == null ? '<div class="bTeam tbd">🏆 ?</div>' : `<div class="bTeam ${champ === 0 ? 'you win' : ''}">🏆 ${flagHTML(team(champ).nation, 11)}<span class="truncate">${esc(team(champ).name)}</span></div>`}</div></div>
   </div>`;
@@ -34,16 +47,18 @@ function renderTour(){
   if (t && t.alive){
     const c = CAT.CUP_BY[t.cup], o = CAT.tourOpp(t), ai = AIS[o.ai];
     setTxt('#tourTitle', `${CUP_ICON[t.cup]} ${c.name}`);
-    $('#tourBody').innerHTML = `<div class="nextCard"><div class="min-w-0"><span class="lobbyTag">${CAT.ROUND_NAME[t.round].toUpperCase()}</span>
-      <div class="font-display text-2xl mt-1">You &amp; ${esc(mateName())} <span class="text-[var(--muted)]">vs</span> ${flagHTML(o.nation, 18)} ${esc(o.name)}</div>
-      <div class="text-sm text-[var(--muted)]">${esc(ai.name)} &amp; ${esc(ai.name2)} · ${ai.dupr.toFixed(2)} rating · a win pays ${c.coins[t.round]} coins</div></div>
-      <div class="flex gap-2"><button data-act="tourPlay" class="primary rounded-2xl px-6 py-3 font-display text-lg">Play ${CAT.ROUND_NAME[t.round]}</button><button data-act="tourForfeit" class="tile rounded-2xl px-4 py-3 font-bold text-[var(--muted)]">Forfeit</button></div></div>
-      ${bracketHTML(t, 'You & ' + mateName(), myLook().nation)}`;
+    const single = c.rounds === 1;
+    $('#tourBody').innerHTML = `<div class="nextCard"><div class="min-w-0"><span class="lobbyTag">${single ? '1v1 STREET CHALLENGE' : CAT.ROUND_NAME[t.round].toUpperCase()}</span>
+      <div class="font-display text-2xl mt-1">${single ? 'You' : 'You &amp; ' + esc(mateName())} <span class="text-[var(--muted)]">vs</span> ${flagHTML(o.nation, 18)} ${esc(o.name)}</div>
+      <div class="text-sm text-[var(--muted)]">${single ? '' : esc(ai.name) + ' &amp; ' + esc(ai.name2) + ' · '}${ai.dupr.toFixed(2)} rating · ${c.venue ? esc(IT(c.venue).name) + ' · ' : ''}a win pays ${c.coins[t.round]} coins</div></div>
+      <div class="flex gap-2"><button data-act="tourPlay" class="primary rounded-2xl px-6 py-3 font-display text-lg">${single ? 'Play the challenge' : 'Play ' + CAT.ROUND_NAME[t.round]}</button><button data-act="tourForfeit" class="tile rounded-2xl px-4 py-3 font-bold text-[var(--muted)]">Forfeit</button></div></div>
+      ${single ? '' : bracketHTML(t, 'You & ' + mateName(), myLook().nation)}`;
     return;
   }
   setTxt('#tourTitle', 'Pick a tournament');
-  const last = t && !t.alive ? `<div class="nextCard" style="border-color:${t.champion ? 'rgba(245,197,66,.6)' : 'var(--line)'}"><div><span class="lobbyTag">LAST TOURNAMENT</span><div class="font-display text-xl mt-1">${t.champion ? '🏆 Champions of the ' : 'Out in the ' + CAT.ROUND_NAME[t.round] + ' of the '}${esc(CAT.CUP_BY[t.cup].name)}</div></div></div>${bracketHTML(t, 'You & ' + mateName(), myLook().nation)}` : '';
-  $('#tourBody').innerHTML = last + CAT.CUPS.map(c => cupCard(a, c)).join('');
+  const group = (rg, title) => `<div class="tourGroup"><span>${title}</span></div>` + CAT.CUPS.filter(c => c.region === rg).map(c => cupCard(a, c)).join('');
+  const lc = t && CAT.CUP_BY[t.cup], last = t && !t.alive ? `<div class="nextCard" style="border-color:${t.champion ? 'rgba(245,197,66,.6)' : 'var(--line)'}"><div><span class="lobbyTag">LAST TOURNAMENT</span><div class="font-display text-xl mt-1">${t.champion ? (lc.rounds === 1 ? '🔥 You beat ' : '🏆 Champions of the ') : (lc.rounds === 1 ? 'Lost the ' : 'Out in the ' + CAT.ROUND_NAME[t.round] + ' of the ')}${esc(lc.rounds === 1 ? 'Street Challenge' : lc.name)}</div></div></div>${lc.rounds === 1 ? '' : bracketHTML(t, 'You & ' + mateName(), myLook().nation)}` : '';
+  $('#tourBody').innerHTML = last + group('PH', `${flagHTML('PH', 16)} Philippine Tour`) + group('WORLD', '🌍 World Tour');
   requestAnimationFrame(() => $$('#tourBody canvas[data-id]').forEach(cv2 => thumbOf(cv2, cv2.dataset.id)));
 }
 async function tourStart(cup){
@@ -58,12 +73,40 @@ function tourPlay(){
   const o = CAT.tourOpp(t); TOUR.cur = { id:t.id, cup:t.cup, round:t.round, opp:o };
   playGame('tour', o.ai);
 }
+// watch one of the other matches: the AI teams really play and the winner moves on
+function tourWatch(key){
+  const a = getAcc(), t = a && a.tour; if (!CAT.tourWatchable(t, key)) return;
+  const parts = CAT.tourParts(t, key);
+  TOUR.watch = { key, parts, teams:parts.map(i => t.teams[i]), id:t.id }; TOUR.cur = { id:t.id, cup:t.cup, round:t.round, opp:null };
+  playGame('watch', null); showToast(`${t.teams[parts[0]].name} vs ${t.teams[parts[1]].name}`, 'Watching at 1.6× speed · press Skip any time');
+}
+async function recordWatch(winner){
+  const a = getAcc(), W2 = TOUR.watch; if (!W2) return null;
+  try {
+    if (isServerAcc()){ const j = await api('api/tour/watch', { id:W2.id, key:W2.key, winner }); ACC.user = j.user; }
+    else { const err = CAT.tourDecide(a.tour, W2.key, winner); if (err) throw new Error(err); save(); }
+    return true;
+  } catch (e){ showToast('Couldn’t record that match', e.message); return null; }
+}
+async function watchDone(w){
+  const W2 = TOUR.watch; if (!W2) return;
+  const winner = w === 1 ? W2.parts[0] : W2.parts[1];
+  await recordWatch(winner);
+  $('#resNew').textContent = '—'; $('#resDelta').textContent = '';
+  $('#resRank').textContent = `${W2.teams[w === 1 ? 0 : 1].name} win and move on in the bracket.`;
+  $('#resAgain').textContent = 'View bracket'; $('#resBracket').classList.add('hidden');
+}
+async function watchSkip(){
+  const a = getAcc(), W2 = TOUR.watch; if (!W2 || !a.tour) return;
+  await recordWatch(CAT.tourWinner(a.tour, W2.key)); TOUR.watch = null; show('s-tour');
+}
 async function tourQuit(){
   try { if (isServerAcc()){ const j = await api('api/tour/quit', {}); ACC.user = j.user; } else { const a = getAcc(); if (a && a.tour) a.tour.alive = false; save(); } } catch (e) {}
 }
 async function tourMatchDone(won, sc){
   const a = getAcc() || ensureLocal(), score = String(sc).replace('–', '-');
   $('#resNew').textContent = '—'; $('#resDelta').textContent = ''; $('#resAgain').textContent = 'Continue';
+  $('#resBracket').classList.add('hidden');
   let res, t;
   try {
     if (isServerAcc()){ const j = await api('api/tour/result', { id:TOUR.cur && TOUR.cur.id, won, score, stats:matchStats() }); ACC.user = j.user; res = j.res; t = j.tour; handleProg(j.prog); }
@@ -71,7 +114,12 @@ async function tourMatchDone(won, sc){
   } catch (e){ $('#resRank').textContent = 'This match wasn’t counted: ' + e.message; return; }
   handleProg({ achievements:res.achievements || [] });
   const rn = CAT.ROUND_NAME[res.round], cname = CAT.CUP_BY[t.cup].name;
-  $('#resRank').textContent = res.champion ? `🏆 Champions of the ${cname}!` : won ? `${rn} won! Up next: the ${CAT.ROUND_NAME[res.round + 1]}.` : `Knocked out in the ${rn} of the ${cname}.`;
+  const single = CAT.CUP_BY[t.cup].rounds === 1;
+  $('#resRank').textContent = single ? (won ? '🔥 You beat Kuya Lando on his own court!' : 'Kuya Lando wins this time. Challenge him again!')
+    : res.champion ? `🏆 Champions of the ${cname}!` : won ? `${rn} won! Up next: the ${CAT.ROUND_NAME[res.round + 1]}.` : `Knocked out in the ${rn} of the ${cname}.`;
+  // after a win there's always somewhere to go: the next match, or the bracket
+  $('#resAgain').textContent = t.alive ? `Next match: ${CAT.ROUND_NAME[t.round]}` : (single ? 'Back to tournaments' : 'View bracket');
+  $('#resBracket').classList.toggle('hidden', !t.alive || single);
   showRewards(res);
   if (res.champion) setTimeout(() => showChampion(t.cup, res), 600);
 }

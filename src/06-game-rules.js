@@ -76,8 +76,13 @@ function buildPlayers(mode, diff){
         : [AI('pro', { team:1, lane:-1 }), AI('mate_ace', { team:1, lane:1, look:MATE_LOOK.mate_nova }), AI('legend', { team:2, lane:1 }), AI('pro', { team:2, lane:-1 })];
     case '1p': return [H('p1', { team:1, look:myLook(), name:n1 }, true), AI(diff, { team:2 })];
     case 'rally': return [H('p1', { team:1, look:myLook(), name:n1 }, true), AI('coach', { team:2 })];
+    case 'watch': {
+      const W2 = TOUR.watch, A = W2.teams[0], B2 = W2.teams[1], nl = n => Object.assign(randomLook(), { nation:n });
+      return [AI(A.ai, { team:1, lane:-1, look:nl(A.nation) }), AI(A.ai, { team:1, lane:1, look:nl(A.nation) }, AIS[A.ai].name2), AI(B2.ai, { team:2, lane:1, look:nl(B2.nation) }), AI(B2.ai, { team:2, lane:-1, look:nl(B2.nation) }, AIS[B2.ai].name2)];
+    }
     case 'tour': {
       const mk = (getAcc() && getAcc().equip.partner) || 'mate_ace', o = (TOUR.cur && TOUR.cur.opp) || { nation:'' }, nl = () => Object.assign(randomLook(), { nation:o.nation });
+      if (TOUR.cur && CAT.CUP_BY[TOUR.cur.cup].singles) return [H('p1', { team:1, look:myLook(), name:n1 }, true), AI(diff, { team:2, look:MATE_LOOK.mate_lando })];
       return [H('p1', { team:1, lane:-1, look:myLook(), name:n1 }, true), AI(mk, { team:1, lane:1, look:MATE_LOOK[mk] }), AI(diff, { team:2, lane:1, look:nl() }), AI(diff, { team:2, lane:-1, look:nl() }, AIS[diff].name2)];
     }
     case '2p': return [H('p1', { team:1, look:myLook(), name:n1 }, false, 0), H('p2', { team:2, look:p2Look(), name:n2 }, false, 1)];
@@ -97,6 +102,7 @@ function startMatch(mode, diff, players){
   G.serveNum = 2; G.serverP = null; G.recvP = null; G.matchT = 0; G.firstSetup = true;
   if (mode === 'demo') G.court = COURT_IDS[(Math.random() * COURT_IDS.length) | 0];
   else if (CUSTOM_MODES.includes(mode)) G.court = resolveCourt(data.opts.customCourt);       // custom games: any court, or a random one
+  else if ((mode === 'tour' || mode === 'watch') && TOUR.cur && CAT.CUP_BY[TOUR.cur.cup].venue) G.court = CAT.CUP_BY[TOUR.cur.cup].venue;   // the tournament's venue
   else if (G.netRole !== 'guest'){ const a = getAcc(); G.court = (a && a.equip.court) || 'court_stadium'; }
   G.bfx = [];   // first-serve exception: the opening team gets one server (0-0-2)
   G.ball = newBall(); G.fx = []; G.rings = []; G.texts = []; G.trail = []; G.confetti = []; G.flashes = []; G.lastWin = 0; G.hitstop = 0; G.dance = null; G.cele = null; G.tutorial = null;

@@ -84,6 +84,9 @@ function act(name, el){
     case 'tour': show('s-tour'); break;
     case 'tourStart': tourStart(el.dataset.cup); break;
     case 'tourPlay': tourPlay(); break;
+    case 'tourWatch': tourWatch(el.dataset.key); break;
+    case 'watchSkip': watchSkip(); break;
+    case 'shopTeammates': show('s-shop'); shopTab = 'partner'; renderShop(); break;
     case 'tourForfeit': askConfirm('Forfeit this tournament?', 'You’ll be out of the tournament and keep the coins you already won.', 'Forfeit', () => tourQuit().then(renderTour), 'Stay in'); break;
     case 'tourOnline': if (!ACC.server){ showToast('Online needs the server', ''); break; } NW.mode = '2v2'; NW.pendingTour = el.dataset.cup; show('s-online'); netConnect(); { let tries = 0; const go = () => { if (NW.open) netSend({ t:'create', mode:'2v2', name:myName() + '’s tournament' }); else if (tries++ < 30) setTimeout(go, 300); }; go(); } break;
     case 'champClose': $('#champOv').classList.add('hidden'); break;
@@ -145,7 +148,8 @@ function act(name, el){
     case 'pause': togglePause(true); break;
     case 'resume': togglePause(false); break;
     case 'restart': case 'rematch':
-      if (G.mode === 'tour'){ show('s-tour'); break; }
+      if (G.mode === 'tour'){ const tt = getAcc() && getAcc().tour; if (tt && tt.alive) tourPlay(); else show('s-tour'); break; }
+      if (G.mode === 'watch'){ TOUR.watch = null; show('s-tour'); break; }
       if (G.mode === 'online'){ if (G.netRole === 'host'){ const tr = NW.room && NW.room.tour; netSend(tr && tr.alive ? { t:'start', tour:tr.cup, force:true } : { t:'start' }); } }
       else playGame(G.mode, G.diff);
       break;
@@ -155,6 +159,7 @@ function act(name, el){
         if (screenNow === 'result' && G.netRole === 'host'){ netSend({ t:'lobby' }); break; }
         const leave = () => { NW.leaving = false; clearRejoin(); netSend({ t:'leave' }); leaveOnline(); };
         if (midMatch && isServerAcc()) askConfirm('Leave this match?', 'Leaving an online match before it ends counts as a loss (−15 rating).', 'Leave', leave); else leave();
+      } else if (G.mode === 'watch'){ TOUR.watch = null; show('s-tour');
       } else if (midMatch && G.mode === 'tour'){
         askConfirm('Leave this tournament match?', 'Leaving now knocks your team out of the tournament.', 'Leave', () => { tourQuit(); show('s-tour'); });
       } else if (midMatch && RANKED(G.mode) && CAT.isPractice((getAcc() || {}).mmr || 0, G.diff)){

@@ -16,8 +16,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=16">
-<link rel="stylesheet" href="css/utilities.css?v=16">
+<link rel="stylesheet" href="css/style.css?v=17">
+<link rel="stylesheet" href="css/utilities.css?v=17">
 </head>
 <body class="overflow-hidden select-none">
 <canvas id="game" aria-label="Pickleball court"></canvas>
@@ -277,6 +277,7 @@
     <button data-act="champClose" class="primary rounded-2xl px-6 py-3 font-display text-lg mt-5">Awesome!</button>
   </div>
 </div>
+<button id="watchSkip" data-act="watchSkip" class="hidden glass rounded-full px-5 py-2.5 font-bold" style="position:fixed; z-index:29; left:50%; transform:translateX(-50%); bottom:calc(env(safe-area-inset-bottom,0px) + 18px)">⏭ Skip to the result</button>
 <div id="tutBox" class="hidden glass tutBox">
   <div class="flex items-center gap-2"><span id="tutStep" class="lobbyTag">STEP 1 OF 5</span><button data-act="tutSkip" class="ml-auto text-xs font-bold text-[var(--muted)] underline underline-offset-4">Skip tutorial</button></div>
   <div id="tutTitle" class="font-display text-xl mt-1">Move around</div><div id="tutText" class="text-sm text-[var(--muted)] mt-1"></div><div id="tutDots" class="tutDots"></div>
@@ -360,7 +361,7 @@
       <select id="rmCourt" class="courtSel"></select><span id="rmCourtTxt" class="lobbyTag"></span></div>
     <div id="rmSlots" class="slotRow"></div>
     <div id="rmTourRow" class="flex items-center justify-center gap-2 mt-2 flex-wrap text-sm font-semibold hidden"><span class="text-[var(--muted)]">Mode</span>
-      <select id="rmTour" class="courtSel"><option value="">Normal match</option><option value="cup_club">🏆 Club Cup (tournament)</option><option value="cup_open">🏆 Pro Open (tournament)</option><option value="cup_world">🏆 World Championship (tournament)</option></select><span id="rmTourTxt" class="lobbyTag hidden"></span></div>
+      <select id="rmTour" class="courtSel"><option value="">Normal match</option><option value="cup_brgy">🇵🇭 Barangay Cup (tournament)</option><option value="cup_visayas">🇵🇭 Visayas Open (tournament)</option><option value="cup_phnats">🇵🇭 Philippine Nationals (tournament)</option><option value="cup_club">🏆 Club Cup (tournament)</option><option value="cup_open">🏆 Pro Open (tournament)</option><option value="cup_world">🏆 World Championship (tournament)</option></select><span id="rmTourTxt" class="lobbyTag hidden"></span></div>
     <p id="rmTourHelp" class="text-xs text-center text-[var(--muted)] mt-1 hidden">Tournament: you two are Team 1 (1P and 3P) and play three rounds against AI teams. Leave 2P and 4P empty.</p>
     <div id="rmFriends" class="flex gap-2 flex-wrap justify-center mt-3"></div>
     <div class="lobbyFoot">
@@ -572,6 +573,7 @@
     <div id="resRew" class="tile rounded-2xl mt-3 p-3 text-left hidden"></div>
     <div id="resBtns" class="mt-5 grid grid-cols-2 gap-2.5">
       <button id="resAgain" data-act="rematch" class="primary rounded-xl py-3 font-display text-lg">Rematch</button>
+      <button id="resBracket" data-act="tour" class="tile rounded-xl py-3 font-bold hidden">View bracket · watch other matches</button>
       <button id="resMenu" data-act="quit" class="tile rounded-xl py-3 font-semibold">Menu</button>
     </div>
     <p id="resWait" class="text-sm font-semibold text-[var(--muted)] mt-3 hidden pulse">Waiting for the host…</p>
@@ -625,12 +627,12 @@
     <button id="hitBtn" data-t="hit" class="tbtn rounded-full font-display primary">Hit</button>
   </div>
 </div>
-<script src="catalog.js?v=16"></script>
+<script src="catalog.js?v=17"></script>
 <script>
 /* Safety net: if catalog.js is missing or older than this page, reload once without the cache,
    then explain what to fix instead of showing a blank screen. Startup errors are shown too. */
 (function(){
-  var NEED = 16;
+  var NEED = 17;
   function box(title, msg){
     var d = document.createElement('div');
     d.style.cssText = 'position:fixed;inset:0;z-index:99;display:grid;place-items:center;padding:20px;background:#070f1f;color:#eef3fb;font:16px/1.5 system-ui,sans-serif';
@@ -657,6 +659,6 @@
   });
 })();
 </script>
-<script src="app.js?v=16"></script>
+<script src="app.js?v=17"></script>
 </body>
 </html>

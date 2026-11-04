@@ -38,6 +38,13 @@ Then log in with that username and password. MMR and DUPR still start at 0 / 2.0
 
 Club Cup, Pro Open and World Championship: 8-team brackets (Quarterfinal → Semifinal → Final) against national AI teams. Play with your AI teammate, or create a 2v2 room online in Tournament mode and team up with a friend (you two are Team 1). Winning a cup gives tournament-only prizes: champion jerseys, the Trophy Lift dance, the Golden laurel, the Champion's Cup paddle and the World Champion crown with its aura. Pro Open unlocks at a 3.5 rating or after winning the Club Cup; World Championship at 5.0 or after winning the Pro Open.
 
+## Philippine Tour and Kuya Lando
+
+- **Barangay Cup** (Beginner), **Visayas Open** (Intermediate) and **Philippine Nationals** (Pro): teams are Philippine cities and provinces. Prizes include the Lansangan Street Court, the Barangay Cup sando, the Visayas Open jersey, Sinulog Steps and the Nationals jersey.
+- **Street Challenge:** a 1v1 against **Kuya Lando** (7.8 rating) at the Lansangan Street Court. Beat him, win the Philippine Nationals, or buy him for 20,000 coins to make him your teammate.
+- After each win: **Next match** goes straight to your next round; **View bracket** lets you **watch the other matches** (they really decide who advances) or skip to the result.
+- New courts: **Lansangan Street Court** and **Barangay Covered Court**. Street gear in the shop: Street legend tee, Faded cargo shorts, Tsinelas, Taped-up paddle.
+
 ## Accounts
 
 - **Change password** and **Delete my account** are on the Account page.
