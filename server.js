@@ -713,7 +713,7 @@ function onlineResultOk(room, winTeam, score) {
 function tourInfo(room) {
   const t = room.tour; if (!t) return null;
   const o = CAT.tourOpp(t);
-  return { cup: t.cup, round: t.round, alive: t.alive, champion: t.champion, opp: o ? { name: o.name, nation: o.nation, ai: o.ai } : null, teams: t.teams.map((x) => x.you ? { you: true } : { name: x.name, nation: x.nation }), path: t.path, qf: t.qf, sf: t.sf };
+  return { cup: t.cup, round: t.round, alive: t.alive, champion: t.champion, opp: o ? { name: o.name, nation: o.nation, ai: o.ai, players: o.players || null } : null, teams: t.teams.map((x) => x.you ? { you: true } : { name: x.name, nation: x.nation }), path: t.path, qf: t.qf, sf: t.sf };
 }
 function rankOnline(room, winTeam, score) {
   // slots 0 and 2 are the near team (team 1), slots 1 and 3 the far team (team 2)

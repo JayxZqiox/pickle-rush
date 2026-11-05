@@ -1,6 +1,6 @@
 // Network-first service worker: always tries the newest version, falls back to cache when offline.
-const CACHE = 'pickle-rush-v23';
-const CORE = ['./', 'index.html', 'catalog.js', 'catalog.js?v=20', 'app.js', 'app.js?v=22', 'css/style.css?v=22', 'css/utilities.css?v=19', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png', 'privacy.html', 'terms.html'];
+const CACHE = 'pickle-rush-v24';
+const CORE = ['./', 'index.html', 'catalog.js', 'catalog.js?v=21', 'app.js', 'app.js?v=23', 'css/style.css?v=23', 'css/utilities.css?v=19', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png', 'privacy.html', 'terms.html'];
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE).then((c) => c.addAll(CORE)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', (e) => {

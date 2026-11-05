@@ -128,6 +128,40 @@
     { id:'hair_flame',     slot:'hairx', name:'Flame hair',       price:700, lvl:1, chest:true, rarity:'epic',      style:'flame',      c1:'#ff4d1a', tip:'#ffd23f', glow:true },
     { id:'hair_galaxy',    slot:'hairx', name:'Galaxy waves',     price:700, lvl:1, chest:true, rarity:'epic',      style:'long',       c1:'#6d28d9', tip:'#f0abfc', glow:true },
     { id:'hair_super',     slot:'hairx', name:'Super spikes',     price:1500,lvl:1, chest:true, rarity:'legendary', style:'superspike', c1:'#ffd23f', tip:'#fff6c2', glow:true },
+    // pro characters: original players inspired by the pro tour (teammates from the Pro and Pinoy chests)
+    { id:'mate_pro_ava', slot:'partner', name:'Ava ‘Triple Crown’ Rivers', nation:'US', price:3000, lvl:1, chest:true, chestTag:'pro', rarity:'legendary', speed:5.6, react:0.08, aimSd:0.2, mistake:0.018, skill:0.48, smash:0.95, tScale:0.87, judge:0.95, acc:0.99 },
+    { id:'mate_pro_blake', slot:'partner', name:'Blake ‘The Professor’ Jensen', nation:'US', price:3000, lvl:1, chest:true, chestTag:'pro', rarity:'legendary', speed:5.4, react:0.075, aimSd:0.18, mistake:0.016, skill:0.46, smash:0.9, tScale:0.88, judge:0.97, acc:0.99 },
+    { id:'mate_pro_brielle', slot:'partner', name:'Brielle ‘Blitz’ Banks', nation:'US', price:2500, lvl:1, chest:true, chestTag:'pro', rarity:'epic', speed:5.6, react:0.09, aimSd:0.24, mistake:0.024, skill:0.44, smash:0.97, tScale:0.85, judge:0.9, acc:0.96 },
+    { id:'mate_pro_felix', slot:'partner', name:'Felix Strand', nation:'NO', price:2200, lvl:1, chest:true, chestTag:'pro', rarity:'epic', speed:5.4, react:0.09, aimSd:0.24, mistake:0.024, skill:0.42, smash:0.92, tScale:0.87, judge:0.91, acc:0.96 },
+    { id:'mate_pro_gael', slot:'partner', name:'Gael Torres', nation:'AR', price:2200, lvl:1, chest:true, chestTag:'pro', rarity:'epic', speed:5.5, react:0.09, aimSd:0.25, mistake:0.025, skill:0.43, smash:0.93, tScale:0.86, judge:0.9, acc:0.95 },
+    { id:'mate_pro_hunter', slot:'partner', name:'Hunter Price', nation:'CA', price:1800, lvl:1, chest:true, chestTag:'pro', rarity:'rare', speed:5.5, react:0.1, aimSd:0.27, mistake:0.028, skill:0.4, smash:0.95, tScale:0.87, judge:0.88, acc:0.94 },
+    { id:'mate_pro_jj', slot:'partner', name:'J.J. Jordan', nation:'US', price:1800, lvl:1, chest:true, chestTag:'pro', rarity:'rare', speed:5.4, react:0.1, aimSd:0.27, mistake:0.028, skill:0.4, smash:0.94, tScale:0.87, judge:0.88, acc:0.94 },
+    { id:'mate_ph_kidlat', slot:'partner', name:'Rafael ‘Kidlat’ Dizon', nation:'PH', price:2800, lvl:1, chest:true, chestTag:'pinoy', rarity:'legendary', speed:5.6, react:0.08, aimSd:0.2, mistake:0.018, skill:0.46, smash:0.94, tScale:0.87, judge:0.95, acc:0.98 },
+    { id:'mate_ph_bagyo', slot:'partner', name:'Luis ‘Bagyo’ Lacson', nation:'PH', price:2600, lvl:1, chest:true, chestTag:'pinoy', rarity:'legendary', speed:5.4, react:0.08, aimSd:0.19, mistake:0.017, skill:0.47, smash:0.92, tScale:0.88, judge:0.96, acc:0.98 },
+    { id:'mate_ph_andrea', slot:'partner', name:'Andrea ‘Sampaguita’ Reyes', nation:'PH', price:2200, lvl:1, chest:true, chestTag:'pinoy', rarity:'epic', speed:5.4, react:0.09, aimSd:0.23, mistake:0.022, skill:0.44, smash:0.9, tScale:0.87, judge:0.92, acc:0.96 },
+    { id:'mate_ph_wena', slot:'partner', name:'Wena ‘Hiyas’ Bautista', nation:'PH', price:2200, lvl:1, chest:true, chestTag:'pinoy', rarity:'epic', speed:5.4, react:0.09, aimSd:0.23, mistake:0.022, skill:0.45, smash:0.9, tScale:0.87, judge:0.92, acc:0.96 },
+    { id:'mate_ph_agila', slot:'partner', name:'Marco ‘Agila’ Pascual', nation:'PH', price:2000, lvl:1, chest:true, chestTag:'pinoy', rarity:'epic', speed:5.5, react:0.09, aimSd:0.24, mistake:0.024, skill:0.42, smash:0.93, tScale:0.87, judge:0.9, acc:0.95 },
+    { id:'mate_ph_kaye', slot:'partner', name:'Kaye Santos', nation:'PH', price:1600, lvl:1, chest:true, chestTag:'pinoy', rarity:'rare', speed:5.2, react:0.1, aimSd:0.27, mistake:0.028, skill:0.4, smash:0.88, tScale:0.88, judge:0.9, acc:0.94 },
+    { id:'mate_ph_rina', slot:'partner', name:'Rina Santos', nation:'PH', price:1600, lvl:1, chest:true, chestTag:'pinoy', rarity:'rare', speed:5.2, react:0.1, aimSd:0.27, mistake:0.028, skill:0.4, smash:0.88, tScale:0.88, judge:0.9, acc:0.94 },
+    // pro chest gear
+    { id:'kit_pro_navy',  slot:'top',    name:'Pro Tour kit · navy',  price:400, lvl:1, chest:true, chestTag:'pro', rarity:'rare',   style:'kit', c1:'#0f172a', c2:'#38bdf8', c3:'#f8fafc', deco:'sides' },
+    { id:'kit_pro_white', slot:'top',    name:'Pro Tour kit · white', price:400, lvl:1, chest:true, chestTag:'pro', rarity:'rare',   style:'kit', c1:'#f8fafc', c2:'#0f172a', c3:'#a6f23d', deco:'sides' },
+    { id:'pad_pro_carbon',slot:'paddle', name:'Pro Carbon 16mm',      price:900, lvl:1, chest:true, chestTag:'pro', rarity:'epic',   c1:'#111827', c2:'#94a3b8', power:2, control:2, spin:1, deco:'stripe' },
+    { id:'visor_pro',     slot:'head',   name:'Pro visor',            price:150, lvl:1, chest:true, chestTag:'pro', rarity:'common', style:'visor', c1:'#f8fafc', c2:'#0f172a' },
+    { id:'wrist_pro',     slot:'wrist',  name:'Pro sweatbands',       price:120, lvl:1, chest:true, chestTag:'pro', rarity:'common', c1:'#0f172a', c2:'#38bdf8' },
+    // pinoy chest gear
+    { id:'ball_kalamansi',slot:'ball',   name:'Kalamansi',            price:100, lvl:1, chest:true, chestTag:'pinoy', rarity:'common', fx:'none', c1:'#9bd43b' },
+    { id:'ball_mango',    slot:'ball',   name:'Mango',                price:100, lvl:1, chest:true, chestTag:'pinoy', rarity:'common', fx:'none', c1:'#fbbf24' },
+    { id:'jer_sampaguita',slot:'top',    name:'Sampaguita jersey',    price:300, lvl:1, chest:true, chestTag:'pinoy', rarity:'rare', style:'jersey', c1:'#ffffff', c2:'#16a34a', c3:'#facc15', deco:'sash' },
+    { id:'pad_banig',     slot:'paddle', name:'Banig weave paddle',   price:350, lvl:1, chest:true, chestTag:'pinoy', rarity:'rare', c1:'#d6b37a', c2:'#a1323a', power:1, control:1, spin:1, deco:'dots' },
+    { id:'jer_jeepney',   slot:'top',    name:'Jeepney jersey',       price:600, lvl:1, chest:true, chestTag:'pinoy', rarity:'epic', style:'jersey', c1:'#dc2626', c2:'#facc15', c3:'#2563eb', deco:'hoops' },
+    { id:'top_barong',    slot:'top',    name:'Barong-style polo',    price:700, lvl:1, chest:true, chestTag:'pinoy', rarity:'epic', style:'polo', c1:'#f5f0e1', c2:'#d9ccaa', deco:'stripes' },
+    { id:'head_salakot',  slot:'head',   name:'Salakot',              price:1200,lvl:1, chest:true, chestTag:'pinoy', rarity:'legendary', style:'salakot', c1:'#c8a165', c2:'#8a6a3a' },
+    // showcase cup prizes
+    { id:'jer_showcase',  slot:'top',    name:'Pro Showcase jersey',  price:800, lvl:1, tour:'cup_pros', rarity:'epic', style:'jersey', c1:'#0f172a', c2:'#f5c542', c3:'#38bdf8', deco:'sash' },
+    { id:'pad_showcase',  slot:'paddle', name:'Showcase paddle',      price:1400,lvl:1, tour:'cup_pros', rarity:'legendary', c1:'#f8fafc', c2:'#f5c542', power:2, control:1, spin:1, deco:'split' },
+    { id:'jer_invitational',slot:'top',  name:'Pinoy Invitational jersey', price:800, lvl:1, tour:'cup_pinoypros', rarity:'epic', style:'jersey', c1:'#0038a8', c2:'#fcd116', c3:'#ce1126', deco:'sides', flag:'PH' },
+    { id:'wrist_pinoypro',slot:'wrist',  name:'Pinoy Pro sweatbands', price:600, lvl:1, tour:'cup_pinoypros', rarity:'rare', c1:'#0038a8', c2:'#fcd116' },
     // jerseys and sandos (sando = tank top)
     { id:'sando_23',      slot:'top', name:'Basketball sando #23', price:250, lvl:1, style:'tank',   c1:'#c8102e', c2:'#ffffff', deco:'number', num:'23' },
     { id:'sando_11',      slot:'top', name:'Basketball sando #11', price:250, lvl:1, style:'tank',   c1:'#552583', c2:'#fdb927', deco:'number', num:'11' },
@@ -250,11 +284,15 @@
   function rarityOf(it) { return it.rarity || (!it.price ? 'common' : it.price <= 300 ? 'rare' : it.price <= 800 ? 'epic' : 'legendary'); }
   /* ---------- chests ---------- */
   const CHESTS = [
-    { id:'chest_rally', name:'Rally Chest',  price:500,  keys:1, odds:{ common:.58, rare:.29, epic:.1,  legendary:.03 } },
-    { id:'chest_gold',  name:'Golden Chest', price:1500, keys:0, odds:{ common:.2,  rare:.42, epic:.28, legendary:.1 } },
+    { id:'chest_mini',  name:'Mini Chest',   price:200,  keys:0, odds:{ common:.78, rare:.2,  epic:.02, legendary:0 },   desc:'Cheap pulls: mostly common and rare items.' },
+    { id:'chest_rally', name:'Rally Chest',  price:500,  keys:1, odds:{ common:.58, rare:.29, epic:.1,  legendary:.03 }, desc:'Balls, courts, special hair and chest-only outfits.' },
+    { id:'chest_gold',  name:'Golden Chest', price:1500, keys:0, odds:{ common:.2,  rare:.42, epic:.28, legendary:.1 },  desc:'Better odds on the same prizes as the Rally Chest.' },
+    { id:'chest_pinoy', name:'Pinoy Chest',  price:900,  keys:0, tag:'pinoy', odds:{ common:.3, rare:.35, epic:.25, legendary:.1 },  desc:'Filipino pro teammates, Salakot, Barong-style polo, Jeepney jersey and more.' },
+    { id:'chest_pro',   name:'Pro Chest',    price:2500, keys:0, tag:'pro',   odds:{ common:.2, rare:.38, epic:.3,  legendary:.12 }, desc:'Pro Tour teammates, pro kits and the Pro Carbon paddle.' },
   ];
   const DUP_REFUND = { common:80, rare:200, epic:450, legendary:1000 };
-  const CHEST_POOL = ITEMS.filter(i => i.chest);
+  const CHEST_POOL = ITEMS.filter(i => i.chest && !i.chestTag);
+  const poolOf = ch => ch.tag ? ITEMS.filter(i => i.chestTag === ch.tag) : CHEST_POOL;
   function openChest(p, chestId, useKey, rnd) {
     rnd = rnd || Math.random;
     const ch = CHESTS.find(c => c.id === chestId);
@@ -263,7 +301,9 @@
     else { if ((p.coins | 0) < ch.price) return 'Not enough coins'; p.coins -= ch.price; }
     let r = rnd(), rarity = 'common';
     for (const k of ['legendary', 'epic', 'rare', 'common']) { if (r < ch.odds[k]) { rarity = k; break; } r -= ch.odds[k]; }
-    const pool = CHEST_POOL.filter(i => rarityOf(i) === rarity);
+    const all = poolOf(ch), order = ['legendary', 'epic', 'rare', 'common'];
+    let pool = all.filter(i => rarityOf(i) === rarity);
+    for (let k = order.indexOf(rarity) + 1; !pool.length && k < order.length * 2; k++) { rarity = order[k % order.length]; pool = all.filter(i => rarityOf(i) === rarity); }
     const item = pool[Math.floor(rnd() * pool.length)];
     const dup = p.owned.includes(item.id);
     p.stats = p.stats || {}; p.stats.chests = (p.stats.chests || 0) + 1;
@@ -320,7 +360,7 @@
 
   function elo(mmr, opp, won) {
     const exp = 1 / (1 + Math.pow(10, (opp - mmr) / 400));
-    let d = Math.round(40 * ((won ? 1 : 0) - exp));
+    let d = won ? Math.round(90 * (1 - exp)) : Math.round(40 * (0 - exp));      // wins pay more than losses cost, so steady play climbs
     if (won && d < 3) d = 3;
     if (!won && d > -3) d = -3;
     return d;
@@ -487,7 +527,7 @@
    * - an "easy win" (normal rating math gives less than +3) pays +1/+2/+3 by score margin, and half coins and XP */
   const PRACTICE_GAP = 1.0;
   function isPractice(mmr, key) { const ai = LADDER[aiIndex(key)]; return !!ai && dupr(mmr) - ai.dupr > PRACTICE_GAP + 1e-9; }
-  function rawElo(mmr, opp, won) { const exp = 1 / (1 + Math.pow(10, (opp - mmr) / 400)); return Math.round(40 * ((won ? 1 : 0) - exp)); }
+  function rawElo(mmr, opp, won) { const exp = 1 / (1 + Math.pow(10, (opp - mmr) / 400)); return won ? Math.round(90 * (1 - exp)) : Math.round(40 * (0 - exp)); }
   function marginBonus(score) { const sc = parseScore(score); if (!sc) return 1; const m = sc.w - sc.l; return m >= 7 ? 3 : m >= 4 ? 2 : 1; }
   function scaleRew(r, k) { return { coins: Math.round(r.coins * k), xp: Math.round(r.xp * k) }; }
   // what a match against this opponent would be worth, for the opponent list
@@ -504,10 +544,12 @@
     { id:'cup_brgy', title:'Barangay Cup Champion', opp:['club','pro','veteran'], ticket:150,    region:'PH', tier:'Beginner',     name:'Barangay Cup',         lo:2.0, hi:2.9, need:0,   prev:null,          coins:[70, 110, 250],   xp:[50, 70, 120],   keys:1, prizes:['court_lansangan', 'sando_brgy'], venue:'court_barangay' },
     { id:'cup_visayas', title:'Visayas Open Champion', opp:['elite','legend','champion'], ticket:400, region:'PH', tier:'Intermediate', name:'Visayas Open',         lo:3.0, hi:4.3, need:2.8, prev:'cup_brgy',    coins:[140, 200, 500],  xp:[80, 110, 200],  keys:2, prizes:['jer_visayas', 'dance_sinulog'], venue:'court_beach' },
     { id:'cup_phnats', title:'Philippine National Champion', opp:['grandmaster','semi2','tour1'], ticket:900,  region:'PH', tier:'Pro',          name:'Philippine Nationals', lo:4.5, hi:6.7, need:4.3, prev:'cup_visayas', coins:[260, 380, 1000], xp:[120, 170, 330], keys:3, prizes:['top_phnats', 'mate_lando'], venue:'court_stadium' },
+    { id:'cup_pinoypros', title:'Pinoy Invitational Champion', opp:['legend','champion','grandmaster'], ticket:450, region:'PH', tier:'Showcase', name:'Pinoy Pro Invitational', need:3.0, prev:'cup_brgy', names:'pinoypro', coins:[160, 230, 600], xp:[90, 120, 230], keys:2, prizes:['jer_invitational', 'wrist_pinoypro'], venue:'court_barangay' },
     { id:'cup_street', title:'Street Legend Slayer', opp:['lando'], ticket:300,  region:'PH', tier:'Legend',       name:'Street Challenge: Kuya Lando', lo:7.8, hi:7.8, need:0, prev:null, rounds:1, singles:true, coins:[500], xp:[200], keys:2, prizes:['mate_lando'], venue:'court_lansangan', boss:'lando' },
     { id:'cup_s1', title:'Singles Open Champion', opp:['club','pro','veteran'], ticket:150, region:'SOLO', tier:'Beginner',     name:'Singles Open',       lo:2.0, hi:3.0, need:0,   prev:null,     singles:true, coins:[90, 130, 300],  xp:[50, 75, 140],  keys:1, prizes:['jer_singles', 'wrist_champ'], venue:'court_park' },
     { id:'cup_s2', title:'Singles Masters Champion', opp:['elite','champion','grandmaster'], ticket:400, region:'SOLO', tier:'Intermediate', name:'Singles Masters',    lo:3.4, hi:5.0, need:3.2, prev:'cup_s1', singles:true, coins:[170, 240, 650], xp:[90, 120, 230], keys:2, prizes:['top_masters', 'ball_masters'], venue:'court_clay' },
     { id:'cup_s3', title:'Singles Grand Slam Champion', opp:['semi1','semi2','tour2'], ticket:900, region:'SOLO', tier:'Pro',          name:'Singles Grand Slam', lo:5.4, hi:7.6, need:5.0, prev:'cup_s2', singles:true, coins:[300, 450, 1300], xp:[140, 200, 380], keys:3, prizes:['pad_slam', 'head_slam'], venue:'court_royal' },
+    { id:'cup_pros', title:'Pro Showcase Champion', opp:['legend','champion','grandmaster'], ticket:450, region:'WORLD', tier:'Showcase', name:'Pro Showcase', need:3.0, prev:'cup_club', names:'pro', coins:[160, 230, 600], xp:[90, 120, 230], keys:2, prizes:['jer_showcase', 'pad_showcase'], venue:'court_stadium' },
     { id:'cup_club', title:'Club Cup Champion', opp:['pro','veteran','legend'], ticket:200,    region:'WORLD', tier:'Beginner',  name:'Club Cup',             lo:2.3, hi:3.8, need:0,   prev:null,          coins:[100, 150, 350],  xp:[60, 80, 150],   keys:1, prizes:['top_cup_club', 'dance_trophy'] },
     { id:'cup_open', title:'Pro Open Champion', opp:['champion','grandmaster','semi2'], ticket:500,    region:'WORLD', tier:'Intermediate', name:'Pro Open',          lo:3.8, hi:5.4, need:3.5, prev:'cup_club',    coins:[180, 260, 700],  xp:[90, 120, 250],  keys:2, prizes:['top_cup_open', 'head_laurel'] },
     { id:'cup_world', title:'World Champion', opp:['semi2','tour1','nightmare'], ticket:1200,   region:'WORLD', tier:'Pro',       name:'World Championship',   lo:5.6, hi:8.0, need:5.0, prev:'cup_open',    coins:[320, 480, 1400], xp:[140, 200, 400], keys:3, prizes:['pad_cup', 'head_wc'] },
@@ -523,6 +565,11 @@
   function titleName(id, count) { const c = CUP_BY[id]; return c ? c.title + (count > 1 ? ` ×${count}` : '') : ''; }
   function titlesOf(p) { return CUPS.filter(c => ((p.trophies || {})[c.id] || 0) > 0).map(c => c.id); }
   function setTitle(p, id) { if (id && !((p.trophies || {})[id] > 0)) return 'You haven’t won that tournament yet'; p.title = id || ''; p.titlePicked = true; return null; }
+  // original pro characters (not real players): [team name, flag, player 1, player 2]
+  const PRO_TEAMS = [['Rivers & Banks', 'US', 'Ava Rivers', 'Brielle Banks'], ['Jensen & Park', 'US', 'Blake Jensen', 'Noah Park'], ['Strand & Voss', 'NO', 'Felix Strand', 'Lena Voss'],
+    ['Price & Mercer', 'CA', 'Hunter Price', 'Cole Mercer'], ['Torres & Ramos', 'AR', 'Gael Torres', 'Diego Ramos'], ['Jordan & Quinn', 'US', 'J.J. Jordan', 'Tessa Quinn'], ['Castellano & Briggs', 'US', 'Mira Castellano', 'Owen Briggs']];
+  const PINOY_PRO_TEAMS = [['Kidlat & Bagyo', 'Rafael Dizon', 'Luis Lacson'], ['Sampaguita & Hiyas', 'Andrea Reyes', 'Wena Bautista'], ['Santos Sisters', 'Kaye Santos', 'Rina Santos'],
+    ['Agila & Cruz', 'Marco Pascual', 'Paolo Cruz'], ['Visayan Vipers', 'Jun Tabada', 'Carlo Alcala'], ['Mindanao Maulers', 'Ramil Datu', 'Joey Ampuan'], ['Luzon Lightning', 'Ben Ocampo', 'Migs Villanueva']];
   function cleanTeamName(n) { return String(n || '').replace(/[^\w \-'’.&]/g, '').replace(/\s+/g, ' ').trim().slice(0, 20); }
   function teamNameError(n) { if (n.length < 3) return 'Team names need at least 3 characters'; if (badName(n.replace(/[^A-Za-z0-9]/g, '_'))) return 'Please pick a different team name'; return null; }
   // pay for the ticket and get a fresh bracket
@@ -551,6 +598,8 @@
     // seats: 0 = you; your path is seat 1 (QF), then the winner of 2v3 (SF), then the winner of 4–7 (F)
     const teams = [{ you:true }];
     for (let i = 1; i < 8; i++) teams.push({ nation:ph ? 'PH' : nat[i - 1], name:names[i - 1], ai:any() });
+    if (c.names === 'pro') { const pt = PRO_TEAMS.slice().sort(() => rnd() - .5); for (let i = 1; i < 8; i++) { teams[i].name = pt[i - 1][0]; teams[i].nation = pt[i - 1][1]; teams[i].players = [pt[i - 1][2], pt[i - 1][3]]; } }
+    if (c.names === 'pinoypro') { const pt = PINOY_PRO_TEAMS.slice().sort(() => rnd() - .5); for (let i = 1; i < 8; i++) { teams[i].name = pt[i - 1][0]; teams[i].nation = 'PH'; teams[i].players = [pt[i - 1][1], pt[i - 1][2]]; } }
     teams[1].ai = opp[0];
     const sfSeat = 2 + Math.floor(rnd() * 2); teams[sfSeat].ai = opp[1];
     const fSeat = 4 + Math.floor(rnd() * 4); teams[fSeat].ai = opp[2];
@@ -690,7 +739,7 @@
     return out;
   }
 
-  const API = { VERSION: 20, titleName, titlesOf, setTitle, tourEnter, cleanTeamName, teamNameError, TEAM_NAMES, PH_TEAM_NAMES, CUPS, CUP_BY, ROUND_NAME, cupUnlocked, tourNew, tourOpp, tourReward, tourResult, tourWinner, tourParts, tourWatchable, tourDecide, tourAdvance, PH_PLACES, PRACTICE_GAP, isPractice, matchPreview, parseScore, seasonId, seasonEnds, seasonRoll, SEASON_REWARD, CH_DAILY, CH_WEEKLY, CH_BY_ID, ensureChallenges, cleanStats, trackStats,
+  const API = { VERSION: 21, poolOf, titleName, titlesOf, setTitle, tourEnter, cleanTeamName, teamNameError, TEAM_NAMES, PH_TEAM_NAMES, CUPS, CUP_BY, ROUND_NAME, cupUnlocked, tourNew, tourOpp, tourReward, tourResult, tourWinner, tourParts, tourWatchable, tourDecide, tourAdvance, PH_PLACES, PRACTICE_GAP, isPractice, matchPreview, parseScore, seasonId, seasonEnds, seasonRoll, SEASON_REWARD, CH_DAILY, CH_WEEKLY, CH_BY_ID, ensureChallenges, cleanStats, trackStats,
     ACHIEVEMENTS, checkAchievements, badName, LADDER, SKILL_LEVELS, ITEMS, BY_ID, SLOTS, STARTER, DEFAULT_EQUIP, HAIR_STYLES, ALL_HAIR, HAIR_COLORS, BODY_TYPES, NATIONS,
     rarityOf, CHESTS, CHEST_POOL, DUP_REFUND, openChest,
     levelInfo, aiIndex, dupr, duprTier, xpForLevel, claimDaily, DAILY_COINS, PALETTE, matchRewards, rallyRewards, onlineRewards, elo, aiUnlocked,

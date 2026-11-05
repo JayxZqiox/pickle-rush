@@ -1,6 +1,6 @@
 /* ---------- tournaments ---------- */
 const TOUR = { cur:null };
-const CUP_ICON = { cup_s1:'🥉', cup_s2:'🥈', cup_s3:'🥇', cup_club:'🥉', cup_open:'🥈', cup_world:'🥇', cup_brgy:'🥉', cup_visayas:'🥈', cup_phnats:'🥇', cup_street:'🔥' };
+const CUP_ICON = { cup_pros:'🎖️', cup_pinoypros:'🎖️', cup_s1:'🥉', cup_s2:'🥈', cup_s3:'🥇', cup_club:'🥉', cup_open:'🥈', cup_world:'🥇', cup_brgy:'🥉', cup_visayas:'🥈', cup_phnats:'🥇', cup_street:'🔥' };
 function streetCard(a, c){
   const owned = a.owned.includes('mate_lando'), beat = (a.trophies || {})[c.id] || 0;
   return `<div class="cupCard streetCard"><div class="flex gap-4 items-center flex-wrap"><canvas class="landoStage" data-lando="1"></canvas>
@@ -10,7 +10,7 @@ function streetCard(a, c){
       <div class="text-sm font-bold mt-2" style="color:#f5c542">${owned ? '✓ Kuya Lando is on your team' : 'Three ways to get him: beat him here · win the Philippine Nationals · buy him for 20,000 coins'}</div>
       <div class="flex gap-2 flex-wrap mt-3"><button data-act="tourStart" data-cup="cup_street" class="primary rounded-xl px-4 py-2.5 font-bold">${beat ? 'Challenge him again' : 'Challenge Kuya Lando'} · ${COIN_SVG} ${c.ticket}</button>${owned ? '' : `<button data-act="shopTeammates" class="tile rounded-xl px-4 py-2.5 font-bold">Buy him · ${COIN_SVG} 20,000</button>`}</div></div></div></div>`;
 }
-const mateName = () => { const a = getAcc(); return IT((a && a.equip.partner) || 'mate_ace').name.split(' · ')[0]; };
+const mateName = () => { const a = getAcc(); return IT((a && a.equip.partner) || 'mate_ace').name.split(' · ')[0].replace(/\s*‘[^’]*’\s*/g, ' ').trim(); };
 function cupCard(a, c){
   if (c.boss) return streetCard(a, c);
   const open = CAT.cupUnlocked(a, c.id), won = (a.trophies || {})[c.id] || 0;
@@ -56,7 +56,8 @@ function renderTour(){
     return;
   }
   setTxt('#tourTitle', 'Pick a tournament');
-  const group = (rg, title) => `<div class="tourGroup"><span>${title}</span></div>` + CAT.CUPS.filter(c => c.region === rg).map(c => cupCard(a, c)).join('');
+  const rank = c => c.boss ? 2 : c.tier === 'Showcase' ? 1 : 0;
+  const group = (rg, title) => `<div class="tourGroup"><span>${title}</span></div>` + CAT.CUPS.filter(c => c.region === rg).sort((x, y) => rank(x) - rank(y)).map(c => cupCard(a, c)).join('');
   const lc = t && CAT.CUP_BY[t.cup], last = t && !t.alive ? `<div class="nextCard" style="border-color:${t.champion ? 'rgba(245,197,66,.6)' : 'var(--line)'}"><div><span class="lobbyTag">LAST TOURNAMENT</span><div class="font-display text-xl mt-1">${t.champion ? (lc.rounds === 1 ? '🔥 You beat ' : '🏆 Champions of the ') : (lc.rounds === 1 ? 'Lost the ' : 'Out in the ' + CAT.ROUND_NAME[t.round] + ' of the ')}${esc(lc.rounds === 1 ? 'Street Challenge' : lc.name)}</div></div></div>${lc.rounds === 1 ? '' : bracketHTML(t, lc.singles ? 'You' : (t.teams[0].name || 'You & ' + mateName()), myLook().nation)}` : '';
   $('#tourBody').innerHTML = last + group('SOLO', '🎾 Singles Tour') + group('PH', `${flagHTML('PH', 16)} Philippine Tour`) + group('WORLD', '🌍 World Tour');
   requestAnimationFrame(() => $$('#tourBody canvas[data-id]').forEach(cv2 => thumbOf(cv2, cv2.dataset.id)));
@@ -442,7 +443,7 @@ function beginOnline(){
     const base = { team:slotTeam(i), lane:slotLane(i, n) };
     if (!s){
       const o = r.tour && r.tour.alive && r.tour.opp;
-      if (o && AIS[o.ai]){ const p = makePlayer(Object.assign(base, { name:i < 2 ? AIS[o.ai].name : AIS[o.ai].name2, look:Object.assign(randomLook(), { nation:o.nation }) })); p.ai = mkAI(AIS[o.ai]); return p; }
+      if (o && AIS[o.ai]){ const pl = o.players || [], p = makePlayer(Object.assign(base, { name:(i < 2 ? pl[0] || AIS[o.ai].name : pl[1] || AIS[o.ai].name2), look:Object.assign(randomLook(), { nation:o.nation }) })); p.ai = mkAI(AIS[o.ai]); return p; }
       const p = makePlayer(Object.assign(base, { name:'CPU' })); p.ai = mkAI(AIS.pro); return p;
     }
     if (i === NW.you) return makePlayer(Object.assign(base, { look:myLook(), name:s.name, human:{ set:'p1', alt:true, pad:0, tag:'P1', color:SLOT_COL[i] } }));

@@ -35,7 +35,9 @@ function aiFromDupr(d){
 }
 const AI_TITLE = { rookie:'Weekend Rookie', amateur:'Park Regular', club:'Club Ladder Climber', pro:'Rally Specialist', veteran:'Veteran Grinder', elite:'Spin Wizard',
   legend:'Kitchen Specialist', champion:'Regional Champion', grandmaster:'National Finalist', semi1:'Semi-Pro Contender', semi2:'Singles Masters Champion', tour1:'Pro Open Champion',
-  tour2:'Singles Grand Slam Champion', nightmare:'World Champion', atlas:'World No.1', king:'Grand Slam Legend', lando:'Street Legend' };
+  tour2:'Singles Grand Slam Champion', nightmare:'World Champion', atlas:'World No.1', king:'Grand Slam Legend', lando:'Street Legend',
+  mate_pro_ava:'Triple Crown Champion', mate_pro_blake:'The Professor', mate_pro_brielle:'Pro Tour Star', mate_pro_felix:'Pro Tour Contender', mate_pro_gael:'Pro Tour Contender', mate_pro_hunter:'Pro Tour Contender', mate_pro_jj:'Pro Tour Rookie',
+  mate_ph_kidlat:'Pinoy Pro Champion', mate_ph_bagyo:'Pinoy Pro Ace', mate_ph_andrea:'Pinoy Pro Star', mate_ph_wena:'Pinoy Pro Star', mate_ph_agila:'Pinoy Pro Contender', mate_ph_kaye:'Pinoy Pro Contender', mate_ph_rina:'Pinoy Pro Contender' };
 // the street legend
 AIS.lando = Object.assign(aiFromDupr(7.8), { key:'lando', name:'Kuya Lando', name2:'Kuya Lando', mmr:3866, dupr:7.8, blurb:'Learned the game on the lansangan. Humble, quiet, unstoppable.' });
 for (const a of CAT.LADDER) AIS[a.key] = Object.assign(aiFromDupr(a.dupr), { dupr:a.dupr }, { key:a.key, name:a.name, name2:a.name2, mmr:a.mmr, dupr:a.dupr, blurb:AI_BLURB[a.key] || '' });

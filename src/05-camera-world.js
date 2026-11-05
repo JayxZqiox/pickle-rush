@@ -41,6 +41,7 @@ const CAMS = {
   corner:    { name:'Corner',    yaw:-.62,  R:16.5, H:7.5, follow:.02, hint:'Angled from the corner' },
 };
 const CAM_ORDER = ['classic', 'action', 'low', 'sky', 'broadcast', 'corner'];
+function setCamera(k){ if (!CAMS[k]) return; data.opts.camera = k; save(); fitCamera(); showToast(`Camera ${CAM_ORDER.indexOf(k) + 1}: ${CAMS[k].name}`, CAMS[k].hint); if (screenNow === 'ctrl') renderCtrl(); }
 const camKey = () => G.mode === 'demo' ? 'classic' : (CAMS[data.opts.camera] ? data.opts.camera : 'classic');
 function setBasis(yaw, R){
   CAM.yaw = yaw; CAM.R = R;

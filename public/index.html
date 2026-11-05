@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=22">
+<link rel="stylesheet" href="css/style.css?v=23">
 <link rel="stylesheet" href="css/utilities.css?v=19">
 </head>
 <body class="overflow-hidden select-none">
@@ -341,7 +341,8 @@
 <div id="chestOv" class="hidden chestOv">
   <div class="chestBox glass">
     <div class="text-center"><span id="chestTag" class="lobbyTag">OPENING</span><div id="chestTitle" class="font-display text-3xl mt-1">Rally Chest</div></div>
-    <div class="reelWin"><div id="reel" class="reel"></div><div class="reelMark"></div></div>
+    <div class="reelWin" data-act="chestSkip"><div id="reel" class="reel"></div><div class="reelMark"></div></div>
+    <div class="text-center mt-3"><button id="chestSkip" data-act="chestSkip" class="tile rounded-full px-5 py-2 font-bold">⏭ Skip · tap the reel or press Space</button></div>
     <div id="chestRes" class="chestRes"></div>
     <div class="flex gap-2 justify-center flex-wrap mt-4">
       <button id="chestEquip" data-act="chestEquip" class="primary rounded-2xl px-5 py-3 font-display hidden">Equip it</button>
@@ -375,7 +376,7 @@
       <select id="rmCourt" class="courtSel"></select><span id="rmCourtTxt" class="lobbyTag"></span></div>
     <div id="rmSlots" class="slotRow"></div>
     <div id="rmTourRow" class="flex items-center justify-center gap-2 mt-2 flex-wrap text-sm font-semibold hidden"><span class="text-[var(--muted)]">Mode</span>
-      <select id="rmTour" class="courtSel"><option value="">Normal match</option><option value="cup_brgy">🇵🇭 Barangay Cup (tournament)</option><option value="cup_visayas">🇵🇭 Visayas Open (tournament)</option><option value="cup_phnats">🇵🇭 Philippine Nationals (tournament)</option><option value="cup_club">🏆 Club Cup (tournament)</option><option value="cup_open">🏆 Pro Open (tournament)</option><option value="cup_world">🏆 World Championship (tournament)</option></select><span id="rmTourTxt" class="lobbyTag hidden"></span></div>
+      <select id="rmTour" class="courtSel"><option value="">Normal match</option><option value="cup_brgy">🇵🇭 Barangay Cup (tournament)</option><option value="cup_visayas">🇵🇭 Visayas Open (tournament)</option><option value="cup_phnats">🇵🇭 Philippine Nationals (tournament)</option><option value="cup_pinoypros">🇵🇭 Pinoy Pro Invitational (tournament)</option><option value="cup_pros">🎖️ Pro Showcase (tournament)</option><option value="cup_club">🏆 Club Cup (tournament)</option><option value="cup_open">🏆 Pro Open (tournament)</option><option value="cup_world">🏆 World Championship (tournament)</option></select><span id="rmTourTxt" class="lobbyTag hidden"></span></div>
     <p id="rmTourHelp" class="text-xs text-center text-[var(--muted)] mt-1 hidden">Tournament: you two are Team 1 (1P and 3P) and play three rounds against AI teams. Leave 2P and 4P empty.</p>
     <div id="rmFriends" class="flex gap-2 flex-wrap justify-center mt-3"></div>
     <div class="lobbyFoot">
@@ -452,17 +453,71 @@
 
 <!-- ============ SETTINGS / CONTROLS ============ -->
 <section id="s-ctrl" class="screen off">
-  <div class="glass rounded-[30px] w-full max-w-[640px] p-5 sm:p-6">
+  <div class="glass rounded-[30px] w-full max-w-[680px] p-5 sm:p-6">
     <div class="flex items-center justify-between stickyHead">
       <h2 class="font-display text-2xl">Settings</h2>
       <button data-act="ctrlBack" class="tile rounded-xl px-4 py-2 font-bold">Back</button>
     </div>
-    <div class="seg mt-4" id="ctrlTabs">
-      <button data-act="ctrlTab" data-v="p1">Player 1</button><button data-act="ctrlTab" data-v="p2">Player 2</button><button data-act="ctrlTab" data-v="p3">Player 3</button><button data-act="ctrlTab" data-v="p4">Player 4</button>
+    <div class="seg mt-4 setTabs" id="setTabs">
+      <button data-act="setTab" data-v="video">🖥 Video</button><button data-act="setTab" data-v="audio">🔊 Audio</button><button data-act="setTab" data-v="controls">⌨ Controls</button><button data-act="setTab" data-v="play">🎮 Gameplay</button>
     </div>
-    <p id="ctrlLead" class="text-sm text-[var(--muted)] mt-2">Tap a key, then press the new key. Esc cancels.</p>
-    <div id="bindList" class="grid sm:grid-cols-2 gap-x-4 gap-y-1.5 mt-3"></div>
-    <div class="tile rounded-2xl p-4 mt-4 grid gap-3">
+
+    <div class="tile rounded-2xl p-4 mt-4 setPane" data-pane="video">
+      <div class="flex items-center justify-between gap-3 flex-wrap">
+        <div><div class="font-bold">Graphics</div><div class="text-sm text-[var(--muted)]">Auto lowers detail by itself if your device struggles</div></div>
+        <div id="optGfx" class="seg"><button data-act="opt" data-k="gfx" data-v="auto">Auto</button><button data-act="opt" data-k="gfx" data-v="high">High</button><button data-act="opt" data-k="gfx" data-v="low">Low</button></div>
+      </div>
+      <div class="flex items-center justify-between gap-3 flex-wrap">
+        <div><div class="font-bold">Camera</div><div class="text-sm text-[var(--muted)]">Press 1–6 during a match, or C to cycle</div></div>
+        <div id="optCam" class="seg flex-wrap"><button data-act="opt" data-k="camera" data-v="classic">1 Classic</button><button data-act="opt" data-k="camera" data-v="action">2 Action</button><button data-act="opt" data-k="camera" data-v="low">3 Low</button><button data-act="opt" data-k="camera" data-v="sky">4 Sky</button><button data-act="opt" data-k="camera" data-v="broadcast">5 Broadcast</button><button data-act="opt" data-k="camera" data-v="corner">6 Corner</button></div>
+      </div>
+      <div class="flex items-center justify-between gap-3 flex-wrap">
+        <div><div class="font-bold">Name tags</div><div class="text-sm text-[var(--muted)]">Auto shows them before each serve and hides them during rallies</div></div>
+        <div id="optTags" class="seg"><button data-act="opt" data-k="nameTags" data-v="auto">Auto</button><button data-act="opt" data-k="nameTags" data-v="always">Always</button><button data-act="opt" data-k="nameTags" data-v="off">Off</button></div>
+      </div>
+      <div class="flex items-center justify-between gap-3 flex-wrap">
+        <div><div class="font-bold">Display</div><div class="text-sm text-[var(--muted)]">FPS shows your frame rate (and ping online) in the corner</div></div>
+        <div class="flex gap-2 flex-wrap"><button id="optShake" data-act="optToggle" data-k="shake" class="tile rounded-xl px-3 py-1.5 font-bold">Screen shake</button><button id="optFps" data-act="optToggle" data-k="fps" class="tile rounded-xl px-3 py-1.5 font-bold">FPS</button><button id="optFull" data-act="optToggle" data-k="fullscreen" class="tile rounded-xl px-3 py-1.5 font-bold">Fullscreen</button></div>
+      </div>
+    </div>
+
+    <div class="tile rounded-2xl p-4 mt-4 setPane" data-pane="audio">
+      <div class="flex items-center justify-between gap-3 flex-wrap">
+        <div><div class="font-bold">Sound</div><div class="text-sm text-[var(--muted)]">Turns all effects and the announcer on or off</div></div>
+        <div class="flex gap-2"><button id="optSound" data-act="sound" class="tile rounded-xl px-3 py-1.5 font-bold">Sound</button><button data-act="music" class="musicBtn tile rounded-xl px-3 py-1.5 font-bold">Music</button></div>
+      </div>
+      <div class="volRow"><div><div class="font-bold">Music volume</div><div class="text-sm text-[var(--muted)]">Menu beats and victory dances</div></div><b id="volMusicV">100%</b><input id="volMusic" class="slider" type="range" min="0" max="100" step="5" style="grid-column:1 / -1"></div>
+      <div class="volRow"><div><div class="font-bold">Sound effects volume</div><div class="text-sm text-[var(--muted)]">Hits, bounces, points and chest clicks</div></div><b id="volSfxV">100%</b><input id="volSfx" class="slider" type="range" min="0" max="100" step="5" style="grid-column:1 / -1"></div>
+      <div class="volRow"><div><div class="font-bold">Announcer volume</div><div class="text-sm text-[var(--muted)]">The voice that calls the score</div></div><b id="volVoiceV">100%</b><input id="volVoice" class="slider" type="range" min="0" max="100" step="5" style="grid-column:1 / -1"></div>
+    </div>
+
+    <div class="setPane" data-pane="controls">
+      <div class="seg mt-4" id="ctrlTabs">
+        <button data-act="ctrlTab" data-v="p1">Player 1</button><button data-act="ctrlTab" data-v="p2">Player 2</button><button data-act="ctrlTab" data-v="p3">Player 3</button><button data-act="ctrlTab" data-v="p4">Player 4</button>
+      </div>
+      <p id="ctrlLead" class="text-sm text-[var(--muted)] mt-2">Tap a key, then press the new key. Esc cancels.</p>
+      <div id="bindList" class="grid sm:grid-cols-2 gap-x-4 gap-y-1.5 mt-3"></div>
+      <button data-act="resetBinds" class="mt-3 text-sm font-semibold text-[var(--muted)] underline underline-offset-4">Reset this player’s keys</button>
+      <div class="tile rounded-2xl p-4 mt-4"><div class="font-bold mb-1">Hotkeys</div>
+        <div class="hkRow"><span>Choose a camera</span><span class="kbd">1 – 6</span></div>
+        <div class="hkRow"><span>Cycle cameras</span><span class="kbd">C</span></div>
+        <div class="hkRow"><span>Pause</span><span class="kbd">Esc</span></div>
+        <div class="hkRow"><span>Skip a replay or a chest spin</span><span class="kbd">Space</span></div>
+        <div class="hkRow"><span>Emotes (online matches)</span><span class="kbd">Shift + 1 – 8</span></div>
+      </div>
+      <div class="tile rounded-2xl p-4 mt-3 grid gap-3">
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+          <div><div class="font-bold">Touch buttons</div><div class="text-sm text-[var(--muted)]">Size of the on-screen controls</div></div>
+          <div id="optTouch" class="seg"><button data-act="opt" data-k="touch" data-v="normal">Normal</button><button data-act="opt" data-k="touch" data-v="big">Big</button></div>
+        </div>
+        <div class="flex items-center justify-between gap-3">
+          <div><div class="font-bold">Gamepads</div><div id="padInfo" class="text-sm text-[var(--muted)]">Press any button on a gamepad to connect it.</div></div>
+          <div class="text-sm text-right text-[var(--muted)] shrink-0">Stick move · LB sprint · A hit<br>X slice · Y curve · B dink · RB spike</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tile rounded-2xl p-4 mt-4 setPane" data-pane="play">
       <div class="flex items-center justify-between gap-3 flex-wrap">
         <div><div class="font-bold">Power meter speed</div><div class="text-sm text-[var(--muted)]">How fast the meter fills while you hold Hit</div></div>
         <div id="optMeter" class="seg"><button data-act="opt" data-k="meter" data-v="slow">Slow</button><button data-act="opt" data-k="meter" data-v="normal">Normal</button><button data-act="opt" data-k="meter" data-v="fast">Fast</button></div>
@@ -472,37 +527,17 @@
         <div id="optSwing" class="seg"><button data-act="opt" data-k="swing" data-v="auto">Auto</button><button data-act="opt" data-k="swing" data-v="manual">Manual</button></div>
       </div>
       <div class="flex items-center justify-between gap-3 flex-wrap">
-        <div><div class="font-bold">Touch buttons</div><div class="text-sm text-[var(--muted)]">Size of the on-screen controls</div></div>
-        <div id="optTouch" class="seg"><button data-act="opt" data-k="touch" data-v="normal">Normal</button><button data-act="opt" data-k="touch" data-v="big">Big</button></div>
-      </div>
-      <div class="flex items-center justify-between gap-3 flex-wrap">
-        <div><div class="font-bold">Name tags</div><div class="text-sm text-[var(--muted)]">Auto shows them before each serve and hides them during rallies</div></div>
-        <div id="optTags" class="seg"><button data-act="opt" data-k="nameTags" data-v="auto">Auto</button><button data-act="opt" data-k="nameTags" data-v="always">Always</button><button data-act="opt" data-k="nameTags" data-v="off">Off</button></div>
-      </div>
-      <div class="flex items-center justify-between gap-3 flex-wrap">
         <div><div class="font-bold">Court in custom games</div><div class="text-sm text-[var(--muted)]">1v1, 2v2 and new online rooms can use any court</div></div>
         <div id="optCourt" class="seg flex-wrap"></div>
       </div>
       <div class="flex items-center justify-between gap-3 flex-wrap">
-        <div><div class="font-bold">Camera</div><div class="text-sm text-[var(--muted)]">Also the C key or the camera button during a match</div></div>
-        <div id="optCam" class="seg flex-wrap"><button data-act="opt" data-k="camera" data-v="classic">Classic</button><button data-act="opt" data-k="camera" data-v="action">Action</button><button data-act="opt" data-k="camera" data-v="low">Low</button><button data-act="opt" data-k="camera" data-v="sky">Sky</button><button data-act="opt" data-k="camera" data-v="broadcast">Broadcast</button><button data-act="opt" data-k="camera" data-v="corner">Corner</button></div>
-      </div>
-      <div class="flex items-center justify-between gap-3 flex-wrap">
-        <div><div class="font-bold">Graphics</div><div class="text-sm text-[var(--muted)]">Auto lowers detail by itself if your device struggles</div></div>
-        <div id="optGfx" class="seg"><button data-act="opt" data-k="gfx" data-v="auto">Auto</button><button data-act="opt" data-k="gfx" data-v="high">High</button><button data-act="opt" data-k="gfx" data-v="low">Low</button></div>
-      </div>
-      <div class="flex items-center justify-between gap-3 flex-wrap">
-        <div><div class="font-bold">Shake, sound and FPS</div><div class="text-sm text-[var(--muted)]">FPS shows your frame rate (and ping online) in the corner</div></div>
-        <div class="flex gap-2"><button id="optShake" data-act="optToggle" data-k="shake" class="tile rounded-xl px-3 py-1.5 font-bold">Shake</button><button id="optSound" data-act="sound" class="tile rounded-xl px-3 py-1.5 font-bold">Sound</button><button id="optFps" data-act="optToggle" data-k="fps" class="tile rounded-xl px-3 py-1.5 font-bold">FPS</button><button id="optFull" data-act="optToggle" data-k="fullscreen" class="tile rounded-xl px-3 py-1.5 font-bold">Fullscreen</button><button data-act="music" class="musicBtn tile rounded-xl px-3 py-1.5 font-bold">Music</button><button id="optDance" data-act="optToggle" data-k="pointDance" class="tile rounded-xl px-3 py-1.5 font-bold">Point dances</button><button id="optReplay" data-act="optToggle" data-k="replays" class="tile rounded-xl px-3 py-1.5 font-bold">Replays</button></div>
-      </div>
-      <div class="flex items-center justify-between gap-3">
-        <div><div class="font-bold">Gamepads</div><div id="padInfo" class="text-sm text-[var(--muted)]">Press any button on a gamepad to connect it.</div></div>
-        <div class="text-sm text-right text-[var(--muted)] shrink-0">Stick move · LB sprint · A hit<br>X slice · Y curve · B dink · RB spike</div>
+        <div><div class="font-bold">Celebrations</div><div class="text-sm text-[var(--muted)]">Point dances and instant replays</div></div>
+        <div class="flex gap-2 flex-wrap"><button id="optDance" data-act="optToggle" data-k="pointDance" class="tile rounded-xl px-3 py-1.5 font-bold">Point dances</button><button id="optReplay" data-act="optToggle" data-k="replays" class="tile rounded-xl px-3 py-1.5 font-bold">Replays</button></div>
       </div>
     </div>
-    <button data-act="resetBinds" class="mt-3 text-sm font-semibold text-[var(--muted)] underline underline-offset-4">Reset this player’s keys</button>
   </div>
 </section>
+
 
 <!-- ============ RANKING ============ -->
 <section id="s-rank" class="screen off">
@@ -609,7 +644,7 @@
         <div id="h1Score" class="sbScore">0</div>
       </div>
       <div class="sbMid">
-        <div class="sbRow"><span id="sbClock" class="sbClock">0:00</span><button data-act="camCycle" class="sbPause" aria-label="Change camera" title="Camera (C)"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13.5" r="3.2"/></svg></button><button id="emoteBtn" data-act="emoteBar" class="sbPause hidden" aria-label="Emotes" title="Emotes (keys 1–8)">😀</button><button data-act="pause" class="sbPause" aria-label="Pause">II</button></div>
+        <div class="sbRow"><span id="sbClock" class="sbClock">0:00</span><button data-act="camCycle" class="sbPause" aria-label="Change camera" title="Camera (C)"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13.5" r="3.2"/></svg></button><button id="emoteBtn" data-act="emoteBar" class="sbPause hidden" aria-label="Emotes" title="Emotes (Shift + 1–8)">😀</button><button data-act="pause" class="sbPause" aria-label="Pause">II</button></div>
         <div id="sbCall" class="sbCall">0-0-2</div>
         <div class="sbRow"><span id="sbTag" class="sbTag hidden">GAME POINT</span><span id="netBadge" class="sbPing hidden">LAN</span></div>
       </div>
@@ -646,12 +681,12 @@
     <button id="hitBtn" data-t="hit" class="tbtn rounded-full font-display primary">Hit</button>
   </div>
 </div>
-<script src="catalog.js?v=20"></script>
+<script src="catalog.js?v=21"></script>
 <script>
 /* Safety net: if catalog.js is missing or older than this page, reload once without the cache,
    then explain what to fix instead of showing a blank screen. Startup errors are shown too. */
 (function(){
-  var NEED = 20;
+  var NEED = 21;
   function box(title, msg){
     var d = document.createElement('div');
     d.style.cssText = 'position:fixed;inset:0;z-index:99;display:grid;place-items:center;padding:20px;background:#070f1f;color:#eef3fb;font:16px/1.5 system-ui,sans-serif';
@@ -678,6 +713,6 @@
   });
 })();
 </script>
-<script src="app.js?v=22"></script>
+<script src="app.js?v=23"></script>
 </body>
 </html>

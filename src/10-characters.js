@@ -341,6 +341,12 @@ function drawCharacter(c, x, y, s, look, facing, swing, run, moving, t, tag, fx)
   if (hst === 'visor'){ clip(); c.fillStyle = h1; c.fillRect(-.2, -1.72, .4, .05); c.restore(); if (front){ c.fillStyle = h2; c.beginPath(); c.ellipse(0, -1.675, B.hx + .03, .045, 0, 0, Math.PI); c.fill(); } }
   if (hst === 'bucket'){ c.fillStyle = shade(h1, -.15); ell(c, 0, -1.67, .23, .055); c.fillStyle = h1; c.beginPath(); c.moveTo(-.14, -1.67); c.quadraticCurveTo(-.13, -1.83, 0, -1.84); c.quadraticCurveTo(.13, -1.83, .14, -1.67); c.closePath(); c.fill(); c.fillStyle = h2; c.fillRect(-.14, -1.71, .28, .03); }
   if (hst === 'beanie'){ c.fillStyle = h1; c.beginPath(); c.arc(0, -1.67, B.hx + .015, Math.PI, TAU); c.closePath(); c.fill(); c.fillStyle = h2; rr(c, -B.hx - .018, -1.71, (B.hx + .018) * 2, .06, .02); c.fill(); ell(c, 0, -1.84, .04, .04); }
+  if (hst === 'salakot'){   // wide woven Filipino hat
+    c.fillStyle = h1; c.beginPath(); c.ellipse(0, -1.765, .29, .075, 0, 0, TAU); c.fill();
+    c.fillStyle = shade(h1, .08); c.beginPath(); c.moveTo(-.17, -1.77); c.quadraticCurveTo(-.11, -1.96, 0, -1.985); c.quadraticCurveTo(.11, -1.96, .17, -1.77); c.closePath(); c.fill();
+    c.strokeStyle = h2; c.lineWidth = .008; for (let k = -3; k <= 3; k++) seg(c, k * .048, -1.775, k * .02, -1.955 + Math.abs(k) * .03);
+    c.lineWidth = .012; c.beginPath(); c.ellipse(0, -1.765, .29, .075, 0, 0, TAU); c.stroke(); c.fillStyle = h2; c.fillRect(-.17, -1.8, .34, .014);
+  }
   if (hst === 'laurel'){   // golden laurel wreath around the head
     c.fillStyle = h1; c.strokeStyle = h2; c.lineWidth = .008;
     for (const side of [-1, 1]) for (let k = 0; k < 6; k++){

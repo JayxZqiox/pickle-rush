@@ -46,6 +46,14 @@ Every tournament costs an entry ticket (150 to 1,200 coins; the host pays for on
 
 Winning a tournament earns its title (e.g. **Singles Grand Slam Champion**, **World Champion**, **Street Legend Slayer**; wins again add ×2, ×3). Your newest title is worn automatically; pick another (or none) in the Locker. Titles show on your name tag, the dashboard, your profile, the leaderboard and online lobby cards, and the server only accepts titles you really won. AI opponents have their own titles too (Kuya Lando is the **Street Legend**).
 
+## Chests, pro characters and settings
+
+- **Five chests:** Mini (200 coins), Rally (500 or a key), Golden (1,500), **Pinoy** (900) and **Pro** (2,500). Pinoy and Pro chests hold their own teammates and gear. During the spin you can **skip** with the button, a tap on the reel, Space or Enter.
+- **Pro and Pinoy pro characters are original** (inspired by pro-tour play styles, not real people). They are good teammates but not unbeatable as opponents (about 4.1–4.9 rating in the **Pro Showcase** and **Pinoy Pro Invitational** cups).
+- **Camera:** press **1–6** to pick a camera, **C** to cycle. Online emotes are now **Shift + 1–8**.
+- **Settings** are split into **Video**, **Audio** (separate music, sound effects and announcer volume), **Controls / Hotkeys** and **Gameplay**.
+- **Rating:** ranked wins now pay about twice as much (an even match is about +45), while losses cost the same as before.
+
 ## Singles Tour
 
 Solo tournaments (8-player brackets): **Singles Open** (Beginner), **Singles Masters** (Intermediate) and **Singles Grand Slam** (Pro). Prizes: Singles Open jersey, Champion sweatbands, Singles Masters kit, Masters comet ball, Grand Slam paddle and Grand Slam headband.

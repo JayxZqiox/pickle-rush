@@ -1,9 +1,13 @@
 /* ---------- audio (with network echo for online guests) ---------- */
 let actx = null;
+const AUD = { sfx:null, music:null };
+const volOf = k => (data.opts[k] == null ? 100 : data.opts[k]) / 100;
+function applyVolumes(){ if (AUD.sfx) AUD.sfx.gain.value = volOf('volSfx'); if (AUD.music) AUD.music.gain.value = volOf('volMusic'); }
 function ensureAudio(){
   try {
     if (!actx){
       actx = new (window.AudioContext || window.webkitAudioContext)();
+      AUD.sfx = actx.createGain(); AUD.music = actx.createGain(); AUD.sfx.connect(actx.destination); AUD.music.connect(actx.destination); applyVolumes();
       // iOS unlock: play one silent frame inside the user gesture
       const b = actx.createBuffer(1, 1, 22050), s = actx.createBufferSource(); s.buffer = b; s.connect(actx.destination); s.start(0);
     }
@@ -16,7 +20,7 @@ function tone(f, dur, type = 'triangle', vol = .2, slide = 1, delay = 0){
   o.type = type; o.frequency.setValueAtTime(f, t);
   if (slide !== 1) o.frequency.exponentialRampToValueAtTime(Math.max(40, f * slide), t + dur);
   g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0008, t + dur);
-  o.connect(g).connect(actx.destination); o.start(t); o.stop(t + dur + .03);
+  o.connect(g).connect(AUD.sfx || actx.destination); o.start(t); o.stop(t + dur + .03);
 }
 function playSfx(k){
   if (k === 'hit'){ tone(560, .07, 'square', .07, .55); tone(1500, .03, 'triangle', .06); }
@@ -107,7 +111,7 @@ function stopTrack(){
 function startTrack(name, o = {}){
   if (!actx || !TRACKS[name]) return;
   stopTrack();
-  const tr = TRACKS[name], sd = 60 / tr.bpm / 4, bus = actx.createGain(); bus.gain.value = o.vol ?? .3; bus.connect(actx.destination);
+  const tr = TRACKS[name], sd = 60 / tr.bpm / 4, bus = actx.createGain(); bus.gain.value = o.vol ?? .3; bus.connect(AUD.music || actx.destination);
   const m = MUSIC.cur = { name, tr, sd, step:0, next:actx.currentTime + .06, loop:!!o.loop, total:o.seconds ? Math.ceil(o.seconds / sd) : Infinity, bus, onEnd:o.onEnd };
   const tick = () => {
     if (MUSIC.cur !== m) return;

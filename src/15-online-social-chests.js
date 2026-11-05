@@ -40,10 +40,10 @@ const CH = { busy:false, last:null, chest:null, key:false };
 const RAR_LABEL = { common:'Common', rare:'Rare', epic:'Epic', legendary:'Legendary' };
 function renderChests(a){
   $('#shopGrid').innerHTML = CAT.CHESTS.map(ch => {
-    const gold = ch.id === 'chest_gold', rk = gold ? 'legendary' : 'rare';
+    const rk = { chest_mini:'common', chest_rally:'rare', chest_gold:'legendary', chest_pinoy:'epic', chest_pro:'legendary' }[ch.id] || 'rare';
     return `<div class="chestCard r-${rk}" style="grid-column:1 / -1"><canvas class="shopPv" data-id="${ch.id}" data-slot="chestArt"></canvas>
       <div class="min-w-0 flex flex-col gap-2"><div class="font-display text-2xl">${esc(ch.name)}</div>
-      <div class="text-sm text-[var(--muted)]">Balls, courts, special hair and chest-only outfits. Duplicates turn into coins.</div>
+      <div class="text-sm text-[var(--muted)]">${esc(ch.desc || '')} ${CAT.poolOf(ch).length} possible prizes. Duplicates turn into coins.</div>
       <div class="odds">${['common', 'rare', 'epic', 'legendary'].map(r => `<span style="color:${RARITY[r]}">${RAR_LABEL[r]} ${Math.round(ch.odds[r] * 100)}%</span>`).join('')}</div>
       <div class="flex gap-2 flex-wrap mt-auto">
         <button data-act="chestOpen" data-id="${ch.id}" class="primary rounded-xl px-4 py-2.5 font-bold" ${a.coins < ch.price ? 'disabled' : ''}>Open · ${COIN_SVG} ${ch.price}</button>
@@ -54,17 +54,22 @@ function renderChests(a){
 function drawChestArt(cv2, id, t){
   if (!fitCanvas(cv2)) return;
   const c = cv2.getContext('2d'), W = cv2.width / DPR, H = cv2.height / DPR, gold = id === 'chest_gold';
+  const PAL = { chest_mini:{ glow:'rgba(190,205,225,.35)', body:['#a67c52', '#6a4a2a'], trim:'#d9dde3', spark:'#e5edf7' },
+    chest_rally:{ glow:'rgba(56,189,248,.35)', body:['#8b5a2b', '#5a3816'], trim:'#f5c542', spark:'#bfefff' },
+    chest_gold:{ glow:'rgba(245,197,66,.45)', body:['#b7791f', '#7c4a03'], trim:'#fff3bf', spark:'#fff3bf' },
+    chest_pinoy:{ glow:'rgba(252,209,22,.42)', body:['#1d4fbf', '#0a2a73'], trim:'#fcd116', spark:'#ffe680' },
+    chest_pro:{ glow:'rgba(56,189,248,.5)', body:['#243247', '#0c1422'], trim:'#38bdf8', spark:'#a5e8ff' } }, pal = PAL[id] || PAL.chest_rally;
   c.setTransform(DPR, 0, 0, DPR, 0, 0); c.clearRect(0, 0, W, H);
   const cx = W / 2, cy = H / 2 + 8 + Math.sin(t * 2) * 3, w = Math.min(W * .62, 120), h = w * .62;
-  const glow = c.createRadialGradient(cx, cy, 0, cx, cy, w); glow.addColorStop(0, gold ? 'rgba(245,197,66,.45)' : 'rgba(56,189,248,.35)'); glow.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = glow; c.fillRect(0, 0, W, H);
-  const body = gold ? ['#b7791f', '#7c4a03'] : ['#8b5a2b', '#5a3816'], trim = gold ? '#fff3bf' : '#f5c542';
+  const glow = c.createRadialGradient(cx, cy, 0, cx, cy, w); glow.addColorStop(0, pal.glow); glow.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = glow; c.fillRect(0, 0, W, H);
+  const body = pal.body, trim = pal.trim;
   let g = c.createLinearGradient(0, cy - h * .2, 0, cy + h * .5); g.addColorStop(0, body[0]); g.addColorStop(1, body[1]);
   c.fillStyle = g; rr(c, cx - w / 2, cy - h * .15, w, h * .65, 8); c.fill();
   g = c.createLinearGradient(0, cy - h * .6, 0, cy - h * .1); g.addColorStop(0, shade(body[0], .15)); g.addColorStop(1, body[0]);
   c.fillStyle = g; c.beginPath(); c.moveTo(cx - w / 2, cy - h * .12); c.quadraticCurveTo(cx - w / 2, cy - h * .62, cx, cy - h * .62); c.quadraticCurveTo(cx + w / 2, cy - h * .62, cx + w / 2, cy - h * .12); c.closePath(); c.fill();
   c.fillStyle = trim; for (const fx2 of [-.38, .38]) c.fillRect(cx + w * fx2 - 5, cy - h * .58, 10, h * 1.05);
   c.fillRect(cx - w / 2, cy - h * .17, w, 7); rr(c, cx - 11, cy - h * .25, 22, 26, 5); c.fill(); c.fillStyle = '#2b1a05'; ell(c, cx, cy - h * .12, 3.5, 5);
-  for (let i = 0; i < 6; i++){ const k = (t * .35 + i / 6) % 1, x = cx + Math.sin(i * 7.3) * w * .55, y = cy - h * .3 - k * h; c.globalAlpha = (1 - k) * .9; c.fillStyle = gold ? '#fff3bf' : '#bfefff'; ell(c, x, y, 2, 2); }
+  for (let i = 0; i < 6; i++){ const k = (t * .35 + i / 6) % 1, x = cx + Math.sin(i * 7.3) * w * .55, y = cy - h * .3 - k * h; c.globalAlpha = (1 - k) * .9; c.fillStyle = pal.spark; ell(c, x, y, 2, 2); }
   c.globalAlpha = 1;
 }
 function thumbOf(cv2, id){
@@ -81,7 +86,7 @@ function thumbOf(cv2, id){
 function rollFor(ch){
   let r = Math.random(), rar = 'common';
   for (const k of ['legendary', 'epic', 'rare', 'common']){ if (r < ch.odds[k]){ rar = k; break; } r -= ch.odds[k]; }
-  const pool = CAT.CHEST_POOL.filter(i => CAT.rarityOf(i) === rar); return pool[(Math.random() * pool.length) | 0].id;
+  const all = CAT.poolOf(ch); let pool = all.filter(i => CAT.rarityOf(i) === rar); if (!pool.length) pool = all; return pool[(Math.random() * pool.length) | 0].id;
 }
 async function openChestUI(id, useKey){
   if (CH.busy) return;
@@ -95,7 +100,7 @@ async function openChestUI(id, useKey){
   CH.last = res;
   ensureAudio();
   $('#chestOv').classList.remove('hidden'); setTxt('#chestTitle', ch.name); setTxt('#chestTag', useKey ? 'OPENED WITH A KEY' : 'OPENING');
-  $('#chestRes').innerHTML = ''; ['#chestEquip', '#chestAgain', '#chestClose'].forEach(sel => $(sel).classList.add('hidden'));
+  $('#chestRes').innerHTML = ''; ['#chestEquip', '#chestAgain', '#chestClose'].forEach(sel => $(sel).classList.add('hidden')); $('#chestSkip').classList.remove('hidden');
   const N = 46, WIN = 40, STEP = 126, ids = Array.from({ length:N }, (_, i) => i === WIN ? res.id : rollFor(ch));
   const reel = $('#reel');
   reel.innerHTML = ids.map((iid, i) => { const it = IT(iid), rk = CAT.rarityOf(it); return `<div class="rc r-${rk}" data-i="${i}"><canvas data-id="${iid}"></canvas><span>${esc(it.name)}</span></div>`; }).join('');
@@ -110,23 +115,31 @@ async function openChestUI(id, useKey){
     const tick = () => {
       if (!CH.busy) return;
       const m = new DOMMatrixReadOnly(getComputedStyle(reel).transform), idx = Math.floor((-m.m41 + win / 2 - 8) / STEP);
-      if (idx !== lastIdx){ lastIdx = idx; if (actx) mTone(actx.currentTime, 1500, .03, 'square', .035, actx.destination); }
+      if (idx !== lastIdx){ lastIdx = idx; if (actx) mTone(actx.currentTime, 1500, .03, 'square', .035, AUD.sfx || actx.destination); }
       requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
-    setTimeout(() => {
-      CH.busy = false;
+    const finish = () => {
+      CH.busy = false; CH.finish = null; $('#chestSkip').classList.add('hidden');
       const card = reel.querySelector(`[data-i="${WIN}"]`); if (card) card.classList.add('win');
       const it = IT(res.id), rk = res.rarity;
       $('#chestRes').innerHTML = `<span class="lobbyTag" style="color:${RARITY[rk]}; border-color:${RARITY[rk]}">${RAR_LABEL[rk].toUpperCase()}</span><b style="color:${RARITY[rk]}">${esc(it.name)}</b>
-        <div class="text-sm font-semibold text-[var(--muted)]">${res.dup ? `Already in your collection · +${res.refund} coins` : `New ${({ ball:'ball', court:'court', top:'shirt', bottom:'shorts', hairx:'hairstyle' })[it.slot] || 'item'} unlocked!`}</div>`;
+        <div class="text-sm font-semibold text-[var(--muted)]">${res.dup ? `Already in your collection · +${res.refund} coins` : `New ${({ ball:'ball', court:'court', top:'shirt', bottom:'shorts', hairx:'hairstyle', partner:'teammate', head:'hat', paddle:'paddle', wrist:'wristband', dance:'dance' })[it.slot] || 'item'} unlocked!`}</div>`;
       if (rk === 'epic' || rk === 'legendary') confetti();
       playSfx(rk === 'legendary' || rk === 'epic' ? 'win' : 'perfect');
       $('#chestEquip').classList.toggle('hidden', res.dup); $('#chestAgain').classList.remove('hidden'); $('#chestClose').classList.remove('hidden');
       if (res.dup || !res.dup) addNotif({ type:'info', text:res.dup ? `Chest: duplicate ${it.name} → +${res.refund} coins` : `Chest: you got ${it.name} (${RAR_LABEL[rk]})` });
       renderShop(); if (screenNow === 'menu') refreshMenu();
-    }, 5600);
+    };
+    CH.finish = finish; CH.target = target; CH.reel = reel; CH.timer = setTimeout(finish, 5600);
   });
+}
+// jump straight to the prize (button, tap on the reel, Space or Enter)
+function skipChest(){
+  if (!CH.busy || !CH.finish) return;
+  clearTimeout(CH.timer); const f = CH.finish; CH.finish = null;
+  CH.reel.style.transition = 'none'; CH.reel.style.transform = `translateX(${-CH.target}px)`;
+  f();
 }
 const EMOTES = ['👏', '😂', '🔥', '😮', '🙏', '😎', '💪', 'GG'];
 function showEmote(i, e){ const p = G.players[i]; if (p) p.emote = { e:EMOTES[e] || '👏', t:performance.now() }; }

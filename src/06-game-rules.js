@@ -80,7 +80,7 @@ function buildPlayers(mode, diff){
     case 'watch': {
       const W2 = TOUR.watch, A = W2.teams[0], B2 = W2.teams[1], nl = n => Object.assign(randomLook(), { nation:n });
       if (TOUR.cur && CAT.CUP_BY[TOUR.cur.cup].singles) return [AI(A.ai, { team:1, look:nl(A.nation) }, A.name), AI(B2.ai, { team:2, look:nl(B2.nation) }, B2.name)];
-      return [AI(A.ai, { team:1, lane:-1, look:nl(A.nation) }), AI(A.ai, { team:1, lane:1, look:nl(A.nation) }, AIS[A.ai].name2), AI(B2.ai, { team:2, lane:1, look:nl(B2.nation) }), AI(B2.ai, { team:2, lane:-1, look:nl(B2.nation) }, AIS[B2.ai].name2)];
+      return [AI(A.ai, { team:1, lane:-1, look:nl(A.nation) }, (A.players || [])[0]), AI(A.ai, { team:1, lane:1, look:nl(A.nation) }, (A.players || [])[1] || AIS[A.ai].name2), AI(B2.ai, { team:2, lane:1, look:nl(B2.nation) }, (B2.players || [])[0]), AI(B2.ai, { team:2, lane:-1, look:nl(B2.nation) }, (B2.players || [])[1] || AIS[B2.ai].name2)];
     }
     case 'tour': {
       const mk = (getAcc() && getAcc().equip.partner) || 'mate_ace', o = (TOUR.cur && TOUR.cur.opp) || { nation:'' }, nl = () => Object.assign(randomLook(), { nation:o.nation });
@@ -88,7 +88,8 @@ function buildPlayers(mode, diff){
         const boss = CAT.CUP_BY[TOUR.cur.cup].boss, onm = TOUR.cur.opp ? TOUR.cur.opp.name : AIS[diff].name;
         return [H('p1', { team:1, look:myLook(), name:n1 }, true), AI(diff, { team:2, look:boss ? MATE_LOOK.mate_lando : nl() }, boss ? AIS[diff].name : onm)];
       }
-      return [H('p1', { team:1, lane:-1, look:myLook(), name:n1 }, true), AI(mk, { team:1, lane:1, look:MATE_LOOK[mk] }), AI(diff, { team:2, lane:1, look:nl() }), AI(diff, { team:2, lane:-1, look:nl() }, AIS[diff].name2)];
+      const pl = o.players || [];
+      return [H('p1', { team:1, lane:-1, look:myLook(), name:n1 }, true), AI(mk, { team:1, lane:1, look:MATE_LOOK[mk] }), AI(diff, { team:2, lane:1, look:nl() }, pl[0]), AI(diff, { team:2, lane:-1, look:nl() }, pl[1] || AIS[diff].name2)];
     }
     case '2p': return [H('p1', { team:1, look:myLook(), name:n1 }, false, 0), H('p2', { team:2, look:p2Look(), name:n2 }, false, 1)];
     case 'duo-ai': { const mk = (getAcc() && getAcc().equip.partner) || 'mate_ace'; return [H('p1', { team:1, lane:-1, look:myLook(), name:n1 }, true), AI(mk, { team:1, lane:1, look:MATE_LOOK[mk] }), AI(diff, { team:2, lane:1 }), AI(diff, { team:2, lane:-1 }, AIS[diff].name2)]; }
@@ -156,8 +157,8 @@ function showCall(c, sv, n){
   $('#cbSub').textContent = n ? `${sv} · server ${n}` : `${sv} serving`;
   el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
   clearTimeout(callT); callT = setTimeout(() => el.classList.remove('show'), 1800);
-  if (data.sound && 'speechSynthesis' in window){
-    try { const u = new SpeechSynthesisUtterance(c.split('-').join(', ')); u.volume = .8; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {}
+  if (data.sound && volOf('volVoice') > 0 && 'speechSynthesis' in window){
+    try { const u = new SpeechSynthesisUtterance(c.split('-').join(', ')); u.volume = .9 * volOf('volVoice'); speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {}
   }
 }
 function announceCall(){

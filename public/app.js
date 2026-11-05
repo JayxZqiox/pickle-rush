@@ -93,6 +93,20 @@ const MATE_LOOK = {
   mate_es: { gender:'girl', skin:1, hair:1, hairStyle:'long',     nation:'ES', head:'cap_c_red',     top:'jer_es', bottom:'skirt_c_yellow', shoes:'shoes_c_red',   paddle:'pad_petals',  body:'regular',  height:168 },
   mate_in: { gender:'boy',  skin:2, hair:0, hairStyle:'short',    nation:'IN', head:'head_none',     top:'jer_in', bottom:'shorts_c_navy',  shoes:'shoes_c_orange',paddle:'pad_glacier', body:'regular',  height:177 },
   mate_lando: { gender:'boy', skin:2, hair:0, hairStyle:'curly', nation:'PH', head:'head_none', top:'tee_worn', bottom:'bot_worn', shoes:'shoes_tsinelas', paddle:'pad_tape', wrist:'wrist_none', body:'athletic', height:174, dance:'dance_budots' },
+  mate_pro_ava: { gender:'girl', skin:0, hair:3, hairStyle:'ponytail', nation:'US', head:'visor_pro', top:'kit_pro_white', bottom:'shorts_c_white', shoes:'shoes_c_white', paddle:'pad_pro_carbon', body:'athletic', height:175 },
+  mate_pro_blake: { gender:'boy', skin:0, hair:2, hairStyle:'undercut', nation:'US', head:'head_none', top:'kit_pro_navy', bottom:'shorts_navy', shoes:'shoes_c_white', paddle:'pad_pro_carbon', body:'regular', height:188 },
+  mate_pro_brielle: { gender:'girl', skin:0, hair:4, hairStyle:'braid', nation:'US', head:'band_c_red', top:'kit_pro_navy', bottom:'skirt_c_red', shoes:'shoes_c_red', paddle:'pad_carbon', body:'athletic', height:172 },
+  mate_pro_felix: { gender:'boy', skin:0, hair:1, hairStyle:'short', nation:'NO', head:'cap_navy', top:'kit_pro_white', bottom:'shorts_c_navy', shoes:'sneak_white', paddle:'pad_blade', body:'athletic', height:190 },
+  mate_pro_gael: { gender:'boy', skin:1, hair:0, hairStyle:'curly', nation:'AR', head:'head_none', top:'jersey_stripe', bottom:'shorts_c_white', shoes:'shoes_c_yellow', paddle:'pad_carbon', body:'regular', height:178 },
+  mate_pro_hunter: { gender:'boy', skin:0, hair:2, hairStyle:'manbun', nation:'CA', head:'band_c_red', top:'kit_pro_navy', bottom:'shorts_navy', shoes:'shoes_c_white', paddle:'pad_blade', body:'athletic', height:184 },
+  mate_pro_jj: { gender:'boy', skin:2, hair:0, hairStyle:'spiky', nation:'US', head:'visor_pro', top:'kit_pro_white', bottom:'shorts_c_navy', shoes:'shoes_c_white', paddle:'pad_carbon', body:'slim', height:176 },
+  mate_ph_kidlat: { gender:'boy', skin:1, hair:0, hairStyle:'spiky', nation:'PH', head:'head_none', top:'jer_invitational', bottom:'shorts_c_navy', shoes:'shoes_c_white', paddle:'pad_carbon', body:'athletic', height:176 },
+  mate_ph_bagyo: { gender:'boy', skin:2, hair:0, hairStyle:'short', nation:'PH', head:'cap_navy', top:'jer_ph', bottom:'shorts_navy', shoes:'shoes_c_red', paddle:'pad_blade', body:'athletic', height:180 },
+  mate_ph_andrea: { gender:'girl', skin:1, hair:0, hairStyle:'ponytail', nation:'PH', head:'visor_white', top:'jer_sampaguita', bottom:'skirt_c_yellow', shoes:'shoes_c_white', paddle:'pad_petals', body:'regular', height:165 },
+  mate_ph_wena: { gender:'girl', skin:1, hair:0, hairStyle:'bob', nation:'PH', head:'band_c_red', top:'jer_jeepney', bottom:'skirt_c_red', shoes:'shoes_c_yellow', paddle:'pad_tropic', body:'slim', height:163 },
+  mate_ph_agila: { gender:'boy', skin:2, hair:0, hairStyle:'undercut', nation:'PH', head:'head_none', top:'top_barong', bottom:'shorts_c_navy', shoes:'shoes_c_orange', paddle:'pad_banig', body:'athletic', height:178 },
+  mate_ph_kaye: { gender:'girl', skin:1, hair:0, hairStyle:'long', nation:'PH', head:'cap_c_red', top:'jer_ph', bottom:'skirt_c_red', shoes:'sneak_white', paddle:'pad_blade', body:'regular', height:162 },
+  mate_ph_rina: { gender:'girl', skin:1, hair:0, hairStyle:'pigtails', nation:'PH', head:'cap_c_red', top:'jer_ph', bottom:'skirt_c_red', shoes:'sneak_white', paddle:'pad_blade', body:'regular', height:162 },
   mate_gb: { gender:'boy',  skin:0, hair:5, hairStyle:'undercut', nation:'GB', head:'head_none',     top:'jer_gb', bottom:'shorts_c_navy',  shoes:'shoes_c_white', paddle:'pad_mecha',   body:'athletic', height:183 },
 };
 
@@ -133,7 +147,9 @@ function aiFromDupr(d){
 }
 const AI_TITLE = { rookie:'Weekend Rookie', amateur:'Park Regular', club:'Club Ladder Climber', pro:'Rally Specialist', veteran:'Veteran Grinder', elite:'Spin Wizard',
   legend:'Kitchen Specialist', champion:'Regional Champion', grandmaster:'National Finalist', semi1:'Semi-Pro Contender', semi2:'Singles Masters Champion', tour1:'Pro Open Champion',
-  tour2:'Singles Grand Slam Champion', nightmare:'World Champion', atlas:'World No.1', king:'Grand Slam Legend', lando:'Street Legend' };
+  tour2:'Singles Grand Slam Champion', nightmare:'World Champion', atlas:'World No.1', king:'Grand Slam Legend', lando:'Street Legend',
+  mate_pro_ava:'Triple Crown Champion', mate_pro_blake:'The Professor', mate_pro_brielle:'Pro Tour Star', mate_pro_felix:'Pro Tour Contender', mate_pro_gael:'Pro Tour Contender', mate_pro_hunter:'Pro Tour Contender', mate_pro_jj:'Pro Tour Rookie',
+  mate_ph_kidlat:'Pinoy Pro Champion', mate_ph_bagyo:'Pinoy Pro Ace', mate_ph_andrea:'Pinoy Pro Star', mate_ph_wena:'Pinoy Pro Star', mate_ph_agila:'Pinoy Pro Contender', mate_ph_kaye:'Pinoy Pro Contender', mate_ph_rina:'Pinoy Pro Contender' };
 // the street legend
 AIS.lando = Object.assign(aiFromDupr(7.8), { key:'lando', name:'Kuya Lando', name2:'Kuya Lando', mmr:3866, dupr:7.8, blurb:'Learned the game on the lansangan. Humble, quiet, unstoppable.' });
 for (const a of CAT.LADDER) AIS[a.key] = Object.assign(aiFromDupr(a.dupr), { dupr:a.dupr }, { key:a.key, name:a.name, name2:a.name2, mmr:a.mmr, dupr:a.dupr, blurb:AI_BLURB[a.key] || '' });
@@ -358,10 +374,14 @@ function refreshAll(){
 
 /* ---------- audio (with network echo for online guests) ---------- */
 let actx = null;
+const AUD = { sfx:null, music:null };
+const volOf = k => (data.opts[k] == null ? 100 : data.opts[k]) / 100;
+function applyVolumes(){ if (AUD.sfx) AUD.sfx.gain.value = volOf('volSfx'); if (AUD.music) AUD.music.gain.value = volOf('volMusic'); }
 function ensureAudio(){
   try {
     if (!actx){
       actx = new (window.AudioContext || window.webkitAudioContext)();
+      AUD.sfx = actx.createGain(); AUD.music = actx.createGain(); AUD.sfx.connect(actx.destination); AUD.music.connect(actx.destination); applyVolumes();
       // iOS unlock: play one silent frame inside the user gesture
       const b = actx.createBuffer(1, 1, 22050), s = actx.createBufferSource(); s.buffer = b; s.connect(actx.destination); s.start(0);
     }
@@ -374,7 +394,7 @@ function tone(f, dur, type = 'triangle', vol = .2, slide = 1, delay = 0){
   o.type = type; o.frequency.setValueAtTime(f, t);
   if (slide !== 1) o.frequency.exponentialRampToValueAtTime(Math.max(40, f * slide), t + dur);
   g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0008, t + dur);
-  o.connect(g).connect(actx.destination); o.start(t); o.stop(t + dur + .03);
+  o.connect(g).connect(AUD.sfx || actx.destination); o.start(t); o.stop(t + dur + .03);
 }
 function playSfx(k){
   if (k === 'hit'){ tone(560, .07, 'square', .07, .55); tone(1500, .03, 'triangle', .06); }
@@ -465,7 +485,7 @@ function stopTrack(){
 function startTrack(name, o = {}){
   if (!actx || !TRACKS[name]) return;
   stopTrack();
-  const tr = TRACKS[name], sd = 60 / tr.bpm / 4, bus = actx.createGain(); bus.gain.value = o.vol ?? .3; bus.connect(actx.destination);
+  const tr = TRACKS[name], sd = 60 / tr.bpm / 4, bus = actx.createGain(); bus.gain.value = o.vol ?? .3; bus.connect(AUD.music || actx.destination);
   const m = MUSIC.cur = { name, tr, sd, step:0, next:actx.currentTime + .06, loop:!!o.loop, total:o.seconds ? Math.ceil(o.seconds / sd) : Infinity, bus, onEnd:o.onEnd };
   const tick = () => {
     if (MUSIC.cur !== m) return;
@@ -545,6 +565,7 @@ const CAMS = {
   corner:    { name:'Corner',    yaw:-.62,  R:16.5, H:7.5, follow:.02, hint:'Angled from the corner' },
 };
 const CAM_ORDER = ['classic', 'action', 'low', 'sky', 'broadcast', 'corner'];
+function setCamera(k){ if (!CAMS[k]) return; data.opts.camera = k; save(); fitCamera(); showToast(`Camera ${CAM_ORDER.indexOf(k) + 1}: ${CAMS[k].name}`, CAMS[k].hint); if (screenNow === 'ctrl') renderCtrl(); }
 const camKey = () => G.mode === 'demo' ? 'classic' : (CAMS[data.opts.camera] ? data.opts.camera : 'classic');
 function setBasis(yaw, R){
   CAM.yaw = yaw; CAM.R = R;
@@ -878,7 +899,7 @@ function buildPlayers(mode, diff){
     case 'watch': {
       const W2 = TOUR.watch, A = W2.teams[0], B2 = W2.teams[1], nl = n => Object.assign(randomLook(), { nation:n });
       if (TOUR.cur && CAT.CUP_BY[TOUR.cur.cup].singles) return [AI(A.ai, { team:1, look:nl(A.nation) }, A.name), AI(B2.ai, { team:2, look:nl(B2.nation) }, B2.name)];
-      return [AI(A.ai, { team:1, lane:-1, look:nl(A.nation) }), AI(A.ai, { team:1, lane:1, look:nl(A.nation) }, AIS[A.ai].name2), AI(B2.ai, { team:2, lane:1, look:nl(B2.nation) }), AI(B2.ai, { team:2, lane:-1, look:nl(B2.nation) }, AIS[B2.ai].name2)];
+      return [AI(A.ai, { team:1, lane:-1, look:nl(A.nation) }, (A.players || [])[0]), AI(A.ai, { team:1, lane:1, look:nl(A.nation) }, (A.players || [])[1] || AIS[A.ai].name2), AI(B2.ai, { team:2, lane:1, look:nl(B2.nation) }, (B2.players || [])[0]), AI(B2.ai, { team:2, lane:-1, look:nl(B2.nation) }, (B2.players || [])[1] || AIS[B2.ai].name2)];
     }
     case 'tour': {
       const mk = (getAcc() && getAcc().equip.partner) || 'mate_ace', o = (TOUR.cur && TOUR.cur.opp) || { nation:'' }, nl = () => Object.assign(randomLook(), { nation:o.nation });
@@ -886,7 +907,8 @@ function buildPlayers(mode, diff){
         const boss = CAT.CUP_BY[TOUR.cur.cup].boss, onm = TOUR.cur.opp ? TOUR.cur.opp.name : AIS[diff].name;
         return [H('p1', { team:1, look:myLook(), name:n1 }, true), AI(diff, { team:2, look:boss ? MATE_LOOK.mate_lando : nl() }, boss ? AIS[diff].name : onm)];
       }
-      return [H('p1', { team:1, lane:-1, look:myLook(), name:n1 }, true), AI(mk, { team:1, lane:1, look:MATE_LOOK[mk] }), AI(diff, { team:2, lane:1, look:nl() }), AI(diff, { team:2, lane:-1, look:nl() }, AIS[diff].name2)];
+      const pl = o.players || [];
+      return [H('p1', { team:1, lane:-1, look:myLook(), name:n1 }, true), AI(mk, { team:1, lane:1, look:MATE_LOOK[mk] }), AI(diff, { team:2, lane:1, look:nl() }, pl[0]), AI(diff, { team:2, lane:-1, look:nl() }, pl[1] || AIS[diff].name2)];
     }
     case '2p': return [H('p1', { team:1, look:myLook(), name:n1 }, false, 0), H('p2', { team:2, look:p2Look(), name:n2 }, false, 1)];
     case 'duo-ai': { const mk = (getAcc() && getAcc().equip.partner) || 'mate_ace'; return [H('p1', { team:1, lane:-1, look:myLook(), name:n1 }, true), AI(mk, { team:1, lane:1, look:MATE_LOOK[mk] }), AI(diff, { team:2, lane:1 }), AI(diff, { team:2, lane:-1 }, AIS[diff].name2)]; }
@@ -954,8 +976,8 @@ function showCall(c, sv, n){
   $('#cbSub').textContent = n ? `${sv} · server ${n}` : `${sv} serving`;
   el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
   clearTimeout(callT); callT = setTimeout(() => el.classList.remove('show'), 1800);
-  if (data.sound && 'speechSynthesis' in window){
-    try { const u = new SpeechSynthesisUtterance(c.split('-').join(', ')); u.volume = .8; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {}
+  if (data.sound && volOf('volVoice') > 0 && 'speechSynthesis' in window){
+    try { const u = new SpeechSynthesisUtterance(c.split('-').join(', ')); u.volume = .9 * volOf('volVoice'); speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {}
   }
 }
 function announceCall(){
@@ -2005,6 +2027,12 @@ function drawCharacter(c, x, y, s, look, facing, swing, run, moving, t, tag, fx)
   if (hst === 'visor'){ clip(); c.fillStyle = h1; c.fillRect(-.2, -1.72, .4, .05); c.restore(); if (front){ c.fillStyle = h2; c.beginPath(); c.ellipse(0, -1.675, B.hx + .03, .045, 0, 0, Math.PI); c.fill(); } }
   if (hst === 'bucket'){ c.fillStyle = shade(h1, -.15); ell(c, 0, -1.67, .23, .055); c.fillStyle = h1; c.beginPath(); c.moveTo(-.14, -1.67); c.quadraticCurveTo(-.13, -1.83, 0, -1.84); c.quadraticCurveTo(.13, -1.83, .14, -1.67); c.closePath(); c.fill(); c.fillStyle = h2; c.fillRect(-.14, -1.71, .28, .03); }
   if (hst === 'beanie'){ c.fillStyle = h1; c.beginPath(); c.arc(0, -1.67, B.hx + .015, Math.PI, TAU); c.closePath(); c.fill(); c.fillStyle = h2; rr(c, -B.hx - .018, -1.71, (B.hx + .018) * 2, .06, .02); c.fill(); ell(c, 0, -1.84, .04, .04); }
+  if (hst === 'salakot'){   // wide woven Filipino hat
+    c.fillStyle = h1; c.beginPath(); c.ellipse(0, -1.765, .29, .075, 0, 0, TAU); c.fill();
+    c.fillStyle = shade(h1, .08); c.beginPath(); c.moveTo(-.17, -1.77); c.quadraticCurveTo(-.11, -1.96, 0, -1.985); c.quadraticCurveTo(.11, -1.96, .17, -1.77); c.closePath(); c.fill();
+    c.strokeStyle = h2; c.lineWidth = .008; for (let k = -3; k <= 3; k++) seg(c, k * .048, -1.775, k * .02, -1.955 + Math.abs(k) * .03);
+    c.lineWidth = .012; c.beginPath(); c.ellipse(0, -1.765, .29, .075, 0, 0, TAU); c.stroke(); c.fillStyle = h2; c.fillRect(-.17, -1.8, .34, .014);
+  }
   if (hst === 'laurel'){   // golden laurel wreath around the head
     c.fillStyle = h1; c.strokeStyle = h2; c.lineWidth = .008;
     for (const side of [-1, 1]) for (let k = 0; k < 6; k++){
@@ -2704,7 +2732,7 @@ function saveName(){
 }
 /* ---------- shop ---------- */
 const RARITY = { common:'#9aa4b4', rare:'#38bdf8', epic:'#c084fc', legendary:'#f5c542' };
-const rarity = it => !it.price ? 'common' : it.price <= 300 ? 'rare' : it.price <= 800 ? 'epic' : 'legendary';
+const rarity = it => CAT.rarityOf(it);       // the item's own rarity (falls back to its price)
 const COIN_SVG = '<svg class="inline-block align-[-3px]" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="#f5c542" stroke="#9a6b00" stroke-width="1.5"/><path d="M8 4.2v7.6M5.8 6.2h3.4a1.4 1.4 0 0 1 0 2.8H6.8a1.4 1.4 0 0 0 0 2.8h3.4" stroke="#7a5200" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg>';
 let shopTab = 'outfit', shopSub = 'top', shopFrom = 'menu';
 const pips = n => '●'.repeat(n) + '○'.repeat(Math.max(0, 2 - n));
@@ -2788,6 +2816,9 @@ $('#titleSel').addEventListener('change', async e => {
     showToast(id ? 'Title on' : 'Title off', id ? '🏆 ' + CAT.titleName(id) : 'Your name shows on its own');
   } catch (er){ showToast('Couldn’t change title', er.message); }
 });
+for (const k of ['volMusic', 'volSfx', 'volVoice']) $('#' + k).addEventListener('input', e => { data.opts[k] = +e.target.value; setTxt('#' + k + 'V', e.target.value + '%'); applyVolumes(); save(); });
+$('#volSfx').addEventListener('change', () => { ensureAudio(); playSfx('perfect'); });
+$('#volVoice').addEventListener('change', () => { ensureAudio(); if (data.sound && 'speechSynthesis' in window && volOf('volVoice') > 0){ try { const u = new SpeechSynthesisUtterance('15, 14, 2'); u.volume = .9 * volOf('volVoice'); speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {} } });
 $('#teName').addEventListener('input', () => { if (!$('#teGo').disabled) setTxt('#teErr', ''); });
 $('#teName').addEventListener('keydown', e => { if (e.key === 'Enter') entryGo(); });
 $('#rmCourt').addEventListener('change', e => netSend({ t:'court', v:e.target.value }));
@@ -2801,7 +2832,11 @@ $('#nationSel').addEventListener('change', e => { data[editWho].nation = e.targe
 
 /* ---------- settings + key binding ---------- */
 let ctrlSet = 'p1', REB = null;
+let setTab = 'video';
 function renderCtrl(){
+  $$('#setTabs button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === setTab));
+  $$('.setPane').forEach(p => p.classList.toggle('hidden', p.dataset.pane !== setTab));
+  for (const k of ['volMusic', 'volSfx', 'volVoice']){ const v = data.opts[k] == null ? 100 : data.opts[k], el = $('#' + k); if (document.activeElement !== el) el.value = v; setTxt('#' + k + 'V', v + '%'); }
   $$('#ctrlTabs button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === ctrlSet));
   const bs = data.binds[ctrlSet];
   $('#bindList').innerHTML = ACTIONS.map(([a, label]) => {
@@ -2977,11 +3012,9 @@ function act(name, el){
       break;
     }
     case 'music': data.opts.music = !musicOn(); save(); if (musicOn()) updateMusic(); else stopTrack(); refreshMusicBtns(); break;
-    case 'camCycle': {
-      const i = CAM_ORDER.indexOf(data.opts.camera || 'classic'), k = CAM_ORDER[(i + 1) % CAM_ORDER.length];
-      data.opts.camera = k; save(); fitCamera(); showToast(`Camera: ${CAMS[k].name}`, CAMS[k].hint);
-      break;
-    }
+    case 'setTab': setTab = el.dataset.v; renderCtrl(); break;
+    case 'chestSkip': skipChest(); break;
+    case 'camCycle': { const i = CAM_ORDER.indexOf(data.opts.camera || 'classic'); setCamera(CAM_ORDER[(i + 1) % CAM_ORDER.length]); break; }
     case 'opt': data.opts[el.dataset.k] = el.dataset.v; save(); if (el.dataset.k === 'gfx') applyGfx(); if (el.dataset.k === 'camera') fitCamera(); renderCtrl(); updateHUD(); break;
     case 'optToggle': { const k = el.dataset.k, cur = data.opts[k] === undefined ? ['fullscreen', 'pointDance', 'shake', 'music', 'replays'].includes(k) : !!data.opts[k]; data.opts[k] = !cur; save(); renderCtrl(); break; }
     case 'resetBinds': data.binds[ctrlSet] = clone(DEF_BINDS[ctrlSet]); save(); renderCtrl(); break;
@@ -3038,10 +3071,12 @@ addEventListener('keydown', e => {
   K[c] = true;
   if (e.repeat) return;
   ensureAudio();
+  if (CH.busy && !$('#chestOv').classList.contains('hidden') && ['Space', 'Enter', 'Escape'].includes(c)){ e.preventDefault(); skipChest(); return; }
   if (c === 'Escape'){ if (screenNow === 'game') togglePause(true); else if (screenNow === 'pause') togglePause(false); else if (screenNow === 'ctrl') act('ctrlBack'); return; }
   if (screenNow !== 'game' || G.paused || G.state === 'over' || G.mode === 'demo') return;
   if (G.state === 'replay' && G.netRole !== 'guest' && ['Space', 'Enter', 'NumpadEnter'].includes(c)){ endReplay(); return; }
-  if (G.mode === 'online' && /^Digit[1-8]$/.test(c)){ sendEmote(+c.slice(5) - 1); return; }
+  if (G.mode === 'online' && e.shiftKey && /^Digit[1-8]$/.test(c)){ sendEmote(+c.slice(5) - 1); return; }
+  if (/^Digit[1-6]$/.test(c) && !localHumans().some(p => Object.values(bindSets(p)).some(set => Object.values(set).includes(c)))){ setCamera(CAM_ORDER[+c.slice(5) - 1]); return; }
   if (c === 'KeyC' && !localHumans().some(p => Object.values(bindSets(p)).some(set => Object.values(set).includes('KeyC')))){ act('camCycle'); return; }
   for (const p of localHumans()) for (const a of SHOT_ACTS) if (isBind(p, a, c)) control(p, a, true);
 });
@@ -3145,10 +3180,10 @@ const CH = { busy:false, last:null, chest:null, key:false };
 const RAR_LABEL = { common:'Common', rare:'Rare', epic:'Epic', legendary:'Legendary' };
 function renderChests(a){
   $('#shopGrid').innerHTML = CAT.CHESTS.map(ch => {
-    const gold = ch.id === 'chest_gold', rk = gold ? 'legendary' : 'rare';
+    const rk = { chest_mini:'common', chest_rally:'rare', chest_gold:'legendary', chest_pinoy:'epic', chest_pro:'legendary' }[ch.id] || 'rare';
     return `<div class="chestCard r-${rk}" style="grid-column:1 / -1"><canvas class="shopPv" data-id="${ch.id}" data-slot="chestArt"></canvas>
       <div class="min-w-0 flex flex-col gap-2"><div class="font-display text-2xl">${esc(ch.name)}</div>
-      <div class="text-sm text-[var(--muted)]">Balls, courts, special hair and chest-only outfits. Duplicates turn into coins.</div>
+      <div class="text-sm text-[var(--muted)]">${esc(ch.desc || '')} ${CAT.poolOf(ch).length} possible prizes. Duplicates turn into coins.</div>
       <div class="odds">${['common', 'rare', 'epic', 'legendary'].map(r => `<span style="color:${RARITY[r]}">${RAR_LABEL[r]} ${Math.round(ch.odds[r] * 100)}%</span>`).join('')}</div>
       <div class="flex gap-2 flex-wrap mt-auto">
         <button data-act="chestOpen" data-id="${ch.id}" class="primary rounded-xl px-4 py-2.5 font-bold" ${a.coins < ch.price ? 'disabled' : ''}>Open · ${COIN_SVG} ${ch.price}</button>
@@ -3159,17 +3194,22 @@ function renderChests(a){
 function drawChestArt(cv2, id, t){
   if (!fitCanvas(cv2)) return;
   const c = cv2.getContext('2d'), W = cv2.width / DPR, H = cv2.height / DPR, gold = id === 'chest_gold';
+  const PAL = { chest_mini:{ glow:'rgba(190,205,225,.35)', body:['#a67c52', '#6a4a2a'], trim:'#d9dde3', spark:'#e5edf7' },
+    chest_rally:{ glow:'rgba(56,189,248,.35)', body:['#8b5a2b', '#5a3816'], trim:'#f5c542', spark:'#bfefff' },
+    chest_gold:{ glow:'rgba(245,197,66,.45)', body:['#b7791f', '#7c4a03'], trim:'#fff3bf', spark:'#fff3bf' },
+    chest_pinoy:{ glow:'rgba(252,209,22,.42)', body:['#1d4fbf', '#0a2a73'], trim:'#fcd116', spark:'#ffe680' },
+    chest_pro:{ glow:'rgba(56,189,248,.5)', body:['#243247', '#0c1422'], trim:'#38bdf8', spark:'#a5e8ff' } }, pal = PAL[id] || PAL.chest_rally;
   c.setTransform(DPR, 0, 0, DPR, 0, 0); c.clearRect(0, 0, W, H);
   const cx = W / 2, cy = H / 2 + 8 + Math.sin(t * 2) * 3, w = Math.min(W * .62, 120), h = w * .62;
-  const glow = c.createRadialGradient(cx, cy, 0, cx, cy, w); glow.addColorStop(0, gold ? 'rgba(245,197,66,.45)' : 'rgba(56,189,248,.35)'); glow.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = glow; c.fillRect(0, 0, W, H);
-  const body = gold ? ['#b7791f', '#7c4a03'] : ['#8b5a2b', '#5a3816'], trim = gold ? '#fff3bf' : '#f5c542';
+  const glow = c.createRadialGradient(cx, cy, 0, cx, cy, w); glow.addColorStop(0, pal.glow); glow.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = glow; c.fillRect(0, 0, W, H);
+  const body = pal.body, trim = pal.trim;
   let g = c.createLinearGradient(0, cy - h * .2, 0, cy + h * .5); g.addColorStop(0, body[0]); g.addColorStop(1, body[1]);
   c.fillStyle = g; rr(c, cx - w / 2, cy - h * .15, w, h * .65, 8); c.fill();
   g = c.createLinearGradient(0, cy - h * .6, 0, cy - h * .1); g.addColorStop(0, shade(body[0], .15)); g.addColorStop(1, body[0]);
   c.fillStyle = g; c.beginPath(); c.moveTo(cx - w / 2, cy - h * .12); c.quadraticCurveTo(cx - w / 2, cy - h * .62, cx, cy - h * .62); c.quadraticCurveTo(cx + w / 2, cy - h * .62, cx + w / 2, cy - h * .12); c.closePath(); c.fill();
   c.fillStyle = trim; for (const fx2 of [-.38, .38]) c.fillRect(cx + w * fx2 - 5, cy - h * .58, 10, h * 1.05);
   c.fillRect(cx - w / 2, cy - h * .17, w, 7); rr(c, cx - 11, cy - h * .25, 22, 26, 5); c.fill(); c.fillStyle = '#2b1a05'; ell(c, cx, cy - h * .12, 3.5, 5);
-  for (let i = 0; i < 6; i++){ const k = (t * .35 + i / 6) % 1, x = cx + Math.sin(i * 7.3) * w * .55, y = cy - h * .3 - k * h; c.globalAlpha = (1 - k) * .9; c.fillStyle = gold ? '#fff3bf' : '#bfefff'; ell(c, x, y, 2, 2); }
+  for (let i = 0; i < 6; i++){ const k = (t * .35 + i / 6) % 1, x = cx + Math.sin(i * 7.3) * w * .55, y = cy - h * .3 - k * h; c.globalAlpha = (1 - k) * .9; c.fillStyle = pal.spark; ell(c, x, y, 2, 2); }
   c.globalAlpha = 1;
 }
 function thumbOf(cv2, id){
@@ -3186,7 +3226,7 @@ function thumbOf(cv2, id){
 function rollFor(ch){
   let r = Math.random(), rar = 'common';
   for (const k of ['legendary', 'epic', 'rare', 'common']){ if (r < ch.odds[k]){ rar = k; break; } r -= ch.odds[k]; }
-  const pool = CAT.CHEST_POOL.filter(i => CAT.rarityOf(i) === rar); return pool[(Math.random() * pool.length) | 0].id;
+  const all = CAT.poolOf(ch); let pool = all.filter(i => CAT.rarityOf(i) === rar); if (!pool.length) pool = all; return pool[(Math.random() * pool.length) | 0].id;
 }
 async function openChestUI(id, useKey){
   if (CH.busy) return;
@@ -3200,7 +3240,7 @@ async function openChestUI(id, useKey){
   CH.last = res;
   ensureAudio();
   $('#chestOv').classList.remove('hidden'); setTxt('#chestTitle', ch.name); setTxt('#chestTag', useKey ? 'OPENED WITH A KEY' : 'OPENING');
-  $('#chestRes').innerHTML = ''; ['#chestEquip', '#chestAgain', '#chestClose'].forEach(sel => $(sel).classList.add('hidden'));
+  $('#chestRes').innerHTML = ''; ['#chestEquip', '#chestAgain', '#chestClose'].forEach(sel => $(sel).classList.add('hidden')); $('#chestSkip').classList.remove('hidden');
   const N = 46, WIN = 40, STEP = 126, ids = Array.from({ length:N }, (_, i) => i === WIN ? res.id : rollFor(ch));
   const reel = $('#reel');
   reel.innerHTML = ids.map((iid, i) => { const it = IT(iid), rk = CAT.rarityOf(it); return `<div class="rc r-${rk}" data-i="${i}"><canvas data-id="${iid}"></canvas><span>${esc(it.name)}</span></div>`; }).join('');
@@ -3215,23 +3255,31 @@ async function openChestUI(id, useKey){
     const tick = () => {
       if (!CH.busy) return;
       const m = new DOMMatrixReadOnly(getComputedStyle(reel).transform), idx = Math.floor((-m.m41 + win / 2 - 8) / STEP);
-      if (idx !== lastIdx){ lastIdx = idx; if (actx) mTone(actx.currentTime, 1500, .03, 'square', .035, actx.destination); }
+      if (idx !== lastIdx){ lastIdx = idx; if (actx) mTone(actx.currentTime, 1500, .03, 'square', .035, AUD.sfx || actx.destination); }
       requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
-    setTimeout(() => {
-      CH.busy = false;
+    const finish = () => {
+      CH.busy = false; CH.finish = null; $('#chestSkip').classList.add('hidden');
       const card = reel.querySelector(`[data-i="${WIN}"]`); if (card) card.classList.add('win');
       const it = IT(res.id), rk = res.rarity;
       $('#chestRes').innerHTML = `<span class="lobbyTag" style="color:${RARITY[rk]}; border-color:${RARITY[rk]}">${RAR_LABEL[rk].toUpperCase()}</span><b style="color:${RARITY[rk]}">${esc(it.name)}</b>
-        <div class="text-sm font-semibold text-[var(--muted)]">${res.dup ? `Already in your collection · +${res.refund} coins` : `New ${({ ball:'ball', court:'court', top:'shirt', bottom:'shorts', hairx:'hairstyle' })[it.slot] || 'item'} unlocked!`}</div>`;
+        <div class="text-sm font-semibold text-[var(--muted)]">${res.dup ? `Already in your collection · +${res.refund} coins` : `New ${({ ball:'ball', court:'court', top:'shirt', bottom:'shorts', hairx:'hairstyle', partner:'teammate', head:'hat', paddle:'paddle', wrist:'wristband', dance:'dance' })[it.slot] || 'item'} unlocked!`}</div>`;
       if (rk === 'epic' || rk === 'legendary') confetti();
       playSfx(rk === 'legendary' || rk === 'epic' ? 'win' : 'perfect');
       $('#chestEquip').classList.toggle('hidden', res.dup); $('#chestAgain').classList.remove('hidden'); $('#chestClose').classList.remove('hidden');
       if (res.dup || !res.dup) addNotif({ type:'info', text:res.dup ? `Chest: duplicate ${it.name} → +${res.refund} coins` : `Chest: you got ${it.name} (${RAR_LABEL[rk]})` });
       renderShop(); if (screenNow === 'menu') refreshMenu();
-    }, 5600);
+    };
+    CH.finish = finish; CH.target = target; CH.reel = reel; CH.timer = setTimeout(finish, 5600);
   });
+}
+// jump straight to the prize (button, tap on the reel, Space or Enter)
+function skipChest(){
+  if (!CH.busy || !CH.finish) return;
+  clearTimeout(CH.timer); const f = CH.finish; CH.finish = null;
+  CH.reel.style.transition = 'none'; CH.reel.style.transform = `translateX(${-CH.target}px)`;
+  f();
 }
 const EMOTES = ['👏', '😂', '🔥', '😮', '🙏', '😎', '💪', 'GG'];
 function showEmote(i, e){ const p = G.players[i]; if (p) p.emote = { e:EMOTES[e] || '👏', t:performance.now() }; }
@@ -3256,7 +3304,7 @@ function askConfirm(title, text, yes, cb, no, yesStyle){ setTxt('#cfTitle', titl
   CONFIRM.cb = cb; $('#confirmOv').classList.remove('hidden'); }
 /* ---------- tournaments ---------- */
 const TOUR = { cur:null };
-const CUP_ICON = { cup_s1:'🥉', cup_s2:'🥈', cup_s3:'🥇', cup_club:'🥉', cup_open:'🥈', cup_world:'🥇', cup_brgy:'🥉', cup_visayas:'🥈', cup_phnats:'🥇', cup_street:'🔥' };
+const CUP_ICON = { cup_pros:'🎖️', cup_pinoypros:'🎖️', cup_s1:'🥉', cup_s2:'🥈', cup_s3:'🥇', cup_club:'🥉', cup_open:'🥈', cup_world:'🥇', cup_brgy:'🥉', cup_visayas:'🥈', cup_phnats:'🥇', cup_street:'🔥' };
 function streetCard(a, c){
   const owned = a.owned.includes('mate_lando'), beat = (a.trophies || {})[c.id] || 0;
   return `<div class="cupCard streetCard"><div class="flex gap-4 items-center flex-wrap"><canvas class="landoStage" data-lando="1"></canvas>
@@ -3266,7 +3314,7 @@ function streetCard(a, c){
       <div class="text-sm font-bold mt-2" style="color:#f5c542">${owned ? '✓ Kuya Lando is on your team' : 'Three ways to get him: beat him here · win the Philippine Nationals · buy him for 20,000 coins'}</div>
       <div class="flex gap-2 flex-wrap mt-3"><button data-act="tourStart" data-cup="cup_street" class="primary rounded-xl px-4 py-2.5 font-bold">${beat ? 'Challenge him again' : 'Challenge Kuya Lando'} · ${COIN_SVG} ${c.ticket}</button>${owned ? '' : `<button data-act="shopTeammates" class="tile rounded-xl px-4 py-2.5 font-bold">Buy him · ${COIN_SVG} 20,000</button>`}</div></div></div></div>`;
 }
-const mateName = () => { const a = getAcc(); return IT((a && a.equip.partner) || 'mate_ace').name.split(' · ')[0]; };
+const mateName = () => { const a = getAcc(); return IT((a && a.equip.partner) || 'mate_ace').name.split(' · ')[0].replace(/\s*‘[^’]*’\s*/g, ' ').trim(); };
 function cupCard(a, c){
   if (c.boss) return streetCard(a, c);
   const open = CAT.cupUnlocked(a, c.id), won = (a.trophies || {})[c.id] || 0;
@@ -3312,7 +3360,8 @@ function renderTour(){
     return;
   }
   setTxt('#tourTitle', 'Pick a tournament');
-  const group = (rg, title) => `<div class="tourGroup"><span>${title}</span></div>` + CAT.CUPS.filter(c => c.region === rg).map(c => cupCard(a, c)).join('');
+  const rank = c => c.boss ? 2 : c.tier === 'Showcase' ? 1 : 0;
+  const group = (rg, title) => `<div class="tourGroup"><span>${title}</span></div>` + CAT.CUPS.filter(c => c.region === rg).sort((x, y) => rank(x) - rank(y)).map(c => cupCard(a, c)).join('');
   const lc = t && CAT.CUP_BY[t.cup], last = t && !t.alive ? `<div class="nextCard" style="border-color:${t.champion ? 'rgba(245,197,66,.6)' : 'var(--line)'}"><div><span class="lobbyTag">LAST TOURNAMENT</span><div class="font-display text-xl mt-1">${t.champion ? (lc.rounds === 1 ? '🔥 You beat ' : '🏆 Champions of the ') : (lc.rounds === 1 ? 'Lost the ' : 'Out in the ' + CAT.ROUND_NAME[t.round] + ' of the ')}${esc(lc.rounds === 1 ? 'Street Challenge' : lc.name)}</div></div></div>${lc.rounds === 1 ? '' : bracketHTML(t, lc.singles ? 'You' : (t.teams[0].name || 'You & ' + mateName()), myLook().nation)}` : '';
   $('#tourBody').innerHTML = last + group('SOLO', '🎾 Singles Tour') + group('PH', `${flagHTML('PH', 16)} Philippine Tour`) + group('WORLD', '🌍 World Tour');
   requestAnimationFrame(() => $$('#tourBody canvas[data-id]').forEach(cv2 => thumbOf(cv2, cv2.dataset.id)));
@@ -3698,7 +3747,7 @@ function beginOnline(){
     const base = { team:slotTeam(i), lane:slotLane(i, n) };
     if (!s){
       const o = r.tour && r.tour.alive && r.tour.opp;
-      if (o && AIS[o.ai]){ const p = makePlayer(Object.assign(base, { name:i < 2 ? AIS[o.ai].name : AIS[o.ai].name2, look:Object.assign(randomLook(), { nation:o.nation }) })); p.ai = mkAI(AIS[o.ai]); return p; }
+      if (o && AIS[o.ai]){ const pl = o.players || [], p = makePlayer(Object.assign(base, { name:(i < 2 ? pl[0] || AIS[o.ai].name : pl[1] || AIS[o.ai].name2), look:Object.assign(randomLook(), { nation:o.nation }) })); p.ai = mkAI(AIS[o.ai]); return p; }
       const p = makePlayer(Object.assign(base, { name:'CPU' })); p.ai = mkAI(AIS.pro); return p;
     }
     if (i === NW.you) return makePlayer(Object.assign(base, { look:myLook(), name:s.name, human:{ set:'p1', alt:true, pad:0, tag:'P1', color:SLOT_COL[i] } }));

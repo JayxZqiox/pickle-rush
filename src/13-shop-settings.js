@@ -1,6 +1,6 @@
 /* ---------- shop ---------- */
 const RARITY = { common:'#9aa4b4', rare:'#38bdf8', epic:'#c084fc', legendary:'#f5c542' };
-const rarity = it => !it.price ? 'common' : it.price <= 300 ? 'rare' : it.price <= 800 ? 'epic' : 'legendary';
+const rarity = it => CAT.rarityOf(it);       // the item's own rarity (falls back to its price)
 const COIN_SVG = '<svg class="inline-block align-[-3px]" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="#f5c542" stroke="#9a6b00" stroke-width="1.5"/><path d="M8 4.2v7.6M5.8 6.2h3.4a1.4 1.4 0 0 1 0 2.8H6.8a1.4 1.4 0 0 0 0 2.8h3.4" stroke="#7a5200" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg>';
 let shopTab = 'outfit', shopSub = 'top', shopFrom = 'menu';
 const pips = n => '●'.repeat(n) + '○'.repeat(Math.max(0, 2 - n));
@@ -84,6 +84,9 @@ $('#titleSel').addEventListener('change', async e => {
     showToast(id ? 'Title on' : 'Title off', id ? '🏆 ' + CAT.titleName(id) : 'Your name shows on its own');
   } catch (er){ showToast('Couldn’t change title', er.message); }
 });
+for (const k of ['volMusic', 'volSfx', 'volVoice']) $('#' + k).addEventListener('input', e => { data.opts[k] = +e.target.value; setTxt('#' + k + 'V', e.target.value + '%'); applyVolumes(); save(); });
+$('#volSfx').addEventListener('change', () => { ensureAudio(); playSfx('perfect'); });
+$('#volVoice').addEventListener('change', () => { ensureAudio(); if (data.sound && 'speechSynthesis' in window && volOf('volVoice') > 0){ try { const u = new SpeechSynthesisUtterance('15, 14, 2'); u.volume = .9 * volOf('volVoice'); speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {} } });
 $('#teName').addEventListener('input', () => { if (!$('#teGo').disabled) setTxt('#teErr', ''); });
 $('#teName').addEventListener('keydown', e => { if (e.key === 'Enter') entryGo(); });
 $('#rmCourt').addEventListener('change', e => netSend({ t:'court', v:e.target.value }));
@@ -97,7 +100,11 @@ $('#nationSel').addEventListener('change', e => { data[editWho].nation = e.targe
 
 /* ---------- settings + key binding ---------- */
 let ctrlSet = 'p1', REB = null;
+let setTab = 'video';
 function renderCtrl(){
+  $$('#setTabs button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === setTab));
+  $$('.setPane').forEach(p => p.classList.toggle('hidden', p.dataset.pane !== setTab));
+  for (const k of ['volMusic', 'volSfx', 'volVoice']){ const v = data.opts[k] == null ? 100 : data.opts[k], el = $('#' + k); if (document.activeElement !== el) el.value = v; setTxt('#' + k + 'V', v + '%'); }
   $$('#ctrlTabs button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === ctrlSet));
   const bs = data.binds[ctrlSet];
   $('#bindList').innerHTML = ACTIONS.map(([a, label]) => {

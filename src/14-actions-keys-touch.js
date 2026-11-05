@@ -132,11 +132,9 @@ function act(name, el){
       break;
     }
     case 'music': data.opts.music = !musicOn(); save(); if (musicOn()) updateMusic(); else stopTrack(); refreshMusicBtns(); break;
-    case 'camCycle': {
-      const i = CAM_ORDER.indexOf(data.opts.camera || 'classic'), k = CAM_ORDER[(i + 1) % CAM_ORDER.length];
-      data.opts.camera = k; save(); fitCamera(); showToast(`Camera: ${CAMS[k].name}`, CAMS[k].hint);
-      break;
-    }
+    case 'setTab': setTab = el.dataset.v; renderCtrl(); break;
+    case 'chestSkip': skipChest(); break;
+    case 'camCycle': { const i = CAM_ORDER.indexOf(data.opts.camera || 'classic'); setCamera(CAM_ORDER[(i + 1) % CAM_ORDER.length]); break; }
     case 'opt': data.opts[el.dataset.k] = el.dataset.v; save(); if (el.dataset.k === 'gfx') applyGfx(); if (el.dataset.k === 'camera') fitCamera(); renderCtrl(); updateHUD(); break;
     case 'optToggle': { const k = el.dataset.k, cur = data.opts[k] === undefined ? ['fullscreen', 'pointDance', 'shake', 'music', 'replays'].includes(k) : !!data.opts[k]; data.opts[k] = !cur; save(); renderCtrl(); break; }
     case 'resetBinds': data.binds[ctrlSet] = clone(DEF_BINDS[ctrlSet]); save(); renderCtrl(); break;
@@ -193,10 +191,12 @@ addEventListener('keydown', e => {
   K[c] = true;
   if (e.repeat) return;
   ensureAudio();
+  if (CH.busy && !$('#chestOv').classList.contains('hidden') && ['Space', 'Enter', 'Escape'].includes(c)){ e.preventDefault(); skipChest(); return; }
   if (c === 'Escape'){ if (screenNow === 'game') togglePause(true); else if (screenNow === 'pause') togglePause(false); else if (screenNow === 'ctrl') act('ctrlBack'); return; }
   if (screenNow !== 'game' || G.paused || G.state === 'over' || G.mode === 'demo') return;
   if (G.state === 'replay' && G.netRole !== 'guest' && ['Space', 'Enter', 'NumpadEnter'].includes(c)){ endReplay(); return; }
-  if (G.mode === 'online' && /^Digit[1-8]$/.test(c)){ sendEmote(+c.slice(5) - 1); return; }
+  if (G.mode === 'online' && e.shiftKey && /^Digit[1-8]$/.test(c)){ sendEmote(+c.slice(5) - 1); return; }
+  if (/^Digit[1-6]$/.test(c) && !localHumans().some(p => Object.values(bindSets(p)).some(set => Object.values(set).includes(c)))){ setCamera(CAM_ORDER[+c.slice(5) - 1]); return; }
   if (c === 'KeyC' && !localHumans().some(p => Object.values(bindSets(p)).some(set => Object.values(set).includes('KeyC')))){ act('camCycle'); return; }
   for (const p of localHumans()) for (const a of SHOT_ACTS) if (isBind(p, a, c)) control(p, a, true);
 });
