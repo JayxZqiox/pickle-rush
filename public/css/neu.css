@@ -1,0 +1,146 @@
+/* =====================================================================
+   Pickle Rush · "Soft Court" theme
+   Neumorphism (soft extruded surfaces, pressed-in wells) + motion graphics.
+   Loaded after style.css and utilities.css, so it restyles the menus,
+   login, account and shop without touching the game itself.
+   ===================================================================== */
+:root{
+  --nm:#18213a;                      /* the surface everything is "made of" */
+  --nm-2:#1d2745;                    /* a touch lighter, for raised faces */
+  --nm-hi:rgba(74, 98, 148, .30);    /* light from the top-left */
+  --nm-lo:rgba(2, 6, 16, .80);       /* shadow to the bottom-right */
+  --raise:-7px -7px 16px var(--nm-hi), 8px 9px 20px var(--nm-lo);
+  --raise-sm:-4px -4px 10px var(--nm-hi), 5px 6px 13px var(--nm-lo);
+  --raise-lg:-12px -12px 30px rgba(74, 98, 148, .2), 16px 18px 44px rgba(0, 0, 0, .62);
+  --press:inset 5px 5px 12px var(--nm-lo), inset -4px -4px 10px var(--nm-hi);
+  --press-sm:inset 3px 3px 7px var(--nm-lo), inset -3px -3px 7px var(--nm-hi);
+  --lime-glow:0 0 24px -6px rgba(166, 242, 61, .65);
+  --spring:cubic-bezier(.2, 1.35, .35, 1);
+  --glide:cubic-bezier(.22, .8, .25, 1);
+}
+
+/* ---------- the ambient stage behind every menu ---------- */
+#ambient{position:fixed; inset:0; z-index:15; pointer-events:none; opacity:0; transition:opacity .6s var(--glide);
+  background:radial-gradient(120% 90% at 50% 0%, rgba(24, 33, 58, .55), rgba(9, 13, 26, .86) 70%);}
+body.inMenu #ambient{opacity:1;}
+#ambient i{position:absolute; width:46vmax; height:46vmax; border-radius:50%; opacity:.55; will-change:transform;}
+#ambient i:nth-of-type(1){left:-12vmax; top:-14vmax; background:radial-gradient(circle, rgba(166, 242, 61, .26), transparent 62%); animation:orbA 26s ease-in-out infinite alternate;}
+#ambient i:nth-of-type(2){right:-14vmax; top:10vmax; background:radial-gradient(circle, rgba(255, 122, 61, .2), transparent 62%); animation:orbB 31s ease-in-out infinite alternate;}
+#ambient i:nth-of-type(3){left:20vmax; bottom:-22vmax; background:radial-gradient(circle, rgba(56, 189, 248, .2), transparent 62%); animation:orbC 36s ease-in-out infinite alternate;}
+#ambient b{position:absolute; inset:-30%; background:conic-gradient(from 0deg, transparent 0 40%, rgba(166, 242, 61, .05) 50%, transparent 60% 100%); animation:sweep 40s linear infinite;}
+@keyframes orbA{to{transform:translate(18vmax, 12vmax) scale(1.15);}}
+@keyframes orbB{to{transform:translate(-16vmax, 14vmax) scale(.9);}}
+@keyframes orbC{to{transform:translate(10vmax, -16vmax) scale(1.2);}}
+@keyframes sweep{to{transform:rotate(360deg);}}
+
+/* ---------- surfaces ---------- */
+.glass, .dashNav, .dashSide{background:linear-gradient(145deg, #1c2643, #151d34) !important; border:1px solid rgba(255, 255, 255, .045) !important; box-shadow:var(--raise-lg) !important;}
+.tile{background:linear-gradient(145deg, var(--nm-2), var(--nm)) !important; border:1px solid rgba(255, 255, 255, .035) !important; box-shadow:var(--raise-sm);
+  transition:transform .25s var(--spring), box-shadow .25s var(--glide), color .2s;}
+button.tile:active, a.tile:active, .tile[data-act]:active{transform:scale(.97); box-shadow:var(--press-sm);}
+@media (hover:hover){ button.tile:hover:not(:disabled){transform:translateY(-2px); box-shadow:var(--raise);} }
+
+/* wells: things you read from, pressed into the surface */
+.statTile, .mini, .field, .seg, .codeBox, .recCode, .featRow span, .odds, .bar{background:var(--nm) !important; border:1px solid rgba(0, 0, 0, .25) !important; box-shadow:var(--press-sm) !important;}
+.statTile{border-radius:16px;}
+.mini{border-radius:14px;}
+.field{border-radius:16px; transition:box-shadow .25s var(--glide);}
+.field:focus-within{box-shadow:var(--press-sm), 0 0 0 2px rgba(166, 242, 61, .55), var(--lime-glow) !important;}
+.field input, .field select{background:transparent !important;}
+
+/* ---------- segmented controls: a pressed track with a raised thumb ---------- */
+.seg{border-radius:16px; padding:5px;}
+.seg > button{border-radius:12px; transition:color .2s, transform .25s var(--spring), box-shadow .25s var(--glide), background .25s;}
+.seg > button:active{transform:scale(.95);}
+.chip-on{background:linear-gradient(145deg, #c6ff62, #93df29) !important; color:#0b1702 !important; border-color:transparent !important;
+  box-shadow:-3px -3px 8px var(--nm-hi), 4px 5px 12px var(--nm-lo), var(--lime-glow) !important; animation:chipIn .35s var(--spring);}
+@keyframes chipIn{from{transform:scale(.88);} to{transform:scale(1);}}
+
+/* ---------- primary buttons: a soft lime pebble that presses in ---------- */
+.primary{background:linear-gradient(145deg, #c9ff66, #95e02b) !important; border:0 !important;
+  box-shadow:-5px -5px 12px var(--nm-hi), 7px 8px 18px var(--nm-lo), var(--lime-glow) !important;
+  transition:transform .22s var(--spring), box-shadow .22s var(--glide), filter .2s;}
+@media (hover:hover){ .primary:hover:not(:disabled){transform:translateY(-2px); filter:brightness(1.05);} }
+.primary:active:not(:disabled){transform:scale(.97); box-shadow:inset 4px 4px 10px rgba(60, 100, 10, .55), inset -3px -3px 8px rgba(230, 255, 170, .6) !important;}
+.primary:disabled{filter:saturate(.3) brightness(.7); box-shadow:var(--raise-sm) !important;}
+
+/* ---------- navigation ---------- */
+.navBtn{transition:color .2s, box-shadow .3s var(--glide), transform .25s var(--spring);}
+@media (hover:hover){ .navBtn:hover{background:transparent !important; box-shadow:var(--raise-sm); transform:translateX(2px);} }
+.navBtn.on{background:var(--nm) !important; box-shadow:var(--press-sm) !important; color:var(--accent) !important;}
+.navBtn.on::before{content:""; position:absolute; left:6px; top:50%; width:6px; height:6px; margin-top:-3px; border-radius:50%; background:var(--accent); box-shadow:var(--lime-glow); animation:dotPulse 2s ease-in-out infinite;}
+@keyframes dotPulse{50%{transform:scale(1.5); opacity:.6;}}
+.logo-ball{animation:ballBob 3.2s ease-in-out infinite; transform-origin:50% 60%;}
+@keyframes ballBob{0%, 100%{transform:translateY(0) rotate(0);} 50%{transform:translateY(-4px) rotate(-14deg);}}
+
+/* ---------- cards ---------- */
+.modeCard, .rcard, .cupCard, .achCard, .chestCard, .roomCard, .quickCard, .pcard, .nextCard, .prize, .heroInfo .nextOpp{
+  border:1px solid rgba(255, 255, 255, .04) !important; box-shadow:var(--raise) !important;
+  transition:transform .3s var(--spring), box-shadow .3s var(--glide) !important;}
+.modeCard{background:linear-gradient(145deg, #1f2a4a, #161e36) !important;}
+@media (hover:hover){
+  .modeCard:hover, .rcard:hover, .cupCard:hover, .roomCard:hover, .quickCard:hover, .chestCard:hover{transform:translateY(-5px); box-shadow:-10px -10px 22px var(--nm-hi), 14px 18px 32px var(--nm-lo) !important;}
+  .modeCard:hover::after{transform:scale(1.35);}
+}
+.modeCard:active{transform:scale(.97) !important; box-shadow:var(--press) !important;}
+.rcard{border:2px solid var(--rc-b, rgba(255, 255, 255, .05)) !important;}
+.duprTile{background:linear-gradient(145deg, #241f2a, #191726) !important; box-shadow:var(--raise-sm), 0 0 0 1px rgba(255, 122, 61, .25) !important; animation:tileGlow 4s ease-in-out infinite;}
+@keyframes tileGlow{50%{box-shadow:var(--raise-sm), 0 0 0 1px rgba(255, 122, 61, .55), 0 0 26px -8px rgba(255, 122, 61, .6);}}
+.lobbyTag{box-shadow:var(--raise-sm);}
+.kbd{box-shadow:var(--raise-sm) !important; border-color:rgba(255, 255, 255, .05) !important;}
+.titleChip{box-shadow:var(--press-sm);}
+#bellBtn{box-shadow:var(--raise) !important; transition:transform .25s var(--spring);}
+#bellBtn:active{transform:scale(.92); box-shadow:var(--press) !important;}
+.hero{box-shadow:var(--raise-lg) !important; border:1px solid rgba(255, 255, 255, .04) !important;}
+.stickyHead{background:linear-gradient(180deg, #1a233f 70%, rgba(26, 35, 63, 0)) !important;}
+
+/* ---------- motion: everything glides in ---------- */
+@keyframes neuIn{from{opacity:0; transform:translateY(24px) scale(.965); filter:blur(8px);} to{opacity:1; transform:none; filter:none;}}
+@keyframes neuPop{from{opacity:0; transform:translateY(14px) scale(.94);} to{opacity:1; transform:none;}}
+.screen:not(.off) > .glass{animation:neuIn .6s var(--glide) both !important;}
+.screen:not(.off) .dashNav{animation:neuIn .6s var(--glide) both;}
+.screen:not(.off) .hero{animation:neuIn .65s .06s var(--glide) both;}
+.screen:not(.off) .dashSide{animation:neuIn .7s .12s var(--glide) both;}
+.screen:not(.off) .authHero{animation:neuIn .7s var(--glide) both;}
+.screen:not(.off) .authCard{animation:neuIn .7s .1s var(--glide) both;}
+.modeRow > *{animation:neuPop .55s var(--spring) both;}
+.modeRow > :nth-child(1){animation-delay:.18s} .modeRow > :nth-child(2){animation-delay:.24s} .modeRow > :nth-child(3){animation-delay:.3s}
+.modeRow > :nth-child(4){animation-delay:.36s} .modeRow > :nth-child(5){animation-delay:.42s}
+#shopGrid > *, #achGrid > *, #tourBody > *, #rBoard > *, #diffList > *, .navList > *{animation:neuPop .45s var(--spring) both;}
+#shopGrid > :nth-child(2), #achGrid > :nth-child(2), #tourBody > :nth-child(2), #rBoard > :nth-child(2), #diffList > :nth-child(2), .navList > :nth-child(2){animation-delay:.04s}
+#shopGrid > :nth-child(3), #achGrid > :nth-child(3), #tourBody > :nth-child(3), #rBoard > :nth-child(3), #diffList > :nth-child(3), .navList > :nth-child(3){animation-delay:.08s}
+#shopGrid > :nth-child(4), #achGrid > :nth-child(4), #tourBody > :nth-child(4), #rBoard > :nth-child(4), #diffList > :nth-child(4), .navList > :nth-child(4){animation-delay:.12s}
+#shopGrid > :nth-child(5), #achGrid > :nth-child(5), #tourBody > :nth-child(5), #rBoard > :nth-child(5), #diffList > :nth-child(5), .navList > :nth-child(5){animation-delay:.16s}
+#shopGrid > :nth-child(6), #achGrid > :nth-child(6), #tourBody > :nth-child(6), #rBoard > :nth-child(6), #diffList > :nth-child(6), .navList > :nth-child(6){animation-delay:.2s}
+#shopGrid > :nth-child(n+7), #achGrid > :nth-child(n+7), #tourBody > :nth-child(n+7), #rBoard > :nth-child(n+7), #diffList > :nth-child(n+7), .navList > :nth-child(n+7){animation-delay:.24s}
+.setPane:not(.hidden), .authPane:not(.hidden){animation:paneIn .4s var(--glide) both;}
+@keyframes paneIn{from{opacity:0; transform:translateX(14px);} to{opacity:1; transform:none;}}
+
+/* ---------- login page ---------- */
+.authHero{position:relative; overflow:hidden; will-change:transform; transition:transform .5s var(--glide);}
+.authHero::after{content:""; position:absolute; inset:-40%; pointer-events:none; background:radial-gradient(40% 40% at 50% 50%, rgba(166, 242, 61, .14), transparent 70%); animation:orbA 14s ease-in-out infinite alternate;}
+.heroTitle{background:linear-gradient(100deg, #eef3fb 0%, #e8ff3d 25%, #eef3fb 45%, #ff9a5a 70%, #eef3fb 100%); background-size:250% 100%;
+  -webkit-background-clip:text; background-clip:text; color:transparent !important; animation:titleShine 7s ease-in-out infinite;}
+@keyframes titleShine{0%, 100%{background-position:0% 50%;} 50%{background-position:100% 50%;}}
+.featRow span{border-radius:99px !important; animation:chipFloat 4.5s ease-in-out infinite;}
+.featRow span:nth-child(2){animation-delay:-1.1s} .featRow span:nth-child(3){animation-delay:-2.2s} .featRow span:nth-child(4){animation-delay:-3.3s}
+@keyframes chipFloat{50%{transform:translateY(-4px);}}
+.authCard .primary{letter-spacing:.02em;}
+.authOr span{background:#18213a !important;}
+
+/* ---------- click ripple ---------- */
+.ripHost{position:relative;}
+.ripWrap{position:absolute; inset:0; border-radius:inherit; overflow:hidden; pointer-events:none; z-index:0;}
+.rip{position:absolute; border-radius:50%; transform:translate(-50%, -50%) scale(0); background:radial-gradient(circle, rgba(255, 255, 255, .35), rgba(255, 255, 255, 0) 70%); animation:ripple .6s var(--glide) forwards;}
+.primary .rip{background:radial-gradient(circle, rgba(255, 255, 255, .6), rgba(255, 255, 255, 0) 70%);}
+@keyframes ripple{to{transform:translate(-50%, -50%) scale(1); opacity:0;}}
+
+/* ---------- people who prefer less motion get a calm, still version ---------- */
+@media (prefers-reduced-motion: reduce){
+  #ambient i, #ambient b, .authHero::after{animation:none !important;}
+  .screen *, .screen::before, .screen::after{animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important;}
+  .rip{display:none;}
+}
+/* a gentle 3D tilt on the login hero (uses `rotate` so it never fights the entrance animation) */
+.authWrap{perspective:1100px;}
+.authHero{transition:rotate .5s var(--glide), transform .5s var(--glide);}

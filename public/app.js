@@ -2513,6 +2513,8 @@ const MENU_SCREENS = ['menu', 'diff', 'char', 'rank', 'how', 'signup', 'online',
 function show(id){
   $$('.screen').forEach(s => s.classList.toggle('off', s.id !== id));
   screenNow = id ? id.replace('s-', '') : 'game';
+  // the soft animated backdrop only plays behind menus, never over a match
+  document.body.classList.toggle('inMenu', !['game', 'pause', 'result'].includes(screenNow) && !(screenNow === 'ctrl' && ctrlFrom !== 'menu'));
   const wantsDemo = MENU_SCREENS.includes(screenNow) || (screenNow === 'ctrl' && ctrlFrom === 'menu');
   if (wantsDemo && G.mode !== 'demo'){ G.netRole = null; startMatch('demo'); }
   invalidateRects(); HUD_RECT = null;
@@ -2819,6 +2821,21 @@ $('#titleSel').addEventListener('change', async e => {
 for (const k of ['volMusic', 'volSfx', 'volVoice']) $('#' + k).addEventListener('input', e => { data.opts[k] = +e.target.value; setTxt('#' + k + 'V', e.target.value + '%'); applyVolumes(); save(); });
 $('#volSfx').addEventListener('change', () => { ensureAudio(); playSfx('perfect'); });
 $('#volVoice').addEventListener('change', () => { ensureAudio(); if (data.sound && 'speechSynthesis' in window && volOf('volVoice') > 0){ try { const u = new SpeechSynthesisUtterance('15, 14, 2'); u.volume = .9 * volOf('volVoice'); speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {} } });
+/* motion: a soft ripple from wherever you press a button or card */
+document.addEventListener('pointerdown', e => {
+  const host = e.target.closest && e.target.closest('button, .tile, .modeCard, .navBtn, .rcard, .chestCard, .cupCard');
+  if (!host || host.disabled || host.closest('#touch, #hud, #ctrlBtns, #bellBtn') || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (getComputedStyle(host).position === 'static') host.classList.add('ripHost');
+  let w = host.querySelector(':scope > .ripWrap'); if (!w){ w = document.createElement('span'); w.className = 'ripWrap'; host.appendChild(w); }
+  const r = host.getBoundingClientRect(), d = Math.max(r.width, r.height) * 2.2, s = document.createElement('i');
+  s.className = 'rip'; s.style.cssText = `left:${e.clientX - r.left}px; top:${e.clientY - r.top}px; width:${d}px; height:${d}px`;
+  w.appendChild(s); setTimeout(() => s.remove(), 650);
+}, { passive:true });
+// motion: the login hero leans toward the pointer
+for (const el of $$('.authHero')){
+  el.addEventListener('pointermove', e => { const r = el.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; el.style.rotate = `${-y} ${x} 0 ${Math.min(7, Math.hypot(x, y) * 12).toFixed(2)}deg`; });
+  el.addEventListener('pointerleave', () => { el.style.rotate = ''; });
+}
 $('#teName').addEventListener('input', () => { if (!$('#teGo').disabled) setTxt('#teErr', ''); });
 $('#teName').addEventListener('keydown', e => { if (e.key === 'Enter') entryGo(); });
 $('#rmCourt').addEventListener('change', e => netSend({ t:'court', v:e.target.value }));

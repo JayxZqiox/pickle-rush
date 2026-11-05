@@ -107,6 +107,8 @@ const MENU_SCREENS = ['menu', 'diff', 'char', 'rank', 'how', 'signup', 'online',
 function show(id){
   $$('.screen').forEach(s => s.classList.toggle('off', s.id !== id));
   screenNow = id ? id.replace('s-', '') : 'game';
+  // the soft animated backdrop only plays behind menus, never over a match
+  document.body.classList.toggle('inMenu', !['game', 'pause', 'result'].includes(screenNow) && !(screenNow === 'ctrl' && ctrlFrom !== 'menu'));
   const wantsDemo = MENU_SCREENS.includes(screenNow) || (screenNow === 'ctrl' && ctrlFrom === 'menu');
   if (wantsDemo && G.mode !== 'demo'){ G.netRole = null; startMatch('demo'); }
   invalidateRects(); HUD_RECT = null;
