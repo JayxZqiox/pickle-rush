@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=23">
 <link rel="stylesheet" href="css/utilities.css?v=19">
-<link rel="stylesheet" href="css/neu.css?v=24">
+<link rel="stylesheet" href="css/neu.css?v=26">
 </head>
 <body class="overflow-hidden select-none">
 <canvas id="game" aria-label="Pickleball court"></canvas>
@@ -113,7 +113,7 @@
         <button data-act="duo" class="modeCard mcGreen"><svg class="ico " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8.5" r="3"/><path d="M3.5 19c.6-3 2.8-4.6 5.5-4.6s4.9 1.6 5.5 4.6"/><circle cx="17" cy="9.5" r="2.4"/><path d="M15.5 14.6c2.3-.2 4.3 1.1 5 4"/></svg><b>2v2</b><span>Doubles</span></button>
         <button data-act="rally" class="modeCard mcBlue"><svg class="ico " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3 5.5 13.5H12L11 21l7.5-10.5H12z"/></svg><b>Rally</b><span id="mBest">Best: 0</span></button>
         <button data-act="online" class="modeCard mcPurple"><svg class="ico " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.4 3.8 5.2 3.8 8.5s-1.2 6.1-3.8 8.5c-2.6-2.4-3.8-5.2-3.8-8.5s1.2-6.1 3.8-8.5z"/></svg><b>Online</b><span id="mOnlineSub">Quick match &amp; rooms</span></button>
-        <button data-act="tour" class="modeCard mcGold"><span style="font-size:26px; line-height:1; margin-bottom:6px">🏆</span><b>Tournament</b><span>Cups &amp; exclusive prizes</span></button>
+        <button data-act="tour" class="modeCard mcGold tourBanner"><span class="tbIco">🏆</span><span class="tbTxt"><b>Tournaments</b><span>Singles, Philippine and World cups · win titles and exclusive prizes</span></span><span class="tbGo">View cups →</span></button>
       </div>
       <div class="glass chPanel">
         <div class="flex items-center justify-between gap-2 flex-wrap"><div class="flex items-center gap-2"><span class="lobbyTag">CHALLENGES</span><div id="chTabs" class="seg"><button data-act="chTab" data-v="d" class="chip-on">Daily</button><button data-act="chTab" data-v="w">Weekly</button></div></div><span id="chLeft" class="text-xs font-bold text-[var(--muted)]"></span></div>
@@ -122,9 +122,10 @@
     </main>
     <aside class="glass dashSide">
       <div class="flex items-center justify-between gap-2">
-        <div class="min-w-0"><div id="mName" class="font-display text-lg truncate">Player</div><div id="mTitle" class="titleChip hidden"></div><button id="mAccBtn" data-act="signup" class="text-sm font-semibold underline underline-offset-4 decoration-2 decoration-[var(--accent)]">Sign up</button></div>
+        <div class="min-w-0"><div id="mName" class="font-display text-lg truncate">Player</div><button id="mAccBtn" data-act="signup" class="text-sm font-semibold underline underline-offset-4 decoration-2 decoration-[var(--accent)]">Sign up</button></div>
         <span class="flex gap-1.5 items-center"><button data-act="shop" class="coinPill" title="Chest keys: open chests in the shop" style="color:#bfefff; background:rgba(56,189,248,.12); border-color:rgba(56,189,248,.35)">🔑 <b id="mKeys">0</b></button><span class="coinPill"><svg class="inline-block align-[-3px]" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="#f5c542" stroke="#9a6b00" stroke-width="1.5"/><path d="M8 4.2v7.6M5.8 6.2h3.4a1.4 1.4 0 0 1 0 2.8H6.8a1.4 1.4 0 0 0 0 2.8h3.4" stroke="#7a5200" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg> <b id="mCoins">0</b></span></span>
       </div>
+      <div id="mTitle" class="titleChip sideTitle hidden"></div>
       <div class="xpBlock">
         <svg class="ring" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="42" class="ringBg"/><circle id="mRing" cx="50" cy="50" r="42" class="ringFg"/></svg>
         <div class="ringTxt"><span>LEVEL</span><b id="mLevel">1</b></div>
@@ -715,6 +716,6 @@
   });
 })();
 </script>
-<script src="app.js?v=24"></script>
+<script src="app.js?v=25"></script>
 </body>
 </html>

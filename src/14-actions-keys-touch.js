@@ -87,6 +87,7 @@ function act(name, el){
     case 'teGo': entryGo(); break;
     case 'tourPlay': tourPlay(); break;
     case 'tourWatch': tourWatch(el.dataset.key); break;
+    case 'tourRegion': tourRegion = el.dataset.v; renderTour(); break;
     case 'watchSkip': watchSkip(); break;
     case 'shopTeammates': show('s-shop'); shopTab = 'partner'; renderShop(); break;
     case 'tourForfeit': askConfirm('Forfeit this tournament?', 'You’ll be out of the tournament and keep the coins you already won.', 'Forfeit', () => tourQuit().then(renderTour), 'Stay in'); break;

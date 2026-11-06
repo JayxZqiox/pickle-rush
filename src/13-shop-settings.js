@@ -87,6 +87,8 @@ $('#titleSel').addEventListener('change', async e => {
 for (const k of ['volMusic', 'volSfx', 'volVoice']) $('#' + k).addEventListener('input', e => { data.opts[k] = +e.target.value; setTxt('#' + k + 'V', e.target.value + '%'); applyVolumes(); save(); });
 $('#volSfx').addEventListener('change', () => { ensureAudio(); playSfx('perfect'); });
 $('#volVoice').addEventListener('change', () => { ensureAudio(); if (data.sound && 'speechSynthesis' in window && volOf('volVoice') > 0){ try { const u = new SpeechSynthesisUtterance('15, 14, 2'); u.volume = .9 * volOf('volVoice'); speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {} } });
+// the menu becomes a slim icon rail on medium screens: keep a tooltip on every item
+for (const b of $$('.dashNav .navBtn')){ const t = b.textContent.trim(); if (t){ b.title = t; b.setAttribute('aria-label', t); } }
 /* motion: a soft ripple from wherever you press a button or card */
 document.addEventListener('pointerdown', e => {
   const host = e.target.closest && e.target.closest('button, .tile, .modeCard, .navBtn, .rcard, .chestCard, .cupCard');

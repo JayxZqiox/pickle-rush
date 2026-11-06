@@ -2821,6 +2821,8 @@ $('#titleSel').addEventListener('change', async e => {
 for (const k of ['volMusic', 'volSfx', 'volVoice']) $('#' + k).addEventListener('input', e => { data.opts[k] = +e.target.value; setTxt('#' + k + 'V', e.target.value + '%'); applyVolumes(); save(); });
 $('#volSfx').addEventListener('change', () => { ensureAudio(); playSfx('perfect'); });
 $('#volVoice').addEventListener('change', () => { ensureAudio(); if (data.sound && 'speechSynthesis' in window && volOf('volVoice') > 0){ try { const u = new SpeechSynthesisUtterance('15, 14, 2'); u.volume = .9 * volOf('volVoice'); speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {} } });
+// the menu becomes a slim icon rail on medium screens: keep a tooltip on every item
+for (const b of $$('.dashNav .navBtn')){ const t = b.textContent.trim(); if (t){ b.title = t; b.setAttribute('aria-label', t); } }
 /* motion: a soft ripple from wherever you press a button or card */
 document.addEventListener('pointerdown', e => {
   const host = e.target.closest && e.target.closest('button, .tile, .modeCard, .navBtn, .rcard, .chestCard, .cupCard');
@@ -2984,6 +2986,7 @@ function act(name, el){
     case 'teGo': entryGo(); break;
     case 'tourPlay': tourPlay(); break;
     case 'tourWatch': tourWatch(el.dataset.key); break;
+    case 'tourRegion': tourRegion = el.dataset.v; renderTour(); break;
     case 'watchSkip': watchSkip(); break;
     case 'shopTeammates': show('s-shop'); shopTab = 'partner'; renderShop(); break;
     case 'tourForfeit': askConfirm('Forfeit this tournament?', 'You’ll be out of the tournament and keep the coins you already won.', 'Forfeit', () => tourQuit().then(renderTour), 'Stay in'); break;
@@ -3332,8 +3335,22 @@ function streetCard(a, c){
       <div class="flex gap-2 flex-wrap mt-3"><button data-act="tourStart" data-cup="cup_street" class="primary rounded-xl px-4 py-2.5 font-bold">${beat ? 'Challenge him again' : 'Challenge Kuya Lando'} · ${COIN_SVG} ${c.ticket}</button>${owned ? '' : `<button data-act="shopTeammates" class="tile rounded-xl px-4 py-2.5 font-bold">Buy him · ${COIN_SVG} 20,000</button>`}</div></div></div></div>`;
 }
 const mateName = () => { const a = getAcc(); return IT((a && a.equip.partner) || 'mate_ace').name.split(' · ')[0].replace(/\s*‘[^’]*’\s*/g, ' ').trim(); };
+let tourRegion = 'SOLO';
 function cupCard(a, c){
   if (c.boss) return streetCard(a, c);
+  const open = CAT.cupUnlocked(a, c.id), won = (a.trophies || {})[c.id] || 0;
+  const lock = c.need ? `Reach a ${c.need.toFixed(1)} rating or win the ${CAT.CUP_BY[c.prev].name} to unlock` : '';
+  const chips = [c.venue ? `📍 ${esc(IT(c.venue).name)}` : '', `🎯 ${c.lo.toFixed(1)}–${c.hi.toFixed(1)} rating`, `🏅 ${c.rounds} rounds`, `${COIN_SVG} ${c.coins.join(' / ')}`, `🔑 ${c.keys} for champions`, `🎟 Ticket ${c.ticket}`].filter(Boolean);
+  return `<div class="cupCard ${open ? '' : 'locked'}">
+    <div class="cupTop"><div class="cupIcon">${CUP_ICON[c.id] || '🏆'}</div>
+      <div class="min-w-0 flex-1"><div class="cupName">${esc(c.name)}</div><div class="cupBadges"><span class="tierBadge t-${esc(c.tier.toLowerCase())}">${esc(c.tier)}</span>${c.singles ? '<span class="tierBadge">Solo</span>' : '<span class="tierBadge">Doubles</span>'}${won ? `<span class="tierBadge won">🏆 Won × ${won}</span>` : ''}</div></div></div>
+    <div class="cupChips">${chips.map(x => `<span>${x}</span>`).join('')}</div>
+    <div class="cupPrizeHead">Exclusive prizes · only won here</div>
+    <div class="prizeRow">${c.prizes.map(id => `<div class="prize r-${CAT.rarityOf(IT(id))}"><canvas data-id="${id}"></canvas><span>${esc(IT(id).name)}</span>${a.owned.includes(id) ? '<em>OWNED</em>' : ''}</div>`).join('')}</div>
+    ${open ? `<div class="cupActions"><button data-act="tourStart" data-cup="${c.id}" class="primary rounded-xl px-4 py-2.5 font-bold">${c.singles ? 'Enter solo' : 'Enter with ' + esc(mateName())} · ${COIN_SVG} ${c.ticket}</button>${c.singles ? '' : `<button data-act="tourOnline" data-cup="${c.id}" class="tile rounded-xl px-4 py-2.5 font-bold">Team up online</button>`}</div>`
+      : `<div class="cupLock">🔒 ${lock}</div>`}</div>`;
+}
+function cupCardOld(a, c){
   const open = CAT.cupUnlocked(a, c.id), won = (a.trophies || {})[c.id] || 0;
   const lock = c.need ? `Reach a ${c.need.toFixed(1)} rating or win the ${CAT.CUP_BY[c.prev].name} to unlock` : '';
   return `<div class="cupCard ${open ? '' : 'locked'}"><div class="cupHead"><div class="cupIcon">${CUP_ICON[c.id]}</div>
@@ -3380,7 +3397,10 @@ function renderTour(){
   const rank = c => c.boss ? 2 : c.tier === 'Showcase' ? 1 : 0;
   const group = (rg, title) => `<div class="tourGroup"><span>${title}</span></div>` + CAT.CUPS.filter(c => c.region === rg).sort((x, y) => rank(x) - rank(y)).map(c => cupCard(a, c)).join('');
   const lc = t && CAT.CUP_BY[t.cup], last = t && !t.alive ? `<div class="nextCard" style="border-color:${t.champion ? 'rgba(245,197,66,.6)' : 'var(--line)'}"><div><span class="lobbyTag">LAST TOURNAMENT</span><div class="font-display text-xl mt-1">${t.champion ? (lc.rounds === 1 ? '🔥 You beat ' : '🏆 Champions of the ') : (lc.rounds === 1 ? 'Lost the ' : 'Out in the ' + CAT.ROUND_NAME[t.round] + ' of the ')}${esc(lc.rounds === 1 ? 'Street Challenge' : lc.name)}</div></div></div>${lc.rounds === 1 ? '' : bracketHTML(t, lc.singles ? 'You' : (t.teams[0].name || 'You & ' + mateName()), myLook().nation)}` : '';
-  $('#tourBody').innerHTML = last + group('SOLO', '🎾 Singles Tour') + group('PH', `${flagHTML('PH', 16)} Philippine Tour`) + group('WORLD', '🌍 World Tour');
+  const regions = [['SOLO', '🎾 Singles'], ['PH', `${flagHTML('PH', 14)} Philippine`], ['WORLD', '🌍 World']];
+  const tabs = `<div id="tourTabs" class="seg tourTabs">${regions.map(([k, l]) => `<button data-act="tourRegion" data-v="${k}" class="${tourRegion === k ? 'chip-on' : ''}">${l} <i>${CAT.CUPS.filter(c => c.region === k).length}</i></button>`).join('')}</div>`;
+  const list = CAT.CUPS.filter(c => c.region === tourRegion).sort((x, y) => rank(x) - rank(y)).map(c => cupCard(a, c)).join('');
+  $('#tourBody').innerHTML = last + tabs + `<div class="cupGrid">${list}</div>`;
   requestAnimationFrame(() => $$('#tourBody canvas[data-id]').forEach(cv2 => thumbOf(cv2, cv2.dataset.id)));
 }
 // entering costs a ticket; doubles teams pick a name first

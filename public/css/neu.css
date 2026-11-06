@@ -144,3 +144,76 @@ button.tile:active, a.tile:active, .tile[data-act]:active{transform:scale(.97); 
 /* a gentle 3D tilt on the login hero (uses `rotate` so it never fights the entrance animation) */
 .authWrap{perspective:1100px;}
 .authHero{transition:rotate .5s var(--glide), transform .5s var(--glide);}
+
+/* =====================================================================
+   Layout cleanup: roomier dashboard, tidy mode cards, readable tournaments
+   ===================================================================== */
+/* medium screens: the left menu becomes a slim icon rail so the middle has room */
+@media (min-width:761px) and (max-width:1279px){
+  .dash{grid-template-columns:78px minmax(0,1fr) 280px !important; grid-template-areas:"nav main side" !important;}
+  .dashNav{padding:16px 10px !important; align-items:center;}
+  .dashNav > :first-child > :not(svg){display:none;}
+  .dashNav > :first-child{justify-content:center; padding:0 !important;}
+  .navList{align-items:center;}
+  .navBtn{font-size:0 !important; width:52px; height:48px; justify-content:center; padding:0 !important; gap:0 !important;}
+  .navBtn .ico{width:22px; height:22px; margin:0;}
+  .navBtn .navDot{position:absolute; top:8px; right:8px;}
+  .navBtn.on::before{left:3px;}
+  .navFoot{display:none !important;}
+}
+@media (min-width:761px) and (max-width:1020px){
+  .dash{grid-template-columns:78px minmax(0,1fr) !important; grid-template-areas:"nav main" "nav side" !important;}
+}
+/* mode cards: four even cards + one wide tournament banner */
+@media (min-width:761px){ .modeRow{grid-template-columns:repeat(4, minmax(0,1fr)) !important;} }
+.modeRow{gap:14px !important;}
+.modeCard{padding:16px 16px 14px !important; gap:2px !important; min-width:0;}
+.modeCard::after{display:none !important;}
+.modeCard .ico{width:42px !important; height:42px !important; padding:10px; margin-bottom:10px !important; border-radius:14px; color:var(--mc); background:var(--nm); box-shadow:var(--press-sm);}
+.modeCard b{font-size:19px !important; line-height:1.15; max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.modeCard > span{font-size:12.5px !important; line-height:1.3;}
+.tourBanner{grid-column:1 / -1 !important; flex-direction:row !important; align-items:center !important; gap:16px !important; padding:16px 20px !important;
+  background:linear-gradient(120deg, rgba(245, 197, 66, .2), rgba(245, 197, 66, .04) 45%, transparent), linear-gradient(145deg, #222a46, #171f38) !important;
+  border:1px solid rgba(245, 197, 66, .32) !important;}
+.tourBanner .tbIco{flex:none; width:52px; height:52px; display:grid; place-items:center; font-size:28px; border-radius:16px; background:var(--nm); box-shadow:var(--press-sm);}
+.tourBanner .tbTxt{display:flex; flex-direction:column; min-width:0; flex:1;}
+.tourBanner .tbTxt b{color:#fde68a !important; font-size:22px !important;}
+.tourBanner .tbTxt span{font-size:13px; color:var(--muted); white-space:normal;}
+.tourBanner .tbGo{flex:none; font-weight:800; font-size:14px; color:#0b1702; padding:9px 16px; border-radius:12px; background:linear-gradient(145deg, #ffe17a, #f5c542); box-shadow:var(--raise-sm); transition:transform .25s var(--spring);}
+@media (hover:hover){ .tourBanner:hover .tbGo{transform:translateX(4px);} }
+@media (max-width:520px){ .tourBanner .tbGo{display:none;} .tourBanner .tbTxt b{font-size:19px !important;} }
+/* the title under your name: full width, never cut off */
+.sideTitle{display:block; max-width:100%; white-space:normal !important; overflow:visible !important; text-overflow:clip !important; line-height:1.3; padding:5px 11px; margin-top:-6px;}
+.sideTitle.hidden{display:none;}
+
+/* tournaments: tabs per region, tidy cards with info chips */
+.tourTabs{width:100%;} .tourTabs button{flex:1; padding:11px 6px !important; font-size:15px !important; display:flex; align-items:center; justify-content:center; gap:6px;}
+.tourTabs button i{font-style:normal; font-size:11px; font-weight:800; min-width:20px; padding:1px 6px; border-radius:99px; background:rgba(0, 0, 0, .25);}
+.cupGrid{display:grid; gap:16px;}
+@media (min-width:980px){ .cupGrid{grid-template-columns:repeat(2, minmax(0, 1fr));} .cupGrid > .streetCard{grid-column:1 / -1;} }
+.cupCard{padding:18px 18px 16px !important; display:flex; flex-direction:column; gap:12px; background:linear-gradient(145deg, #1f2948, #161e36) !important;}
+.cupTop{display:flex; gap:14px; align-items:center;}
+.cupCard .cupIcon{flex:none; width:54px; height:54px; display:grid; place-items:center; font-size:30px; border-radius:16px; background:var(--nm); box-shadow:var(--press-sm);}
+.cupName{font-family:"Russo One", Impact, sans-serif; font-size:22px; line-height:1.15;}
+.cupBadges{display:flex; flex-wrap:wrap; gap:6px; margin-top:5px;}
+.tierBadge{font-size:11px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; padding:3px 9px; border-radius:99px; color:var(--muted); background:var(--nm); box-shadow:var(--press-sm);}
+.tierBadge.t-beginner{color:#86efac;} .tierBadge.t-intermediate{color:#7dd3fc;} .tierBadge.t-pro{color:#fca5a5;} .tierBadge.t-showcase{color:#f0abfc;} .tierBadge.t-legend{color:#fdba74;}
+.tierBadge.won{color:#f5c542;}
+.cupChips{display:flex; flex-wrap:wrap; gap:7px;}
+.cupChips span{display:inline-flex; align-items:center; gap:5px; font-size:12.5px; font-weight:700; color:#d6deec; padding:6px 10px; border-radius:11px; background:var(--nm); box-shadow:var(--press-sm);}
+.cupChips svg{width:13px; height:13px;}
+.cupPrizeHead{font-size:11px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:#f5c542; margin-bottom:-4px;}
+.cupCard .prizeRow{margin-top:0 !important; gap:10px;}
+.cupCard .prize{width:112px;}
+.cupActions{display:flex; gap:8px; flex-wrap:wrap; margin-top:2px;}
+.cupLock{font-size:13px; font-weight:700; color:var(--muted); padding:10px 12px; border-radius:12px; background:var(--nm); box-shadow:var(--press-sm);}
+.cupCard.locked{opacity:.72 !important; filter:grayscale(.45) !important;}
+#s-tour .glass{max-width:1080px !important;}
+/* small fixes: banner trophy size, phone tabs, keep Back clear of the bell */
+.tourBanner .tbIco{font-size:28px !important;}
+.tourBanner .tbGo{font-size:14px !important;}
+@media (max-width:760px){ .stickyHead{padding-right:60px !important;} }
+@media (max-width:520px){
+  .tourTabs button{font-size:13.5px !important; padding:10px 4px !important; white-space:nowrap;}
+  .tourTabs button i{display:none;}
+}
