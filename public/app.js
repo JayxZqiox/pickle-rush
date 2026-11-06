@@ -2821,6 +2821,7 @@ $('#titleSel').addEventListener('change', async e => {
 for (const k of ['volMusic', 'volSfx', 'volVoice']) $('#' + k).addEventListener('input', e => { data.opts[k] = +e.target.value; setTxt('#' + k + 'V', e.target.value + '%'); applyVolumes(); save(); });
 $('#volSfx').addEventListener('change', () => { ensureAudio(); playSfx('perfect'); });
 $('#volVoice').addEventListener('change', () => { ensureAudio(); if (data.sound && 'speechSynthesis' in window && volOf('volVoice') > 0){ try { const u = new SpeechSynthesisUtterance('15, 14, 2'); u.volume = .9 * volOf('volVoice'); speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {} } });
+applyFx();
 // the menu becomes a slim icon rail on medium screens: keep a tooltip on every item
 for (const b of $$('.dashNav .navBtn')){ const t = b.textContent.trim(); if (t){ b.title = t; b.setAttribute('aria-label', t); } }
 /* motion: a soft ripple from wherever you press a button or card */
@@ -2868,6 +2869,8 @@ function renderCtrl(){
   $$('#optTouch button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === data.opts.touch));
   $('#optCourt').innerHTML = ['random', ...COURT_IDS].map(k => `<button data-act="opt" data-k="customCourt" data-v="${k}" class="${(data.opts.customCourt || 'random') === k ? 'chip-on' : ''}">${k === 'random' ? '🎲 Random' : esc(IT(k).name)}</button>`).join('');
   $$('#optTags button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === (data.opts.nameTags || 'auto')));
+  $$('#optFx button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === (data.opts.uiFx || 'auto')));
+  applyFx();
   $$('#optCam button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === (data.opts.camera || 'classic')));
   $$('#optGfx button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === (data.opts.gfx || 'auto')));
   $('#optFps').classList.toggle('chip-on', !!data.opts.fps);
@@ -3035,7 +3038,7 @@ function act(name, el){
     case 'setTab': setTab = el.dataset.v; renderCtrl(); break;
     case 'chestSkip': skipChest(); break;
     case 'camCycle': { const i = CAM_ORDER.indexOf(data.opts.camera || 'classic'); setCamera(CAM_ORDER[(i + 1) % CAM_ORDER.length]); break; }
-    case 'opt': data.opts[el.dataset.k] = el.dataset.v; save(); if (el.dataset.k === 'gfx') applyGfx(); if (el.dataset.k === 'camera') fitCamera(); renderCtrl(); updateHUD(); break;
+    case 'opt': data.opts[el.dataset.k] = el.dataset.v; if (el.dataset.k === 'uiFx' && el.dataset.v === 'auto'){ data.autoLite = false; FXW.done = false; FXW.t = FXW.n = 0; } save(); if (el.dataset.k === 'gfx') applyGfx(); if (el.dataset.k === 'camera') fitCamera(); renderCtrl(); updateHUD(); break;
     case 'optToggle': { const k = el.dataset.k, cur = data.opts[k] === undefined ? ['fullscreen', 'pointDance', 'shake', 'music', 'replays'].includes(k) : !!data.opts[k]; data.opts[k] = !cur; save(); renderCtrl(); break; }
     case 'resetBinds': data.binds[ctrlSet] = clone(DEF_BINDS[ctrlSet]); save(); renderCtrl(); break;
     case 'rank': show('s-rank'); break;
@@ -3942,7 +3945,18 @@ function guestTick(dt){
 /* ---------- loop ---------- */
 let last = performance.now() / 1000, accT = 0, hudTick = 0, pingTick = 0;
 const DT = 1 / 120;
-let lastRender = 0, lastShop = 0;
+let lastRender = 0, lastShop = 0, lastStage = 0;
+/* Menu effects: Full keeps every soft shadow and animation, Lite is flatter and calmer.
+   Auto starts Full and quietly switches to Lite if the menus run slowly on this device. */
+const FXW = { t:0, n:0, done:false };
+function applyFx(){ const m = data.opts.uiFx || 'auto'; document.body.classList.toggle('fxLite', m === 'lite' || (m === 'auto' && !!data.autoLite)); }
+function watchMenuFps(d){
+  if (FXW.done || (data.opts.uiFx || 'auto') !== 'auto' || data.autoLite || !document.body.classList.contains('inMenu') || document.hidden) return;
+  FXW.t += d; FXW.n++;
+  if (FXW.t < 6) return;
+  const fps = FXW.n / FXW.t; FXW.t = 0; FXW.n = 0;
+  if (fps < 30){ FXW.done = true; data.autoLite = true; save(); applyFx(); showToast('Menu effects set to Lite', 'Menus run smoother this way · Settings → Video to change'); }
+}
 let HUD_RECT = null, CB_RECT = null;
 addEventListener('resize', () => { HUD_RECT = CB_RECT = null; });
 cv.addEventListener('pointerdown', () => { if (G.state === 'replay' && G.netRole !== 'guest') endReplay(); });
@@ -3999,10 +4013,16 @@ function frame(nowMs){
   const inPlay = screenNow === 'game' || screenNow === 'pause' || screenNow === 'result';
   // menus run at 30 fps; behind the shop, locker and other big panels the background match only needs ~8 fps
   const busyMenu = ['shop', 'char', 'ach', 'tour', 'rank', 'ctrl', 'how', 'player', 'signup'].includes(screenNow);
-  if (inPlay || now - lastRender >= (busyMenu ? 1 / 8 : 1 / 30) - .004){
+  // behind the themed menus the court is mostly covered, so it only needs a few frames a second
+  const veiled = !inPlay && document.body.classList.contains('inMenu');
+  if (inPlay || now - lastRender >= (veiled ? 1 / 4 : busyMenu ? 1 / 8 : 1 / 30) - .004){
     lastRender = now;
     render();
     if (inPlay) hudAutoHide(Math.min(.1, now - (G.hudLast || now))), G.hudLast = now;
+  }
+  if (!inPlay) watchMenuFps(d);
+  if (!inPlay && now - lastStage >= 1 / 30 - .004){
+    lastStage = now;
     if (screenNow === 'menu') drawStage($('#pvMenu'), myLook(), now, { pose:STAGE.pose, tag:(myName() || '?').slice(0, 1).toUpperCase() });
     if (screenNow === 'char'){
       if (!STAGE.drag) STAGE.ang += Math.min(.05, d) * .6;

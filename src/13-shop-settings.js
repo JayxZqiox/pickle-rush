@@ -87,6 +87,7 @@ $('#titleSel').addEventListener('change', async e => {
 for (const k of ['volMusic', 'volSfx', 'volVoice']) $('#' + k).addEventListener('input', e => { data.opts[k] = +e.target.value; setTxt('#' + k + 'V', e.target.value + '%'); applyVolumes(); save(); });
 $('#volSfx').addEventListener('change', () => { ensureAudio(); playSfx('perfect'); });
 $('#volVoice').addEventListener('change', () => { ensureAudio(); if (data.sound && 'speechSynthesis' in window && volOf('volVoice') > 0){ try { const u = new SpeechSynthesisUtterance('15, 14, 2'); u.volume = .9 * volOf('volVoice'); speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {} } });
+applyFx();
 // the menu becomes a slim icon rail on medium screens: keep a tooltip on every item
 for (const b of $$('.dashNav .navBtn')){ const t = b.textContent.trim(); if (t){ b.title = t; b.setAttribute('aria-label', t); } }
 /* motion: a soft ripple from wherever you press a button or card */
@@ -134,6 +135,8 @@ function renderCtrl(){
   $$('#optTouch button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === data.opts.touch));
   $('#optCourt').innerHTML = ['random', ...COURT_IDS].map(k => `<button data-act="opt" data-k="customCourt" data-v="${k}" class="${(data.opts.customCourt || 'random') === k ? 'chip-on' : ''}">${k === 'random' ? '🎲 Random' : esc(IT(k).name)}</button>`).join('');
   $$('#optTags button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === (data.opts.nameTags || 'auto')));
+  $$('#optFx button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === (data.opts.uiFx || 'auto')));
+  applyFx();
   $$('#optCam button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === (data.opts.camera || 'classic')));
   $$('#optGfx button').forEach(b => b.classList.toggle('chip-on', b.dataset.v === (data.opts.gfx || 'auto')));
   $('#optFps').classList.toggle('chip-on', !!data.opts.fps);

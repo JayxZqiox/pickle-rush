@@ -48,7 +48,7 @@ Winning a tournament earns its title (e.g. **Singles Grand Slam Champion**, **Wo
 
 ## Look and feel ("Soft Court" theme)
 
-The menus, login, account, shop and tournament screens use a neumorphism theme in `public/css/neu.css` (soft raised surfaces, pressed-in wells and buttons) with motion: screens glide in, cards pop in one after another, hovering lifts cards, buttons press in with a ripple, a slow animated glow drifts behind the menus (never during a match), and the login hero tilts toward the pointer. Devices set to "reduce motion" get a calm, still version. Delete that one `<link>` in `index.html` to return to the previous style.
+The menus, login, account, shop and tournament screens use a neumorphism theme in `public/css/neu.css` (soft raised surfaces, pressed-in wells and buttons) with motion: screens glide in, cards pop in one after another, hovering lifts cards, buttons press in with a ripple, a slow animated glow drifts behind the menus (never during a match), and the login hero tilts toward the pointer. Devices set to "reduce motion" get a calm, still version. **Settings → Video → Menu effects** offers Auto / Full / Lite; Auto switches to Lite by itself if the menus run below 30 fps. Behind the menus the court only refreshes a few times a second, and the panels sit on their own GPU layers, so the menus stay smooth. Delete that one `<link>` in `index.html` to return to the previous style.
 
 ## Chests, pro characters and settings
 

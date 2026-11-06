@@ -136,7 +136,7 @@ function act(name, el){
     case 'setTab': setTab = el.dataset.v; renderCtrl(); break;
     case 'chestSkip': skipChest(); break;
     case 'camCycle': { const i = CAM_ORDER.indexOf(data.opts.camera || 'classic'); setCamera(CAM_ORDER[(i + 1) % CAM_ORDER.length]); break; }
-    case 'opt': data.opts[el.dataset.k] = el.dataset.v; save(); if (el.dataset.k === 'gfx') applyGfx(); if (el.dataset.k === 'camera') fitCamera(); renderCtrl(); updateHUD(); break;
+    case 'opt': data.opts[el.dataset.k] = el.dataset.v; if (el.dataset.k === 'uiFx' && el.dataset.v === 'auto'){ data.autoLite = false; FXW.done = false; FXW.t = FXW.n = 0; } save(); if (el.dataset.k === 'gfx') applyGfx(); if (el.dataset.k === 'camera') fitCamera(); renderCtrl(); updateHUD(); break;
     case 'optToggle': { const k = el.dataset.k, cur = data.opts[k] === undefined ? ['fullscreen', 'pointDance', 'shake', 'music', 'replays'].includes(k) : !!data.opts[k]; data.opts[k] = !cur; save(); renderCtrl(); break; }
     case 'resetBinds': data.binds[ctrlSet] = clone(DEF_BINDS[ctrlSet]); save(); renderCtrl(); break;
     case 'rank': show('s-rank'); break;

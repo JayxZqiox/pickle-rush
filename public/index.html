@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=23">
 <link rel="stylesheet" href="css/utilities.css?v=19">
-<link rel="stylesheet" href="css/neu.css?v=26">
+<link rel="stylesheet" href="css/neu.css?v=27">
 </head>
 <body class="overflow-hidden select-none">
 <canvas id="game" aria-label="Pickleball court"></canvas>
@@ -475,6 +475,10 @@
         <div id="optCam" class="seg flex-wrap"><button data-act="opt" data-k="camera" data-v="classic">1 Classic</button><button data-act="opt" data-k="camera" data-v="action">2 Action</button><button data-act="opt" data-k="camera" data-v="low">3 Low</button><button data-act="opt" data-k="camera" data-v="sky">4 Sky</button><button data-act="opt" data-k="camera" data-v="broadcast">5 Broadcast</button><button data-act="opt" data-k="camera" data-v="corner">6 Corner</button></div>
       </div>
       <div class="flex items-center justify-between gap-3 flex-wrap">
+        <div><div class="font-bold">Menu effects</div><div class="text-sm text-[var(--muted)]">Lite uses flatter shadows and fewer animations for a smoother menu. Auto picks Lite on slower devices.</div></div>
+        <div id="optFx" class="seg"><button data-act="opt" data-k="uiFx" data-v="auto">Auto</button><button data-act="opt" data-k="uiFx" data-v="full">Full</button><button data-act="opt" data-k="uiFx" data-v="lite">Lite</button></div>
+      </div>
+      <div class="flex items-center justify-between gap-3 flex-wrap">
         <div><div class="font-bold">Name tags</div><div class="text-sm text-[var(--muted)]">Auto shows them before each serve and hides them during rallies</div></div>
         <div id="optTags" class="seg"><button data-act="opt" data-k="nameTags" data-v="auto">Auto</button><button data-act="opt" data-k="nameTags" data-v="always">Always</button><button data-act="opt" data-k="nameTags" data-v="off">Off</button></div>
       </div>
@@ -716,6 +720,6 @@
   });
 })();
 </script>
-<script src="app.js?v=25"></script>
+<script src="app.js?v=26"></script>
 </body>
 </html>

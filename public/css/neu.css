@@ -217,3 +217,31 @@ button.tile:active, a.tile:active, .tile[data-act]:active{transform:scale(.97); 
   .tourTabs button{font-size:13.5px !important; padding:10px 4px !important; white-space:nowrap;}
   .tourTabs button i{display:none;}
 }
+
+/* =====================================================================
+   Performance: same look, far less work per frame
+   ===================================================================== */
+/* the background glow stays, but it no longer moves (moving it repainted everything above it) */
+#ambient i{animation:none !important;}
+#ambient b{display:none !important;}
+/* endless animations that repainted big areas every frame are now still */
+.heroTitle{animation:none !important; background-position:30% 50% !important;}
+.duprTile{animation:none !important; box-shadow:var(--raise-sm), 0 0 0 1px rgba(255, 122, 61, .4), 0 0 22px -10px rgba(255, 122, 61, .55) !important;}
+.featRow span{animation:none !important;}
+.authHero::after{animation:none !important;}
+.navBtn.on::before{animation:none !important;}
+/* entrances: a rise and fade, without the costly blur filter */
+@keyframes neuIn{from{opacity:0; transform:translateY(22px) scale(.97);} to{opacity:1; transform:none;}}
+/* big panels get their own GPU layer, so the court refreshing underneath doesn't repaint them */
+.screen:not(.off) > .glass, .dashNav, .dashSide, .hero, .authHero, .authCard, .chPanel{will-change:transform; transform:translateZ(0);}
+
+/* ---------- Lite menu effects (Settings → Video → Menu effects) ---------- */
+body.fxLite{
+  --raise:3px 4px 9px var(--nm-lo); --raise-sm:2px 3px 6px var(--nm-lo); --raise-lg:6px 8px 20px rgba(0, 0, 0, .55);
+  --press:inset 2px 2px 5px var(--nm-lo); --press-sm:inset 1px 2px 4px var(--nm-lo); --lime-glow:0 0 0 transparent;
+}
+body.fxLite #ambient i{display:none;}
+body.fxLite .screen *, body.fxLite .screen{animation-duration:.01ms !important; animation-delay:0s !important; animation-iteration-count:1 !important;}
+body.fxLite .logo-ball{animation:none !important;}
+body.fxLite .rip{display:none;}
+@media (hover:hover){ body.fxLite .modeCard:hover, body.fxLite .rcard:hover, body.fxLite .cupCard:hover, body.fxLite .roomCard:hover, body.fxLite .quickCard:hover, body.fxLite .chestCard:hover{transform:none;} }

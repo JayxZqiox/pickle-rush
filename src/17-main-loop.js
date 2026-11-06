@@ -1,7 +1,18 @@
 /* ---------- loop ---------- */
 let last = performance.now() / 1000, accT = 0, hudTick = 0, pingTick = 0;
 const DT = 1 / 120;
-let lastRender = 0, lastShop = 0;
+let lastRender = 0, lastShop = 0, lastStage = 0;
+/* Menu effects: Full keeps every soft shadow and animation, Lite is flatter and calmer.
+   Auto starts Full and quietly switches to Lite if the menus run slowly on this device. */
+const FXW = { t:0, n:0, done:false };
+function applyFx(){ const m = data.opts.uiFx || 'auto'; document.body.classList.toggle('fxLite', m === 'lite' || (m === 'auto' && !!data.autoLite)); }
+function watchMenuFps(d){
+  if (FXW.done || (data.opts.uiFx || 'auto') !== 'auto' || data.autoLite || !document.body.classList.contains('inMenu') || document.hidden) return;
+  FXW.t += d; FXW.n++;
+  if (FXW.t < 6) return;
+  const fps = FXW.n / FXW.t; FXW.t = 0; FXW.n = 0;
+  if (fps < 30){ FXW.done = true; data.autoLite = true; save(); applyFx(); showToast('Menu effects set to Lite', 'Menus run smoother this way · Settings → Video to change'); }
+}
 let HUD_RECT = null, CB_RECT = null;
 addEventListener('resize', () => { HUD_RECT = CB_RECT = null; });
 cv.addEventListener('pointerdown', () => { if (G.state === 'replay' && G.netRole !== 'guest') endReplay(); });
@@ -58,10 +69,16 @@ function frame(nowMs){
   const inPlay = screenNow === 'game' || screenNow === 'pause' || screenNow === 'result';
   // menus run at 30 fps; behind the shop, locker and other big panels the background match only needs ~8 fps
   const busyMenu = ['shop', 'char', 'ach', 'tour', 'rank', 'ctrl', 'how', 'player', 'signup'].includes(screenNow);
-  if (inPlay || now - lastRender >= (busyMenu ? 1 / 8 : 1 / 30) - .004){
+  // behind the themed menus the court is mostly covered, so it only needs a few frames a second
+  const veiled = !inPlay && document.body.classList.contains('inMenu');
+  if (inPlay || now - lastRender >= (veiled ? 1 / 4 : busyMenu ? 1 / 8 : 1 / 30) - .004){
     lastRender = now;
     render();
     if (inPlay) hudAutoHide(Math.min(.1, now - (G.hudLast || now))), G.hudLast = now;
+  }
+  if (!inPlay) watchMenuFps(d);
+  if (!inPlay && now - lastStage >= 1 / 30 - .004){
+    lastStage = now;
     if (screenNow === 'menu') drawStage($('#pvMenu'), myLook(), now, { pose:STAGE.pose, tag:(myName() || '?').slice(0, 1).toUpperCase() });
     if (screenNow === 'char'){
       if (!STAGE.drag) STAGE.ang += Math.min(.05, d) * .6;
